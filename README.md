@@ -20,4 +20,5 @@
 # Сопутствующая проекту документация:  
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
 * [Miro](https://miro.com/app/board/uXjVIaJdqw0=/?share_link_id=799797734687)  
-* [Figma](https://www.figma.com/design/dCoOCP2Jjx9wVpFINwosEq/Untitled?node-id=0-1&t=uR2EyEcojD5NBRnk-1)  
+* [Figma](https://www.figma.com/design/dCoOCP2Jjx9wVpFINwosEq/Untitled?node-id=0-1&t=uR2EyEcojD5NBRnk-1)
+* [Target analys] (https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Target%20analys.pdf)
