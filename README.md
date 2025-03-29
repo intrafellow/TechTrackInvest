@@ -24,3 +24,4 @@
 * [Target analys](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Target%20analys.pdf)
 * [RoadMap](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Roadmap.pdf)
 * [Finance model](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Monetization.pdf)
+* [Видео презентация](https://drive.google.com/file/d/1o4pzn11tGvJEt4z9_Kvb3I8fv4m5VQRy/view?usp=sharing)
