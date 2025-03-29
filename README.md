@@ -2,9 +2,9 @@
 Проект "TechTrackInvest" - игра, направленная на погружение в мир инвестиций
 
 # Выполняют студенты:  
-* [Ревенко Олег](https://github.com/intrafellow) - Тимлид, ML-Инженер  
-* [Челяпин Леонид](https://github.com/PaterSSS) - FullStack  
-* [Щербаков Константин](https://github.com/KostySCH) - FullStack  
+* [Ревенко Олег](https://github.com/intrafellow) - Тимлид, Дизайнер, Frontend dev, ML Engineer, DevOps  
+* [Челяпин Леонид](https://github.com/PaterSSS) - Backend dev, Аналитик, DevOps, Технический писатель  
+* [Щербаков Константин](https://github.com/KostySCH) - Backend dev, Аналитик, DevOps, Архитектор  
 
 # Описание проекта  
 Данный проект направлен на разработку веб-приложения игры по теме:
