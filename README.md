@@ -33,7 +33,7 @@
 * [Ссылка на исследование EdTech рынка](https://rb.ru/opinion/edtech-russia-world-2023/)
 
 # Чеклист
-[Наш чеклист](https://docs.google.com/spreadsheets/d/1I7wAMjXFl63DBC2T8EiQP-sXQ2jSwbM5kC4elCwdrZA/edit?gid=0#gid=0)
+[Наш чеклист](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Чеклист.pdf)
 
 # Кто нас проверял
 * Команда 4.1 
