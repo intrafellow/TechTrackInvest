@@ -38,7 +38,7 @@
 # Кто нас проверял
 * Команда 4.1 
 [Git](https://github.com/noviyblock/TechTrek-Web-repository) 
-[Чеклист](https://docs.google.com/spreadsheets/d/13YKOvzV7jyS1OseR_betV5oW4j_kMyNTD6rEV9CL7d4/edit?usp=sharing) 
+[Чеклист](https://github.com/noviyblock/TechTrek-Web-repository/blob/main/Чеклист%201%20этап%20-%20Чек-лист%20№1.pdf) 
 * Команда 8.3 
 [Git](https://gitlab.com/rlwd/main) 
 [Чеклист](https://gitlab.com/rlwd/main/-/blob/main/документы/Чеклист.pdf) 
