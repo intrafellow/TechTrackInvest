@@ -31,3 +31,20 @@
 * [Анализ конкурентов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Competitive%20Analysis.pdf)
 * [Правила коммитов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/commit%20rules.pdf)
 * [Ссылка на исследование EdTech рынка](https://rb.ru/opinion/edtech-russia-world-2023/)
+
+# Чеклист
+[Наш чеклист](https://docs.google.com/spreadsheets/d/1I7wAMjXFl63DBC2T8EiQP-sXQ2jSwbM5kC4elCwdrZA/edit?gid=0#gid=0)
+
+# Кто нас проверял
+* Команда 4.1 
+[Git](https://github.com/noviyblock/TechTrek-Web-repository) 
+[Чеклист](https://docs.google.com/spreadsheets/d/13YKOvzV7jyS1OseR_betV5oW4j_kMyNTD6rEV9CL7d4/edit?usp=sharing) 
+* Команда 8.3 
+[Git](https://gitlab.com/rlwd/main) 
+[Чеклист](https://gitlab.com/rlwd/main/-/blob/main/документы/Чеклист.pdf) 
+* Команда 9.2 
+[Git](https://github.com/LatinMapsLives/GigaGuide) 
+[Чеклист](https://docs.google.com/spreadsheets/d/1o5HuAfzpzqxvtnRldhpmKrr6edl-e3STbG9krv0uljs/edit?gid=0#gid=0) 
+* Команда 9.4 
+[Git](https://github.com/MaksimStrelnikov/tp-9.4) 
+[Чеклист](https://docs.google.com/spreadsheets/d/1VnzvLVx9-J3AFBg_S8BTsxBm4z3U46NIhIShkjp6mzk/edit?gid=116236438#gid=116236438) 
