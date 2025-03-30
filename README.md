@@ -44,7 +44,7 @@
 [Чеклист](https://gitlab.com/rlwd/main/-/blob/main/документы/Чеклист.pdf) 
 * Команда 9.2 
 [Git](https://github.com/LatinMapsLives/GigaGuide) 
-[Чеклист](https://docs.google.com/spreadsheets/d/1o5HuAfzpzqxvtnRldhpmKrr6edl-e3STbG9krv0uljs/edit?gid=0#gid=0) 
+[Чеклист](https://github.com/LatinMapsLives/GigaGuide/blob/main/documentation/Чеклист%209.2.pdf) 
 * Команда 9.4 
 [Git](https://github.com/MaksimStrelnikov/tp-9.4) 
 [Чеклист](https://docs.google.com/spreadsheets/d/1VnzvLVx9-J3AFBg_S8BTsxBm4z3U46NIhIShkjp6mzk/edit?gid=116236438#gid=116236438) 
