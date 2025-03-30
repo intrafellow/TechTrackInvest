@@ -3,8 +3,8 @@
 
 # Выполняют студенты:  
 * [Ревенко Олег](https://github.com/intrafellow) - Тимлид, Дизайнер, Frontend dev, ML Engineer, DevOps  
-* [Челяпин Леонид](https://github.com/PaterSSS) - Backend dev, Аналитик, DevOps, Технический писатель  
-* [Щербаков Константин](https://github.com/KostySCH) - Backend dev, Аналитик, DevOps, Архитектор  
+* [Челяпин Леонид](https://github.com/PaterSSS) - Backend dev, Аналитик, DevOps, Архитектор  
+* [Щербаков Константин](https://github.com/KostySCH) - Backend dev, Аналитик, DevOps,Технический писатель  
 
 # Описание проекта  
 Данный проект направлен на разработку веб-приложения игры по теме:
@@ -29,3 +29,4 @@
 * [SWOT анализ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/swot.pdf)
 * [Анализ конкурентов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Competitive%20Analysis.pdf)
 * [Правила коммитов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/commit%20rules.pdf)
+* [Ссылка на исследование EdTech рынка](https://rb.ru/opinion/edtech-russia-world-2023/)
