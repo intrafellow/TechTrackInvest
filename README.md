@@ -27,3 +27,4 @@
 * [Презентация](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Presentation/TP.pdf)
 * [ТЗ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Technical%20specification/TechSpec.pdf)
 * [SWOT анализ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/swot.pdf)
+* [Анализ конкурентов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Competitive%20Analysis.pdf)
