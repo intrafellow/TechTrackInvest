@@ -20,6 +20,7 @@
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
 * [Miro](https://miro.com/app/board/uXjVIaJdqw0=/?share_link_id=799797734687)  
 * [Figma](https://www.figma.com/design/dCoOCP2Jjx9wVpFINwosEq/Untitled?node-id=0-1&t=uR2EyEcojD5NBRnk-1)
+* [Production Mockup](https://www.figma.com/proto/dCoOCP2Jjx9wVpFINwosEq/Untitled?page-id=0%3A1&node-id=212-7824&viewport=1509%2C-72%2C0.2&t=0o1cPhL5GIzbla0O-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=212%3A7824)
 * [Target analys](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Target%20analys.pdf)
 * [RoadMap](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Roadmap.pdf)
 * [Finance model(SAM,SOM)](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Monetization.pdf)
