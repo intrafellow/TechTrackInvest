@@ -1,4 +1,4 @@
-# TechTrackInvest  
+# TechTrackInvest группа 5.3
 Проект "TechTrackInvest" - игра, направленная на погружение в мир инвестиций
 
 # Выполняют студенты:  
