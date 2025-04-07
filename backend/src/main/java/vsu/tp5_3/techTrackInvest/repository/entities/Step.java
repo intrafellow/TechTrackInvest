@@ -1,19 +1,19 @@
 package vsu.tp5_3.techTrackInvest.repository.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "step")
+@Getter
+@Setter
+@NoArgsConstructor
+public class Step {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public Long getId() {
-        return id;
-    }
 }
