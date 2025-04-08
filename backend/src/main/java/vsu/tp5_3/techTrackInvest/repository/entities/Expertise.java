@@ -18,8 +18,11 @@ public class Expertise {
     @Column(nullable = false)
     private int value;
 
-    @Column(name = "resource_id", unique = true, nullable = false)
+    @Column(name = "expertise_resource_id", unique = true, nullable = false)
     private String resourceId;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "step_id", nullable = false)
+    private Step step;
 
 }

@@ -20,8 +20,8 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @OneToMany(mappedBy = "appUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column
+    @OneToMany(mappedBy = "appUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Session> sessions;
 
     @Column(unique = true, nullable = false, length = 50)
