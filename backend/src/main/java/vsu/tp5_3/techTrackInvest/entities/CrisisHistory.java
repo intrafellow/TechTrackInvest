@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.repository.entities;
+package vsu.tp5_3.techTrackInvest.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -6,22 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "conference")
-@Getter
+@Table(name = "crisisHistory")
 @Setter
+@Getter
 @NoArgsConstructor
-public class Conference {
-
+public class CrisisHistory {
     @Id
-    @Column(name = "resource_conference_id")
-    private String id;
-
-    @Column(name = "conference_time")
-    private int timestamp;
+    @Column(name = "crysis_resource_id")
+    private String crisisHistoryId;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "session_id", nullable = false)
     private Session session;
 }
-
-

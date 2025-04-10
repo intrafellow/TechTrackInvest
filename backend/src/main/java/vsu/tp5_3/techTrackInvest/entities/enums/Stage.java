@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.repository.entities.enums;
+package vsu.tp5_3.techTrackInvest.entities.enums;
 
 public enum Stage {
     IDEA,

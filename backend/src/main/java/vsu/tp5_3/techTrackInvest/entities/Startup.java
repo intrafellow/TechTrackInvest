@@ -1,10 +1,10 @@
-package vsu.tp5_3.techTrackInvest.repository.entities;
+package vsu.tp5_3.techTrackInvest.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vsu.tp5_3.techTrackInvest.repository.entities.enums.Stage;
+import vsu.tp5_3.techTrackInvest.entities.enums.Stage;
 
 @Entity
 @Table(name = "startup")
