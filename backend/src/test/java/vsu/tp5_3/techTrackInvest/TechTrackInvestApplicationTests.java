@@ -13,4 +13,9 @@ class TechTrackInvestApplicationTests {
 	void testingMethod() {
 		Assertions.assertTrue(true);
 	}
+
+	@Test
+	void testingMethod2() {
+		Assertions.assertTrue(true);
+	}
 }
