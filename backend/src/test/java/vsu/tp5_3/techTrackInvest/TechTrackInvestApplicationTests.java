@@ -1,6 +1,7 @@
 package vsu.tp5_3.techTrackInvest;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -8,12 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class TechTrackInvestApplicationTests {
 
 	@Test
-	void contextLoads() {
-	}
-
-	@Test
-	void test() {
+	@Tag("test for test")
+	void testingMethod() {
 		Assertions.assertTrue(true);
 	}
-
 }
