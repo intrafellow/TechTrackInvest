@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'src/**'
+      - 'backend/src/**'
       - '.github/workflows/build.yaml'
   push:
     branches: [ main ]
