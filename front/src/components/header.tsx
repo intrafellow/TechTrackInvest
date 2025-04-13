@@ -25,11 +25,10 @@ const Header: React.FC = () => {
         color: '#413545',
         width: '100%',
         height: '12%',
-        padding: '0 5vh',
       }}
     >
-      {/* Левая часть: Лого + Очки */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '4vh' }}>
+      {/* Левая часть: Лого + Очки действий */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: '7vh' }}>
         <Box
           sx={{
             width: '10vh',
@@ -38,6 +37,7 @@ const Header: React.FC = () => {
             backgroundSize: 'contain',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
+            marginLeft: '2.5vh',
           }}
         />
 
@@ -45,17 +45,18 @@ const Header: React.FC = () => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: '2vh',
+            gap: '1vh',
             padding: '0.5vh 1.5vh',
-            backgroundColor: '#6C74AA',
+            backgroundColor: '#9CA0BA',
             borderRadius: '1vh',
-            width: '12vh',
+            width: '18vh',
+            justifyContent: 'center',
           }}
         >
           <Box
             sx={{
-              width: '5vh',
-              height: '5vh',
+              width: '4.5vh',
+              height: '4.5vh',
               backgroundImage: `url(${tea})`,
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
@@ -65,8 +66,19 @@ const Header: React.FC = () => {
           <Typography
             sx={{
               color: '#FFFFFF',
+              fontSize: '1.5vh',
+              fontFamily: '"Lettersano Full Regular", sans-serif',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Очки действий
+          </Typography>
+          <Typography
+            sx={{
+              color: '#FFFFFF',
               fontSize: '2.5vh',
               fontFamily: '"Lettersano Full Regular", sans-serif',
+              marginLeft: '1vh',
             }}
           >
             3
@@ -95,9 +107,9 @@ const Header: React.FC = () => {
             <Typography
               sx={{
                 color: '#9CA0BA',
-                fontSize: '14px',
+                fontSize: '1.3vh',
                 fontFamily: '"Lettersano Full Regular", sans-serif',
-                marginTop: '8px',
+                marginTop: '1vh',
               }}
             >
               {label}
@@ -114,7 +126,7 @@ const Header: React.FC = () => {
             alignItems: 'center',
             gap: '2vh',
             padding: '0.5vh 1.5vh',
-            backgroundColor: '#6C74AA',
+            backgroundColor: '#9CA0BA',
             borderRadius: '1vh',
             width: '20vh',
           }}
@@ -136,7 +148,7 @@ const Header: React.FC = () => {
               fontFamily: '"Lettersano Full Regular", sans-serif',
             }}
           >
-            Февраль
+            Январь
           </Typography>
         </Box>
 
