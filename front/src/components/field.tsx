@@ -1,4 +1,6 @@
+// components/Field.tsx
 import React, { useState } from 'react';
+import HorizontalCard from './bought_card';
 import {
   Box,
   Divider,
@@ -9,19 +11,19 @@ import {
 } from '@mui/material';
 
 const Field: React.FC = () => {
-  const [selected, setSelected] = useState(''); // Изначально пустое значение
-  const [isBlurred, setIsBlurred] = useState(false); // Состояние для блюра
+  const [selected, setSelected] = useState('');
+  const [isBlurred, setIsBlurred] = useState(false);
 
   const handleChange = (event: any) => {
     setSelected(event.target.value);
   };
 
   const handleOpen = () => {
-    setIsBlurred(true); // Включаем блюр, когда открывается список
+    setIsBlurred(true);
   };
 
   const handleClose = () => {
-    setIsBlurred(false); // Отключаем блюр, когда закрывается список
+    setIsBlurred(false);
   };
 
   return (
@@ -36,7 +38,7 @@ const Field: React.FC = () => {
         padding: '2vh',
         fontFamily: 'Raleway, sans-serif',
         color: '#E3E6FF',
-        filter: isBlurred ? 'blur(5px)' : 'none', // Применяем блюр к экрану
+        filter: isBlurred ? 'blur(5px)' : 'none',
         transition: 'filter 0.3s ease',
       }}
     >
@@ -56,17 +58,18 @@ const Field: React.FC = () => {
           }}
         >
           <Select
-		    style={{
-			width: '22.22vh',
-            height: '5.19vh',}}
+            style={{
+              width: '22.22vh',
+              height: '5.19vh',
+            }}
             value={selected}
             onChange={handleChange}
-            onOpen={handleOpen} // Включаем блюр при открытии
-            onClose={handleClose} // Отключаем блюр при закрытии
+            onOpen={handleOpen}
+            onClose={handleClose}
             displayEmpty
             renderValue={(value) => {
               if (!value) {
-                return <Typography style={{display: "flex", justifyContent: "center"}} sx={{ color: '#413545' }}>Выберите отрасль</Typography>;
+                return <Typography style={{ display: "flex", justifyContent: "center" }} sx={{ color: '#413545' }}>Выберите отрасль</Typography>;
               }
               switch (value) {
                 case 'one':
@@ -104,7 +107,22 @@ const Field: React.FC = () => {
       </Typography>
       <Divider sx={{ backgroundColor: '#CAC4D0', marginBottom: '2vh' }} />
 
-      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '23vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start',
+          margin: 0,
+          padding: 0,
+        }}
+      >
+        <HorizontalCard
+          title="CodeMind AI"
+          subtitle="IT"
+        />
+      </div>
+
+      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '17vh' }}>
         Доступные стартапы
       </Typography>
       <Divider sx={{ backgroundColor: '#CAC4D0' }} />
