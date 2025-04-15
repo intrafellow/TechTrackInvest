@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import HorizontalCard from './bought_card';
 import VerticalCard from './available_card';
+import Event from './event'
 import {
   Box,
   Divider,
@@ -30,7 +31,6 @@ const Field: React.FC = () => {
     <Box
       sx={{
         flexGrow: 1,
-        backgroundColor: '#444A6B',
         width: '100%',
         height: '100%',
         display: 'flex',
@@ -145,7 +145,7 @@ const Field: React.FC = () => {
           subtitle="MedTech"
           description="Платформа отслеживания и анализа медицинских показателей в домашних условиях"
         />
-        <VerticalCard
+        <Event
           title="OrbitalConnect"
           subtitle="SpaceTech"
           description="Связь нового поколения для спутников на низкой орбите"
