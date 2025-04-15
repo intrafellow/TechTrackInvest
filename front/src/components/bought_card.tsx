@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Card, Typography } from '@mui/material';
 import itIcon from '../icons/IT.png';
+import medtechIcon from '../icons/Med.png';
+import greentechIcon from '../icons/Green.png';
+import spacetechIcon from '../icons/Space.png';
 
 interface HorizontalCardProps {
   title: string;
@@ -8,9 +11,25 @@ interface HorizontalCardProps {
   image?: string;
 }
 
+const getIconBySubtitle = (subtitle: string): string => {
+  switch (subtitle) {
+    case 'IT':
+      return itIcon;
+    case 'MedTech':
+      return medtechIcon;
+    case 'GreenTech':
+      return greentechIcon;
+    case 'SpaceTech':
+      return spacetechIcon;
+    default:
+      return itIcon;
+  }
+};
+
 const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image }) => {
   const [active, setActive] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const backgroundImage = image || getIconBySubtitle(subtitle);
 
   return (
     <Card
@@ -21,9 +40,9 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '27vh',
+        width: '37.6vh',
         height: '8vh',
-        margin: 0,
+        margin: '0vh',
         padding: 0,
         borderRadius: '1.29vh',
         backgroundColor: active ? '#F8F9FA' : '#9CA0BA',
@@ -51,6 +70,7 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+			color: '#413545',
           }}
         >
           {title}
@@ -63,6 +83,7 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+			color: '#413545',
           }}
         >
           {subtitle}
@@ -75,7 +96,7 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
           height: '100%',
           borderTopRightRadius: '1.29vh',
           borderBottomRightRadius: '1.29vh',
-          backgroundImage: `url(${image || itIcon})`,
+          backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

@@ -1,6 +1,6 @@
-// components/Field.tsx
 import React, { useState } from 'react';
 import HorizontalCard from './bought_card';
+import VerticalCard from './available_card';
 import {
   Box,
   Divider,
@@ -58,10 +58,7 @@ const Field: React.FC = () => {
           }}
         >
           <Select
-            style={{
-              width: '22.22vh',
-              height: '5.19vh',
-            }}
+            style={{ width: '22.22vh', height: '5.19vh' }}
             value={selected}
             onChange={handleChange}
             onOpen={handleOpen}
@@ -102,27 +99,25 @@ const Field: React.FC = () => {
         </FormControl>
       </Box>
 
-      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '6vh' }}>
+      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '6vh'}}>
         Купленные стартапы
       </Typography>
       <Divider sx={{ backgroundColor: '#CAC4D0', marginBottom: '2vh' }} />
 
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          margin: 0,
-          padding: 0,
+          flexWrap: 'wrap',
+          gap: '2.4vh',
         }}
       >
-        <HorizontalCard
-          title="CodeMind AI"
-          subtitle="IT"
-        />
-      </div>
+        <HorizontalCard title="CodeMind AI" subtitle="IT" />
+        <HorizontalCard title="GreenFuelX" subtitle="GreenTech" />
+        <HorizontalCard title="BioScan Pro" subtitle="MedTech" />
+		<HorizontalCard title="BioScan Pro" subtitle="MedTech" />
+      </Box>
 
-      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '17vh' }}>
+      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '2vh' }}>
         Доступные стартапы
       </Typography>
       <Divider sx={{ backgroundColor: '#CAC4D0' }} />
@@ -131,12 +126,30 @@ const Field: React.FC = () => {
         sx={{
           marginTop: '3vh',
           display: 'flex',
-          flexGrow: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
+          flexWrap: 'wrap',
+          gap: '2.4vh',
         }}
       >
-        {/* Здесь появятся кнопки и дивидеры с текстом */}
+        <VerticalCard
+          title="NeuroSync AI"
+          subtitle="IT"
+          description="Неинвазивный AI-ассистент для мониторинга и коррекции нейронной активности в реальном времени"
+        />
+        <VerticalCard
+          title="EcoPanel"
+          subtitle="GreenTech"
+          description="Инновационные солнечные панели с высокой КПД и лёгкой интеграцией"
+        />
+        <VerticalCard
+          title="MediTrack"
+          subtitle="MedTech"
+          description="Платформа отслеживания и анализа медицинских показателей в домашних условиях"
+        />
+        <VerticalCard
+          title="OrbitalConnect"
+          subtitle="SpaceTech"
+          description="Связь нового поколения для спутников на низкой орбите"
+        />
       </Box>
     </Box>
   );

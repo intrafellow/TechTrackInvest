@@ -65,7 +65,7 @@ const Header: React.FC = () => {
           />
           <Typography
             sx={{
-              color: '#FFFFFF',
+			  color: '#413545',
               fontSize: '1.5vh',
               fontFamily: '"Lettersano Full Regular", sans-serif',
               whiteSpace: 'nowrap',
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
           />
           <Typography
             sx={{
-              color: '#FFFFFF',
+			  color: '#413545',
               fontSize: '2.5vh',
               fontFamily: '"Lettersano Full Regular", sans-serif',
             }}
