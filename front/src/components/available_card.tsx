@@ -41,7 +41,9 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         width: '35vh',
         height: '63.5vh',
         borderRadius: '1.29vh',
-        backgroundColor: active ? '#F8F9FA' : '#B0B1BD',
+        background: active
+          ? 'linear-gradient(135deg, #e5e5e5 0%, #ffffff 100%)'
+          : 'linear-gradient(135deg, #9092a1 0%, #c4c5d1 100%)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -93,7 +95,15 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
           }}
         />
 
-        <Box sx={{ marginTop: '2.08vh', color: '#413545', textAlign: 'left' }}>
+        <Box
+          sx={{
+            marginTop: '2.08vh',
+            textAlign: 'left',
+            borderRadius: '1vh',
+            padding: '1vh',
+            color: '#413545'
+          }}
+        >
           <Typography
             sx={{
               fontFamily: 'Lettersano Full Regular, sans-serif',
