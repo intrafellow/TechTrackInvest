@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.entities;
+package vsu.tp5_3.techTrackInvest.entities.postgre;
 
 import jakarta.persistence.*;
 import lombok.Getter;
