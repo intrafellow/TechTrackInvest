@@ -1,6 +1,7 @@
 package vsu.tp5_3.techTrackInvest.mock.mockRepository;
 
 import org.springframework.stereotype.Repository;
+import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
 import vsu.tp5_3.techTrackInvest.entities.AppUser;
 import vsu.tp5_3.techTrackInvest.repositories.UserRepository;
 
@@ -38,5 +39,14 @@ public class MockUserRepository {
 
     public Optional<AppUser> findByEmail(String email) {
         return users.stream().filter(a -> a.getEmail().equals(email)).findFirst();
+    }
+
+    public boolean save(RegistrationDto registrationDto) {
+        AppUser user = new AppUser();
+        user.setEmail(registrationDto.getEmail());
+        user.setPasswordHash(registrationDto.getPassword());
+        user.setUsername(registrationDto.getUsername());
+        users.add(user);
+        return true;
     }
 }
