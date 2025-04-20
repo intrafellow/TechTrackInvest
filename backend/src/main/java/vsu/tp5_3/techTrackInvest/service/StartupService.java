@@ -34,8 +34,8 @@ public class StartupService {
         return new StartupListDto(list1, list2);
     }
 
+    /** По репозиториям что откуда тягается надо фиксить */
     public StartupReadDto findById() {
         return null;
-
     }
 }
