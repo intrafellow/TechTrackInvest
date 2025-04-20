@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.repositories;
+package vsu.tp5_3.techTrackInvest.repositories.postgre;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
