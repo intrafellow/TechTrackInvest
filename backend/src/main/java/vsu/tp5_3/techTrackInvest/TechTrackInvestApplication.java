@@ -12,6 +12,8 @@ public class TechTrackInvestApplication {
 		System.setProperty("DB_URL", dotenv.get("DB_URL"));
 		System.setProperty("DB_USERNAME", dotenv.get("DB_USERNAME"));
 		System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
+		System.setProperty("MONGO_URI", dotenv.get("MONGO_URI"));
+
 		SpringApplication.run(TechTrackInvestApplication.class, args);
 	}
 
