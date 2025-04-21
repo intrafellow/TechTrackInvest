@@ -2,11 +2,12 @@ package vsu.tp5_3.techTrackInvest.mock.mockRepository;
 
 import org.springframework.stereotype.Repository;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
-import vsu.tp5_3.techTrackInvest.entities.AppUser;
-import vsu.tp5_3.techTrackInvest.repositories.UserRepository;
+import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
+
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class MockUserRepository {
             user.setUsername("user" + i);
             user.setEmail("user" + i + "@e.e");
             user.setPasswordHash("$2a$10$aeKPcqrXL/FREfxhg40d0e9gyBUvSvGbvEVZ.sWbTToT6dnZ3qLGm");
-            user.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now().minusDays(i)));
+            user.setRegistrationDate(LocalDate.of(1111,1,1));
             user.setLevel(ThreadLocalRandom.current().nextInt(1, 100));
             user.setBalance(BigInteger.valueOf(ThreadLocalRandom.current().nextLong(1000, 100000)));
             user.setSessions(new ArrayList<>());

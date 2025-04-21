@@ -1,7 +1,8 @@
 package vsu.tp5_3.techTrackInvest.mapper;
 
 import vsu.tp5_3.techTrackInvest.dto.ConferenceAttendDto;
-import vsu.tp5_3.techTrackInvest.entities.Conference;
+import vsu.tp5_3.techTrackInvest.entities.postgre.Conference;
+
 
 public class ConferenceAttendMapper implements Mapper<ConferenceAttendDto, Conference>{
 

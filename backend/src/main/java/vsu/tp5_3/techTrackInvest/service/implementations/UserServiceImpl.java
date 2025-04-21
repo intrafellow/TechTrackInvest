@@ -13,7 +13,8 @@ import vsu.tp5_3.techTrackInvest.dto.ExpertiseDto;
 import vsu.tp5_3.techTrackInvest.dto.MoneyDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
 import vsu.tp5_3.techTrackInvest.dto.ReputationDto;
-import vsu.tp5_3.techTrackInvest.entities.AppUser;
+
+import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
 import vsu.tp5_3.techTrackInvest.mock.mockRepository.MockUserRepository;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
