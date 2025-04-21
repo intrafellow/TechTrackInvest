@@ -17,4 +17,11 @@ public class TechTrackInvestApplication {
 		SpringApplication.run(TechTrackInvestApplication.class, args);
 	}
 
+	private static void setPropertyIfExists(Dotenv dotenv, String key) {
+		String value = dotenv.get(key);
+		if (value != null) {
+			System.setProperty(key, value);
+		}
+	}
+
 }
