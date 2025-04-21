@@ -3,12 +3,15 @@ package vsu.tp5_3.techTrackInvest.rest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
+import vsu.tp5_3.techTrackInvest.dto.ConferenceAttendDto;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
 import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
-import vsu.tp5_3.techTrackInvest.mock.mockEntities.MockConference;
-import vsu.tp5_3.techTrackInvest.service.ConferenceService;
+import vsu.tp5_3.techTrackInvest.service.implementations.ConferenceService;
+import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,26 +21,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ConferenceController {
     private final ConferenceService conferenceService;
+    private final UserServiceImpl userService;
 
     @GetMapping
-    public ResponseEntity<?> findAll(CategoryFilter categoryFilter) {
+    public ResponseEntity<List<ConferenceReadDto>> findAll(CategoryFilter categoryFilter) {
         List<ConferenceReadDto> list = conferenceService.findAll(categoryFilter);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") String id) {
-        Optional<ConferenceReadDto> conferenceReadDto = conferenceService.findById(id);
-        if (!conferenceReadDto.isPresent()) {
-            return new ResponseEntity<>(new AppErrorDto(HttpStatus.NOT_FOUND.value(), "Events not found"),
-                    HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(conferenceReadDto);
+    public ResponseEntity<ConferenceReadDto> findById(@PathVariable("id") String id) {
+        return conferenceService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Событие не найдено"
+                ));
     }
 
     // todo
     @PostMapping("/{id}/attend")
     public ResponseEntity<?> attend(@PathVariable("id") String id) {
+        ConferenceAttendDto conferenceAttendDto = new ConferenceAttendDto(id, SecurityContextHolder.getContext().getAuthentication().getName());
+        conferenceService.attend(conferenceAttendDto);
         return ResponseEntity.ok(id);
     }
 

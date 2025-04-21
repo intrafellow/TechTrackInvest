@@ -12,8 +12,8 @@ import vsu.tp5_3.techTrackInvest.dto.ExpertiseReadDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupListDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
 import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
-import vsu.tp5_3.techTrackInvest.service.ExpertiseService;
-import vsu.tp5_3.techTrackInvest.service.StartupService;
+import vsu.tp5_3.techTrackInvest.service.implementations.ExpertiseService;
+import vsu.tp5_3.techTrackInvest.service.implementations.StartupService;
 
 import java.util.Optional;
 
@@ -34,7 +34,7 @@ public class StartupController {
      * */
 
     @GetMapping("/{id}")
-    public StartupReadDto findById() {
+    public StartupReadDto findById(@PathVariable("id") String id) {
         return startupService.findById();
     }
 

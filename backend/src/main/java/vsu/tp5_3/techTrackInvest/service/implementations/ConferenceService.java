@@ -1,8 +1,9 @@
-package vsu.tp5_3.techTrackInvest.service;
+package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.dto.ConferenceAttendDto;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
 import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadMapper;
@@ -27,5 +28,14 @@ public class ConferenceService {
 
     public Optional<ConferenceReadDto> findById(String id) {
         return mockConferenceRepository.findById(id).map(conferenceReadMapper::map);
+    }
+
+    @Transactional
+    public void attend(ConferenceAttendDto conferenceAttendDto) {
+        // проверка денег
+        // вычет денег
+        // прибавление характеристик
+        // создаем сущность конференции для постгреса
+        // сохранить
     }
 }

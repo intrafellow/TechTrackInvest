@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
-import vsu.tp5_3.techTrackInvest.service.UserService;
+import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/registration")
 public class RegistrationController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
     @PostMapping()
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationDto registrationDto) {
         if (userService.findByEmail(registrationDto.getEmail()) == null) {

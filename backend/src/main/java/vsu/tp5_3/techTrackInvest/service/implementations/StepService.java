@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.service;
+package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

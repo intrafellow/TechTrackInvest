@@ -1,8 +1,7 @@
-package vsu.tp5_3.techTrackInvest.service;
+package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.StartupListDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
@@ -12,7 +11,6 @@ import vsu.tp5_3.techTrackInvest.mapper.StartupReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.StartupShortReadMapper;
 import vsu.tp5_3.techTrackInvest.mock.mockRepository.MockStartupRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
