@@ -8,6 +8,9 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

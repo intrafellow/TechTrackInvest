@@ -8,13 +8,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class TechTrackInvestApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure()
-				.ignoreIfMissing()
-				.load();
-
-		setPropertyIfExists(dotenv, "DB_URL");
-		setPropertyIfExists(dotenv, "DB_USERNAME");
-		setPropertyIfExists(dotenv, "DB_PASSWORD");
+		Dotenv dotenv = Dotenv.load();
+		System.setProperty("DB_URL", dotenv.get("DB_URL"));
+		System.setProperty("DB_USERNAME", dotenv.get("DB_USERNAME"));
+		System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
+		System.setProperty("MONGO_URI", dotenv.get("MONGO_URI"));
 
 		SpringApplication.run(TechTrackInvestApplication.class, args);
 	}
