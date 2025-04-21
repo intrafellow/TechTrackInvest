@@ -166,7 +166,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
             flex: 1
           }}
         >
-          {active ? 'Посещено' : 'Заключить сделку'}
+          {active ? 'Сделка заключена' : 'Заключить сделку'}
         </Button>
       </Box>
     </Card>
