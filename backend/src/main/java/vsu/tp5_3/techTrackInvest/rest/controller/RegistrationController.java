@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
+import vsu.tp5_3.techTrackInvest.dto.UserReadDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 
 @RestController
@@ -16,13 +18,15 @@ import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 @RequestMapping("/api/v1/registration")
 public class RegistrationController {
     private final UserServiceImpl userService;
-    @PostMapping()
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationDto registrationDto) {
-        if (userService.findByEmail(registrationDto.getEmail()) == null) {
-            return new ResponseEntity<>(new AppErrorDto( HttpStatus.BAD_REQUEST.value(), "Такой пользвоатель уже существует"),
-                    HttpStatus.BAD_REQUEST);
-        }
-        userService.create(registrationDto);
-        return ResponseEntity.ok("Заменить на нормальный ответ дто");
+    @PostMapping
+    public ResponseEntity<UserReadDto> createNewUser(@RequestBody RegistrationDto registrationDto) {
+        userService.findByEmail(registrationDto.getEmail())
+                .ifPresent(user -> {
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "Пользователь с таким email уже существует"
+                    );
+                });
+        return ResponseEntity.ok(userService.create(registrationDto));
     }
 }

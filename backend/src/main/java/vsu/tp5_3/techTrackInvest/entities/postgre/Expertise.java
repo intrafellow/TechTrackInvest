@@ -15,7 +15,7 @@ public class Expertise {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false, name = "expertice_value")
+    @Column(nullable = false, name = "expertise_value")
     private int value;
 
     @Column(name = "expertise_resource_id", unique = true, nullable = false)

@@ -22,7 +22,7 @@ public class AppUser {
     private Long id;
 
     @Column
-    @OneToMany(mappedBy = "appUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "appUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions;
 
     @Column(unique = true, nullable = false, length = 50)

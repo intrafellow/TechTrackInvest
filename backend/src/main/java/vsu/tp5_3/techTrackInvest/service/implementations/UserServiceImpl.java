@@ -9,16 +9,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import vsu.tp5_3.techTrackInvest.dto.ExpertiseDto;
-import vsu.tp5_3.techTrackInvest.dto.MoneyDto;
-import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
-import vsu.tp5_3.techTrackInvest.dto.ReputationDto;
+import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
-import vsu.tp5_3.techTrackInvest.mock.mockRepository.MockUserRepository;
+import vsu.tp5_3.techTrackInvest.mapper.UserCreateEditMapper;
+import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
+import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,13 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserDetailsService, UserService {
-    //private final UserRepository userRepository;
-    private final MockUserRepository mockUserRepository;
+    private final UserRepository userRepository;
+    private final UserCreateEditMapper userCreateEditMapper;
+    private final UserReadMapper userReadMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = mockUserRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(
+        AppUser user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(
                 String.format("Пользователь '%s' не найден", username)
         ));
         String role = "ROLE_USER";
@@ -41,6 +40,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 user.getPasswordHash(),
                 Collections.singleton(new SimpleGrantedAuthority(role))
         );
+    }
+
+    @Transactional
+    public UserReadDto create(RegistrationDto registrationDto) {
+        String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
+        registrationDto.setPassword(hashedPassword);
+        return Optional.ofNullable(registrationDto)
+                .map(userCreateEditMapper::map)
+                .map(userRepository::save)
+                .map(userReadMapper::map)
+                .orElseThrow();
     }
 
     @Override
@@ -69,29 +79,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 "SpaceTech", 50)));
     }
 
-    @Transactional
-    public boolean create(RegistrationDto registrationDto) {
-        String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
-        registrationDto.setPassword(hashedPassword);
-        return mockUserRepository.save(registrationDto);
-        /**
-         * Адекватный вид
-         * return Optional.ofNullable(registrationDto)
-         *             .map(dto -> {
-         *                 String hashedPassword = passwordEncoder.encode(dto.getPassword());
-         *                 dto.setPassword(hashedPassword);
-         *                 return registrationMapper.map(dto);
-         *             })
-         *             .map(userRepository::save)
-         *             .map(userReadMapper::map)
-         *             .orElseThrow();
-         * */
-    }
-
     /** Возвращать в дальнейшем надо нормальный опшионал юзер дто */
-    public RegistrationDto findByEmail(String email) {
-        return mockUserRepository.findByEmail(email) != null ? new RegistrationDto() : null;
+    public Optional<AppUser> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
-
 
 }
