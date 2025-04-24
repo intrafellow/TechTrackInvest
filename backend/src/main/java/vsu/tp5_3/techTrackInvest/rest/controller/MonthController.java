@@ -20,18 +20,5 @@ import java.util.Optional;
 @RequestMapping("/api/v1/month")
 public class MonthController {
     private final MonthService monthService;
-    @GetMapping()
-    public ResponseEntity<?> getStep() {
-        /** По юзеру получаем текущий месяц*/
-        return ResponseEntity.ok("jr");
-    }
-    @PostMapping("/end")
-    public ResponseEntity<MonthEndDto> endStep() {
-        return monthService.endMonth()
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Ошибка завершения хода"
-                ));
-    }
+    /** Завершение хода, который месяц */
 }

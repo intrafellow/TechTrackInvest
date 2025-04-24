@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Transactional
     public UserReadDto create(RegistrationDto registrationDto) {
+        // какие-то логичные ошибки если такой же логин или почта
         String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
         registrationDto.setPassword(hashedPassword);
         return Optional.ofNullable(registrationDto)

@@ -7,5 +7,5 @@ public class ConferenceReadDto {
     String id;
     String name;
     String description;
-    Integer categoryId;
+    String categoryId;
 }
