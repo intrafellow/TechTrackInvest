@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Session {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)

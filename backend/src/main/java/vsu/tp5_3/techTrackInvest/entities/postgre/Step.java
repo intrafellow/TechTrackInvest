@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Step {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "sequence_number", nullable = false, updatable = false)

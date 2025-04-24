@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Expertise {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, name = "expertise_value")
