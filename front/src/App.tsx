@@ -1,6 +1,5 @@
-// src/App.tsx
 import React from 'react';
-import FirstPage from './components/first_page';
+import FirstPage from './components/login';
 
 const App: React.FC = () => {
   return (
