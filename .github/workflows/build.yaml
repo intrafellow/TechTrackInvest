@@ -47,9 +47,9 @@ jobs:
 
     - name: Create .env file for DB connection
       run: |
-        echo "DB_URL=jdbc:postgresql://localhost:5432/testdb" > .env
-        echo "DB_USERNAME=testuser" > .env
-        echo "DB_PASSWORD=testpass" > .env
+        echo "DB_URL=jdbc:postgresql://localhost:5432/testdb" > backend/src/test/resources/.env
+        echo "DB_USERNAME=testuser" >> backend/src/test/resources/.env
+        echo "DB_PASSWORD=testpass" >> backend/src/test/resources/.env
 
     - name: Wait for PostgreSQL
       run: |
