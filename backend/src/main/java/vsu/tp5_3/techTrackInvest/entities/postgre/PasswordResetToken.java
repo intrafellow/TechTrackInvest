@@ -19,9 +19,8 @@ public class PasswordResetToken {
     private Long id;
     @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
-    @Column(name = "password",nullable = false, length = 255)
+    @Column(name = "token",nullable = false, length = 255)
     private String token;
-    @CreationTimestamp
     @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;
 }
