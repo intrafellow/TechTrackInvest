@@ -28,6 +28,7 @@ public class Session {
     @Column(name = "step_count", nullable = false)
     private int stepCount;
 
+    //TODO  по хорошему сменить на LocalDate чтобы в бд не хранилось время
     @Column(name = "start_date", nullable = false)
     private Timestamp startDate;
 

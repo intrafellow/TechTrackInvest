@@ -18,7 +18,7 @@ public class Expertise {
     @Column(nullable = false, name = "expertise_value")
     private int value;
 
-    @Column(name = "expertise_resource_id", unique = true, nullable = false)
+    @Column(name = "expertise_resource_id", nullable = false)
     private String resourceId;
 
     @ManyToOne(optional = false)

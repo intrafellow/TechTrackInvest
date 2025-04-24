@@ -15,7 +15,7 @@ public class Conference {
     @Id
     @Column(name = "resource_conference_id")
     private String id;
-
+    //на каком ходу мы сходили на конференцию
     @Column(name = "conference_time")
     private int timestamp;
 
