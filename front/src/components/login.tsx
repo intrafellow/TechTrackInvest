@@ -1,5 +1,5 @@
-// src/pages/LoginPage.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -9,222 +9,233 @@ import {
   Link,
   OutlinedInput,
   FormControl,
-  FormLabel
+  FormLabel,
+  FormHelperText,
+  Snackbar,
+  Alert,
+  CircularProgress
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
+
+const mockUsers = [
+  { email: 'test@example.com', password: 'password123' },
+  { email: 'user@domain.ru', password: '123456' },
+];
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const isEmailValid = (value: string) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ru|com|net|org|io|dev)$/.test(value);
+
+  const isFormValid = () => {
+    return email.trim() && password.trim() && Object.keys(errors).length === 0;
+  };
+
+  const handleChange = (field: string, value: string) => {
+    if (field === 'email') setEmail(value);
+    if (field === 'password') setPassword(value);
+    setErrors((prev) => {
+      const updated = { ...prev };
+      delete updated[field];
+      return updated;
+    });
+    setSuccess(false);
+  };
+
+  const handleLogin = () => {
+    setErrors({});
+    setLoading(true);
+
+    setTimeout(() => {
+      const newErrors: { [key: string]: string } = {};
+      if (!email) newErrors.email = 'Введите email.';
+      else if (!isEmailValid(email)) newErrors.email = 'Неверный формат email.';
+      if (!password) newErrors.password = 'Введите пароль.';
+      else if (password.length < 6) newErrors.password = 'Пароль должен содержать не менее 6 символов.';
+
+      const user = mockUsers.find(u => u.email === email && u.password === password);
+      if (!user && Object.keys(newErrors).length === 0) {
+        newErrors.password = 'Неверный email или пароль.';
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+      } else {
+        setSuccess(true);
+        setTimeout(() => navigate('/redirect'), 2000);
+      }
+      setLoading(false);
+    }, 400);
+  };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const handleCloseSuccess = () => setSuccess(false);
+
+  const commonLabelStyle = {
+    color: '#F6F7FF',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: '1.6vh',
+    marginBottom: '4px',
+    '&.Mui-focused': {
+      color: '#F6F7FF'
+    }
+  };
+
+  const commonInputStyle = {
+    color: '#000000',
+    fontFamily: 'Raleway',
+    fontWeight: 'normal',
+    fontSize: '2vh',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '12px',
+    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#000000' },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#000000' },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#000000' },
+    '&.Mui-focused': { color: '#000000' },
+    '@media (min-width:900px) and (max-width:1025px)': {
+      fontSize: '1.7vh',
+      height: '5.8vh'
+    }
+  };
+
+  const errorTextStyle = {
+    color: '#B00020',
+    fontWeight: 500
+  };
 
   return (
-    <Box
-      sx={{
-        width: '100vw',
-        minHeight: '100vh',
-        backgroundColor: '#585C87',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-        fontFamily: '"Lettersano Full", sans-serif',
-        color: '#F6F7FF',
-        padding: 0,
-        '@media (max-width: 768px)': {
-          minHeight: '100vh'
-        },
-        '@media (max-width: 480px)': {
-          minHeight: '100vh'
-        }
-      }}
-    >
-      <Typography
-        sx={{
-          fontSize: { xs: '4vh', sm: '5vh', md: '6vh' },
-          fontWeight: 600,
-          marginBottom: 4,
-          textAlign: 'center',
-          color: '#F6F7FF',
-          '@media (max-width: 344px) and (max-height: 882px)': {
-            fontSize: '3vh', // Уменьшаем размер шрифта на этом разрешении
-          },
-        }}
-      >
-        Добро пожаловать
-      </Typography>
-
+    <>
       <Box
         sx={{
-          width: '90%',
-          maxWidth: 500,
-          minWidth: 300,
+          width: '100vw',
+          minHeight: '100vh',
+          backgroundColor: '#585C87',
           display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           flexDirection: 'column',
-          gap: 3,
-          '@media (min-width:900px) and (max-width:915px) and (min-height:1360px)': {
-            width: '85%'
-          },
-          '@media (min-width:1023px) and (max-width:1025px) and (min-height:1360px)': {
-            width: '80%'
-          }
+          fontFamily: '"Lettersano Full", sans-serif',
+          color: '#F6F7FF',
+          padding: 0
         }}
       >
-        <FormControl variant="outlined" fullWidth>
-          <FormLabel
-            sx={{
-              color: '#F6F7FF',
-              fontFamily: 'Raleway',
-              fontWeight: 'bold',
-              fontSize: '1.6vh',
-              marginBottom: '4px',
-              '&.Mui-focused': {
-                color: '#F6F7FF'
-              }
-            }}
-          >
-            Email
-          </FormLabel>
-          <OutlinedInput
-            type="email"
-            sx={{
-              color: '#000000',
-              fontFamily: 'Raleway',
-              fontWeight: 'normal',
-              fontSize: '2vh',
-              backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#000000'
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#000000'
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#000000'
-              },
-              '&.Mui-focused': {
-                color: '#000000'
-              },
-              '@media (min-width:900px) and (max-width:1025px)': {
-                fontSize: '1.7vh',
-                height: '5.8vh'
-              }
-            }}
-          />
-        </FormControl>
+        <Typography
+          sx={{
+            fontSize: { xs: '4vh', sm: '5vh', md: '6vh' },
+            fontWeight: 600,
+            marginBottom: 4,
+            textAlign: 'center',
+            color: '#F6F7FF'
+          }}
+        >
+          Добро пожаловать
+        </Typography>
 
-        <FormControl variant="outlined" fullWidth>
-          <FormLabel
-            sx={{
-              color: '#F6F7FF',
-              fontFamily: 'Raleway',
-              fontWeight: 'bold',
-              fontSize: '1.6vh',
-              marginBottom: '4px',
-              '&.Mui-focused': {
-                color: '#F6F7FF'
+        <Box
+          sx={{
+            width: '90%',
+            maxWidth: 500,
+            minWidth: 300,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3
+          }}
+        >
+          <FormControl variant="outlined" fullWidth error={!!errors.email}>
+            <FormLabel sx={commonLabelStyle}>Email</FormLabel>
+            <OutlinedInput
+              type="email"
+              value={email}
+              onChange={(e) => handleChange('email', e.target.value)}
+              sx={commonInputStyle}
+            />
+            {errors.email && <FormHelperText sx={errorTextStyle}>{errors.email}</FormHelperText>}
+          </FormControl>
+
+          <FormControl variant="outlined" fullWidth error={!!errors.password}>
+            <FormLabel sx={commonLabelStyle}>Пароль</FormLabel>
+            <OutlinedInput
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => handleChange('password', e.target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton onClick={togglePasswordVisibility} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
               }
-            }}
-          >
-            Пароль
-          </FormLabel>
-          <OutlinedInput
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton onClick={togglePasswordVisibility} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            sx={{
-              color: '#000000',
-              fontFamily: 'Raleway',
-              fontWeight: 'normal',
-              fontSize: '2vh',
-              backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#000000'
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#000000'
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#000000'
-              },
-              '&.Mui-focused': {
-                color: '#000000'
-              },
-              '@media (min-width:900px) and (max-width:1025px)': {
-                fontSize: '1.7vh',
-                height: '5.8vh'
-              }
-            }}
-          />
-        </FormControl>
+              sx={commonInputStyle}
+            />
+            {errors.password && <FormHelperText sx={errorTextStyle}>{errors.password}</FormHelperText>}
+          </FormControl>
 
-        <Box sx={{ textAlign: 'right', mt: -2, mb: 1 }}>
-          <Link
-            href="#"
-            underline="none"
-            sx={{
-              fontFamily: 'Raleway',
-              fontWeight: 300,
-              fontSize: '1.8vh',
-              color: '#F6F7FF',
-              cursor: 'pointer'
-            }}
-          >
-            Забыли пароль?
-          </Link>
-        </Box>
+          <Box sx={{ textAlign: 'right', mt: -2, mb: 1 }}>
+            <Link
+              onClick={() => navigate('/reset_passw')}
+              underline="none"
+              sx={{ fontFamily: 'Raleway', fontWeight: 300, fontSize: '1.8vh', color: '#F6F7FF', cursor: 'pointer' }}
+            >
+              Забыли пароль?
+            </Link>
+          </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: '#737EB5',
-              color: '#F6F7FF',
-              fontFamily: 'Raleway',
-              fontWeight: 600,
-              fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
-              height: '6.5vh',
-              '@media (min-width:900px) and (max-width:1025px)': {
-                fontSize: '1.4vh',
-                height: '5.5vh'
-              },
-              '&:hover': { backgroundColor: '#5f6999' }
-            }}
-          >
-            Войти
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleLogin}
+              disabled={!isFormValid() || loading}
+              startIcon={success ? <CheckCircleOutline /> : undefined}
+              sx={{
+                backgroundColor: success ? '#4caf50' : '#737EB5',
+                color: '#F6F7FF',
+                fontFamily: 'Raleway',
+                fontWeight: 600,
+                fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
+                height: '6.5vh',
+                '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' },
+                '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' }
+              }}
+            >
+              {loading ? <CircularProgress size={24} sx={{ color: '#F6F7FF' }} /> : success ? 'Успешно!' : 'Войти'}
+            </Button>
 
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: '#585C87',
-              color: '#F6F7FF',
-              fontFamily: 'Raleway',
-              fontWeight: 600,
-              fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
-              height: '6.5vh',
-              boxShadow: 'none',
-              '@media (min-width:900px) and (max-width:1025px)': {
-                fontSize: '1.4vh',
-                height: '5.5vh'
-              },
-              '&:hover': { backgroundColor: '#4a4d75' }
-            }}
-          >
-            Создать аккаунт
-          </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => navigate('/register')}
+              sx={{
+                backgroundColor: '#585C87',
+                color: '#F6F7FF',
+                fontFamily: 'Raleway',
+                fontWeight: 600,
+                fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
+                height: '6.5vh',
+                boxShadow: 'none',
+                '&:hover': { backgroundColor: '#4a4d75' }
+              }}
+            >
+              Создать аккаунт
+            </Button>
+          </Box>
         </Box>
       </Box>
-    </Box>
+
+      <Snackbar open={success} autoHideDuration={4000} onClose={handleCloseSuccess}>
+        <Alert onClose={handleCloseSuccess} severity="success">
+          Успешный вход
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
