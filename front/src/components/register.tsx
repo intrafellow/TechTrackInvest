@@ -75,11 +75,22 @@ const RegisterPage: React.FC = () => {
   const handleCloseSuccess = () => setSuccess(false);
 
   const labelStyle = {
-    color: '#F6F7FF', fontFamily: 'Raleway', fontWeight: 'bold', fontSize: '1.6vh', marginBottom: '4px'
+    color: '#F6F7FF',
+    fontFamily: 'Raleway',
+    fontWeight: 'bold',
+    fontSize: '1.6vh',
+    marginBottom: '4px',
+    '&.Mui-focused': {
+      color: '#F6F7FF'
+    }
   };
 
   const inputStyle = {
-    color: '#000', fontFamily: 'Raleway', fontSize: '2vh', backgroundColor: '#FFF', borderRadius: '12px',
+    color: '#000',
+    fontFamily: 'Raleway',
+    fontSize: '2vh',
+    backgroundColor: '#FFF',
+    borderRadius: '12px',
     '& .MuiOutlinedInput-notchedOutline': { borderColor: '#000' },
     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#000' },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#000' },
