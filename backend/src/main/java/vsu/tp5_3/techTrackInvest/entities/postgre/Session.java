@@ -52,5 +52,15 @@ public class Session {
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Startup> startups;
 
+    @Column
+    @OneToMany(mappedBy = "session", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CurrentDisplayedStartup> currentDisplayedStartups;
+
+    @Column
+    @OneToMany(mappedBy = "session", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CurrentDisplayedConference> currentDisplayedConferences;
+
+
+
 
 }
