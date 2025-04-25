@@ -11,6 +11,18 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: techtrackinvest@gmail.com
+    password: ${EMAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 jwt:
   secret: apppapdfsdlflksajgllhfjghdklfjhdfshhfghdjghfdjgfcdfdtrfdshfgshgsdgfdhsfdsredsretfdcxgfhdsfhgsdh
   lifetime: 180m

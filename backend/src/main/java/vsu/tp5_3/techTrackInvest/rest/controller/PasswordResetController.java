@@ -2,17 +2,17 @@ package vsu.tp5_3.techTrackInvest.rest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import vsu.tp5_3.techTrackInvest.dto.PasswordResetDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.PasswordResetServiceImpl;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class PasswordResetController {
     private final PasswordResetServiceImpl passwordResetService;
+    private final UserService userService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
@@ -34,21 +34,13 @@ public class PasswordResetController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(
-            @RequestParam String email,
-            @RequestParam String token,
-            @RequestParam String newPassword) {
-
-        if (!passwordResetService.validateToken(email, token)) {
-            return ResponseEntity.badRequest().body("Invalid or expired token");
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
+        if (!userService.updatePassword(passwordResetDto.getEmail(), passwordResetDto.getNewPassword())) {
+            return ResponseEntity.badRequest().body("Пользователь не найден");
         }
 
-        // Здесь должна быть логика обновления пароля пользователя
-        // userService.updatePassword(email, newPassword);
+        passwordResetService.deleteToken(passwordResetDto.getEmail());
 
-        // Удаляем использованный токен
-        //passwordResetService.deleteToken(email);
-
-        return ResponseEntity.ok("Password has been reset successfully");
+        return ResponseEntity.ok("Пароль успешно изменен");
     }
 }

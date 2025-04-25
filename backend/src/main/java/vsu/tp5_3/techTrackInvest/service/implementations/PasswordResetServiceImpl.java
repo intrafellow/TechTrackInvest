@@ -19,7 +19,7 @@ import java.util.Random;
 @Transactional(readOnly = true)
 public class PasswordResetServiceImpl {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    //private final JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     private static final int TOKEN_LENGTH = 6;
     private static final int TOKEN_EXPIRY_HOURS = 1;
@@ -36,7 +36,7 @@ public class PasswordResetServiceImpl {
         resetToken.setExpiryDate(LocalDateTime.now().plusHours(TOKEN_EXPIRY_HOURS));
         passwordResetTokenRepository.save(resetToken);
 
-        //sendEmail(email, token);
+        sendEmail(email, token);
     }
 
     @Transactional
@@ -66,13 +66,23 @@ public class PasswordResetServiceImpl {
         return token.toString();
     }
 
-    /*private void sendEmail(String email, String token) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Password Reset Request");
-        message.setText("Ваш токен для восстановления пароля: " + token + "\n\n"
-                + "Этот токен будет доступен в течении " + TOKEN_EXPIRY_HOURS + " часов");
+    private void sendEmail(String email, String token) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("TechTrackInvest <techtrackinvest@gmail.com>");
+            message.setTo(email);
+            message.setSubject("Password Reset Request");
+            message.setText("Ваш токен для восстановления пароля: " + token);
 
-        mailSender.send(message);
-    }*/
+            mailSender.send(message);
+            System.out.println("Email отправлен успешно на " + email);
+        } catch (Exception e) {
+            System.err.println("Ошибка при отправке email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteToken(String email) {
+        passwordResetTokenRepository.deleteByEmail(email);
+    }
 }

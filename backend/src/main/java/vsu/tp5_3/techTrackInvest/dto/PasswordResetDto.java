@@ -4,5 +4,6 @@ import lombok.Value;
 
 @Value
 public class PasswordResetDto {
-    String token;
+    String email;
+    String newPassword;
 }

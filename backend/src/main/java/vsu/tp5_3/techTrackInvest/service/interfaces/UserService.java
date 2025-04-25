@@ -13,4 +13,5 @@ public interface UserService extends UserDetailsService {
     Optional<MoneyDto> getMoney();
     Optional<ReputationDto> getReputation();
     Optional<ExpertiseDto> getExpertise();
+    boolean updatePassword(String email, String newPassword);
 }
