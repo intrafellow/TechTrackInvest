@@ -8,7 +8,7 @@ on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'src/**'
+      - 'backend/src/**'
       - '.github/workflows/build.yaml'
 jobs:
   build-and-test:
