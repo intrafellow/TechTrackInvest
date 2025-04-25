@@ -1,14 +1,11 @@
 package vsu.tp5_3.techTrackInvest;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import vsu.tp5_3.techTrackInvest.entities.enums.Stage;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.ConferenceRepository;
@@ -25,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class PostgresEntitiesTest {
     @Autowired
     private UserRepository userRepository;
@@ -39,17 +36,6 @@ public class PostgresEntitiesTest {
     private Conference conference;
     private CrisisHistory crisisHistory;
     private Startup startup;
-    private List<Step> steps = new ArrayList<>();
-    private List<Expertise> expertiseList = new ArrayList<>();
-
-    @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        Dotenv dotenv = Dotenv.load();
-
-        registry.add("spring.datasource.url", () -> dotenv.get("DB_URL"));
-        registry.add("spring.datasource.username", () -> dotenv.get("DB_USERNAME"));
-        registry.add("spring.datasource.password", () -> dotenv.get("DB_PASSWORD"));
-    }
 
     @BeforeEach
     void setUp() {
