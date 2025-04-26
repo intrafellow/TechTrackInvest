@@ -59,8 +59,4 @@ public class Session {
     @Column
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CurrentDisplayedConference> currentDisplayedConferences;
-
-
-
-
 }

@@ -9,16 +9,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.dto.*;
-import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
+import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
+import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.UserCreateEditMapper;
 import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
+import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserCreateEditMapper userCreateEditMapper;
     private final UserReadMapper userReadMapper;
     private final PasswordEncoder passwordEncoder;
+    private final NicheMongoRepository nicheMongoRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -54,33 +56,69 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .orElseThrow();
     }
 
+    @NeedTest
     @Override
     public Optional<MoneyDto> getMoney() {
         // Получаем монетки пользователя
         // Получаем из сессии
         // Получаем пользователя
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        // UserRepository.findSession().getStepCount().get().cash
-        // Посчитать сумму купленных стартапов
-        // Вычесть всякое
-        Optional<MoneyDto> moneyDto = Optional.of(new MoneyDto((double) 100.0, 80.0, 180.0));
-        return moneyDto;
+        Session session = userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
+
+        //суммарная стоимость стартапов
+        double totalStartupsCost = session.getStartups().stream().mapToDouble(Startup::getSalePrice).sum();
+
+        //получаем сколько у игрока денег нужно скопировать как я понял, на всякий случай
+        List<Step> steps = new ArrayList<>(session.getSteps());
+        steps.sort(Comparator.comparing(Step::getSequenceNumber));
+        int playerCash = steps.getLast().getCash();
+
+        //всё складываем что есть в dto
+        return Optional.of(new MoneyDto((double) playerCash, totalStartupsCost, playerCash
+                + totalStartupsCost));
     }
 
+    @NeedTest
+    @Transactional
     @Override
     public Optional<ReputationDto> getReputation() {
-        return Optional.of(new ReputationDto(100));
+        //получаем пользователя и находим сессию
+        Session session = getCurrentDBSession();
+
+        //получаем состояние репутации на последний ход
+        return session.getSteps().stream()
+                .max(Comparator.comparing(Step::getSequenceNumber))
+                .map(value -> new ReputationDto(value.getReputation()));
+
     }
 
+    @NeedTest
     @Override
     public Optional<ExpertiseDto> getExpertise() {
-        return Optional.of(new ExpertiseDto(Map.of("IT", 100,
-                "GreenTech", 10,
-                "MedTech", 80,
-                "SpaceTech", 50)));
+        //получаем названия категорий из монго(it и вся хрень)
+        List<NicheMongo> nicheMongoList = nicheMongoRepository.findAll();
+        //теперь получаем показатели экспертизы из постгреса
+        Session session = getCurrentDBSession();
+        Step currentStep =  session.getSteps().stream()
+                .max(Comparator.comparing(Step::getSequenceNumber)).get();
+        List<Expertise> currentPlayerExpertise = currentStep.getExpertiseList();
+        Map<String, Integer> resutlExpertise = new HashMap<>();
+        //сравниваем resource id эксперитзы, которые хранятся в постресе с id из монго, чтобы получить названия категорий
+        for (Expertise expertise : currentPlayerExpertise) {
+            for (NicheMongo nicheMongo : nicheMongoList) {
+                if (expertise.getResourceId().equals(nicheMongo.getId())) {
+                    resutlExpertise.put(nicheMongo.getName(), expertise.getValue());
+                    break;
+                }
+            }
+        }
+        return Optional.of(new ExpertiseDto(resutlExpertise));
     }
 
     /** Возвращать в дальнейшем надо нормальный опшионал юзер дто */
+    /**
+     * ещё бы точно знать, что нужно в этом dto возвращать
+     */
     public Optional<AppUser> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
@@ -95,5 +133,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    @NeedTest
+    private Session getCurrentDBSession() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
     }
 }
