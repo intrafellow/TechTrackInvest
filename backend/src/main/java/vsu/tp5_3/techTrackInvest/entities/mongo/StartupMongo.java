@@ -32,6 +32,6 @@ public class StartupMongo {
     private Stage stage;
 
     //хранится индентификатор ниши, к которой относится стартап
-    @Field(name = "niche")
+    // я тут немного изменил название поля в монго, раньше оно было niche. Нужно проверить не поломается ли база.
     private String nicheId;
 }

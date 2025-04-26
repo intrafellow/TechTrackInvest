@@ -17,20 +17,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StartupService {
-    private final MockStartupRepository startupRepository;
-    private final StartupReadMapper startupReadMapper;
-    private final StartupShortReadMapper startupShortReadMapper;
-    public StartupListDto findAll(CategoryFilter categoryFilter) {
-        List<StartupShortReadDto> list1 = startupRepository.findPurchased(categoryFilter)
-                .stream()
-                .map(startupShortReadMapper::map)
-                .toList();
-        List<StartupReadDto> list2 = startupRepository.findAvailable(categoryFilter)
-                .stream()
-                .map(startupReadMapper::map)
-                .toList();
-        return new StartupListDto(list1, list2);
-    }
+    //это всё как я понимаю нам особо не нужно. Тут одни моки
+//    private final MockStartupRepository startupRepository;
+//    private final StartupReadMapper startupReadMapper;
+//    private final StartupShortReadMapper startupShortReadMapper;
+//    public StartupListDto findAll(CategoryFilter categoryFilter) {
+//        List<StartupShortReadDto> list1 = startupRepository.findPurchased(categoryFilter)
+//                .stream()
+//                .map(startupShortReadMapper::map)
+//                .toList();
+//        List<StartupReadDto> list2 = startupRepository.findAvailable(categoryFilter)
+//                .stream()
+//                .map(startupReadMapper::map)
+//                .toList();
+//        return new StartupListDto(list1, list2);
+//    }
+
 
     /** По репозиториям что откуда тягается надо фиксить */
     public StartupReadDto findById() {

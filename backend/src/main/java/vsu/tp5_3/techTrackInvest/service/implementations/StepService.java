@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
@@ -22,6 +23,7 @@ public class StepService {
     // я тут поменял логику, чтобы убавлялось значение доступных очков действий поля в сессии stepCount
     //обновлять значения текущего степа, нам придётся в огромном количестве других мест кода, поэтому есть резон сделать
     //для этого отдельный сервис
+    @NeedTest
     @Transactional
     public StepValidationResult validateAndExecuteStep() {
         // учитывать переменную степ каунт
