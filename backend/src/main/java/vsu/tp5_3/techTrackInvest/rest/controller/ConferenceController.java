@@ -9,6 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceAttendDto;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
+import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
+import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
 import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
 import vsu.tp5_3.techTrackInvest.service.implementations.ConferenceService;
 import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
@@ -41,10 +43,10 @@ public class ConferenceController {
 
     // todo
     @PostMapping("/{id}/attend")
-    public ResponseEntity<?> attend(@PathVariable("id") Long id) {
+    public ResponseEntity<StepActionDto<ConferenceMongo>> attend(@PathVariable("id") Long id) {
         ConferenceAttendDto conferenceAttendDto = new ConferenceAttendDto(id, SecurityContextHolder.getContext().getAuthentication().getName());
-        conferenceService.attend(conferenceAttendDto);
-        return ResponseEntity.ok(id);
+        StepActionDto<ConferenceMongo> conferenceReadDtoStepActionDto = conferenceService.attend(conferenceAttendDto);
+        return ResponseEntity.ok(conferenceReadDtoStepActionDto);
     }
 
 }

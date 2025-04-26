@@ -8,5 +8,6 @@ public class StepActionDto<T> {
     T content;
     String errorMessage;
     Integer stepsLeft;
+    // выпиливаем к хуям
     CrisisReadDto crisisReadDto;
 }

@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.FinishDto;
 import vsu.tp5_3.techTrackInvest.dto.SessionReadDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
+import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.SessionReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.ConferenceMongoRepository;
+import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.SessionRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
@@ -33,6 +35,7 @@ public class SessionServiceImpl implements SessionService {
     private final UserRepository userRepository;
     private final SessionReadMapper sessionReadMapper;
     private final ConferenceMongoRepository conferenceMongoRepository;
+    private final NicheMongoRepository nicheMongoRepository;
 
 
     @Override
@@ -52,12 +55,19 @@ public class SessionServiceImpl implements SessionService {
         step.setCash(1000000);
         step.setSequenceNumber(1);
         List<Expertise> expertiseList = new ArrayList<>();
-        // не догоняю че вставить в ресурс айди и как это создать адекватно
+        List<NicheMongo> nicheMongos = nicheMongoRepository.findAll();
+        for (NicheMongo n : nicheMongos) {
+            Expertise e = new Expertise();
+            e.setValue(10);
+            e.setResourceId(n.getId());
+            e.setStep(step);
+            expertiseList.add(e);
+        }
         step.setExpertiseList(expertiseList);
         step.setSession(session);
         session.getSteps().add(step);
         session.setCurrentDisplayedConferences(getRandomConferences(0, 10, session));
-        // нагенерировать стартапов и мероприятий из монго?
+        // нагенерировать стартапов?
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
     }
 
@@ -80,7 +90,7 @@ public class SessionServiceImpl implements SessionService {
         Long id = userRepository.findByEmail(email).get().getSessions().getLast().getId();
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        user.getSessions().clear(); //что-то не донастроено в каскадном удалении, вроде это orphanRemoval
+        user.getSessions().clear();
         //sessionRepository.deleteByAppUser(user);
         return Optional.of(new FinishDto(id));
 

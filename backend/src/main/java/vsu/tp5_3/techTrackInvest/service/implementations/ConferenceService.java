@@ -54,9 +54,10 @@ public class ConferenceService {
                 .map(conferenceReadPostgresMapper::map);
     }
 
+    // что-то не обработалось
     @Transactional
     public StepActionDto<ConferenceMongo> attend(ConferenceAttendDto conferenceAttendDto) {
-        // 1. Проверка возможности хода
+        // 1. Проверка возможности хода и его совершение
         StepValidationResult validationResult = stepService.validateAndExecuteStep();
         if (!validationResult.isValid()) {
             return new StepActionDto<>(false, null, validationResult.getMessage(), 0, null);
@@ -75,8 +76,8 @@ public class ConferenceService {
                 .orElseThrow(() -> new EntityNotFoundException("Conference details not found"));
 
         // 4. Получение текущего шага
-        Session session = user.getSessions().get(user.getSessions().size() - 1);
-        Step step = session.getSteps().get(session.getSteps().size() - 1);
+        Session session = user.getSessions().getLast();
+        Step step = session.getSteps().getLast();
 
         // 5. Проверка денег
         if (step.getCash() < conferenceMongo.getEnrollPrice()) {
@@ -91,7 +92,8 @@ public class ConferenceService {
         step.setReputation(step.getReputation() + conferenceMongo.getGainedReputation());
 
         // 6.3. Безопасное обновление экспертиз
-        List<Expertise> updatedExpertiseList = new ArrayList<>();
+        // посмотреть что не так
+        /*List<Expertise> updatedExpertiseList = new ArrayList<>();
         for (Expertise existingExpertise : step.getExpertiseList()) {
             Expertise updatedExpertise = new Expertise();
             updatedExpertise.setId(existingExpertise.getId());
@@ -111,7 +113,7 @@ public class ConferenceService {
             expertiseRepository.delete(expertise);
         }
         step.getExpertiseList().clear();
-        step.getExpertiseList().addAll(updatedExpertiseList);
+        step.getExpertiseList().addAll(updatedExpertiseList);*/
 
         // 7. Сохранение конференции
         Conference conference = new Conference();

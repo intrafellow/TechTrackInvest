@@ -20,6 +20,7 @@ public class StepService {
     private final UserRepository userRepository;
     @Transactional
     public StepValidationResult validateAndExecuteStep() {
+        // учитывать переменную степ каунт
         Step lastStep = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast()
                 .getSteps().getLast();

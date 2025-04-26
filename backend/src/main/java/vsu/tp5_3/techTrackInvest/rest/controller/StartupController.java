@@ -48,4 +48,6 @@ public class StartupController {
         return ResponseEntity.ok(expertiseReadDto);
     }
 
+
+
 }
