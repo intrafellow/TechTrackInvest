@@ -4,8 +4,9 @@ import lombok.Value;
 
 @Value
 public class ConferenceReadDto {
-    String id;
+    Long id;
+    String resourceId;
     String name;
     String description;
-    String categoryId;
+    String category;
 }

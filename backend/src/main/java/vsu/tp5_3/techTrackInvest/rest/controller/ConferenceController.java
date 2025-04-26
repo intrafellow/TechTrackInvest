@@ -30,7 +30,7 @@ public class ConferenceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ConferenceReadDto> findById(@PathVariable("id") String id) {
+    public ResponseEntity<ConferenceReadDto> findById(@PathVariable("id") Long id) {
         return conferenceService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -41,7 +41,7 @@ public class ConferenceController {
 
     // todo
     @PostMapping("/{id}/attend")
-    public ResponseEntity<?> attend(@PathVariable("id") String id) {
+    public ResponseEntity<?> attend(@PathVariable("id") Long id) {
         ConferenceAttendDto conferenceAttendDto = new ConferenceAttendDto(id, SecurityContextHolder.getContext().getAuthentication().getName());
         conferenceService.attend(conferenceAttendDto);
         return ResponseEntity.ok(id);

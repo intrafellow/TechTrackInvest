@@ -3,7 +3,6 @@ package vsu.tp5_3.techTrackInvest.dto;
 import lombok.Value;
 
 @Value
-public class ConferenceAttendDto {
-    Long id;
-    String email;
+public class CrisisReadDto {
+    //допилить
 }
