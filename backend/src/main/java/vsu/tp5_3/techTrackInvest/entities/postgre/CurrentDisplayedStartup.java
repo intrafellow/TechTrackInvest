@@ -25,6 +25,7 @@ public class CurrentDisplayedStartup {
     private String name;
     private String description;
     private Integer price;
+    private String nicheId;
 
 
     @ManyToOne(optional = false)

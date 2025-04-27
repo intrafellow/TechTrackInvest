@@ -4,8 +4,8 @@ import lombok.Value;
 
 @Value
 public class StartupReadDto {
-    String id;
-    Integer categoryId;
+    String resourceId;
+    String categoryName;
     String name;
     String description;
 }

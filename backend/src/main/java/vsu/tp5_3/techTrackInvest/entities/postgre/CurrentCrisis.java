@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "currentCrisis")
+@Table(name = "current_сrisis")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +16,7 @@ public class CurrentCrisis {
     @Column(name = "crisis_resource_id")
     private String crisisId;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "session_id", nullable = false)
+    @OneToOne(optional = false)
+    @JoinColumn(name = "session_id", nullable = false, unique = true)
     private Session session;
 }

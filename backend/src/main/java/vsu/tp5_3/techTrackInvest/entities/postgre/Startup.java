@@ -15,6 +15,11 @@ public class Startup {
     @Id
     @Column(name = "startup_resource_id")
     private String id;
+    //эти поля дублируются, но добавлены для удобства, чтобы не лезть в монго каждый раз
+    private String nicheId;
+
+    private String name;
+    private String description;
 
     @Column(name = "sale_price", nullable = false)
     private int salePrice;

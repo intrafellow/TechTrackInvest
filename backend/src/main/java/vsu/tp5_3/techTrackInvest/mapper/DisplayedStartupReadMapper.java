@@ -1,22 +1,21 @@
 package vsu.tp5_3.techTrackInvest.mapper;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
+import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
 import vsu.tp5_3.techTrackInvest.service.implementations.NicheService;
 
 @Component
-@AllArgsConstructor
-public class StartupReadMapper implements Mapper<Startup, StartupReadDto> {
+@RequiredArgsConstructor
+public class DisplayedStartupReadMapper implements Mapper<CurrentDisplayedStartup, StartupReadDto> {
     private final NicheService nicheService;
     @Override
-    public StartupReadDto map(Startup object) {
+    public StartupReadDto map(CurrentDisplayedStartup object) {
         return new StartupReadDto(
-                object.getId(),
+                object.getResourceId(),
                 nicheService.getNicheName(object.getNicheId()),
                 object.getName(),
-                object.getDescription()
-        );
+                object.getDescription());
     }
 }
