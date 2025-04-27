@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 @Value
 public class MockStartup {
     String id;
-    Integer categoryId;
+    String categoryId;
     String name;
     String description;
     BigDecimal price;

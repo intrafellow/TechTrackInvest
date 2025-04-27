@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.dto.FinishDto;
 import vsu.tp5_3.techTrackInvest.dto.SessionReadDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
@@ -41,7 +42,7 @@ public class SessionServiceImpl implements SessionService {
     private final NicheMongoRepository nicheMongoRepository;
     private final StartupMongoRepository startupMongoRepository;
 
-
+    @NeedTest
     @Override
     @Transactional
     public Optional<SessionReadDto> creteSession() {
@@ -92,6 +93,7 @@ public class SessionServiceImpl implements SessionService {
 
     //вообще мы же должны получать определённое количество конференций(4 с каждой категории). Первый раз по 4, потом
     //если сходил на какую-то то вместое неё одну. Тоже самое относится и к стартапам.
+
     private List<CurrentDisplayedConference> getRandomConferences(int min, int max, Session session) {
         int count = ThreadLocalRandom.current().nextInt(min, max + 1);
         List<ConferenceMongo> allConferences = conferenceMongoRepository.findAll();
@@ -103,6 +105,7 @@ public class SessionServiceImpl implements SessionService {
                 .collect(Collectors.toList());
     }
 
+    @NeedTest
     private List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
         Pageable pageable = PageRequest.of(0, count);
 
@@ -141,6 +144,7 @@ public class SessionServiceImpl implements SessionService {
         displayed.setName(mongoStartup.getName());
         displayed.setDescription(mongoStartup.getDescription());
         displayed.setPrice(mongoStartup.getPrice());
+        displayed.setNicheId(mongoStartup.getNicheId());
         displayed.setSession(session);
 
         return displayed;

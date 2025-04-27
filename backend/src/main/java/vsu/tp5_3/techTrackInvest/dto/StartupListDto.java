@@ -6,6 +6,6 @@ import java.util.List;
 
 @Value
 public class StartupListDto {
-    List<StartupShortReadDto> purchasedStartups;
+    List<StartupReadDto> purchasedStartups;
     List<StartupReadDto> availableStartups;
 }
