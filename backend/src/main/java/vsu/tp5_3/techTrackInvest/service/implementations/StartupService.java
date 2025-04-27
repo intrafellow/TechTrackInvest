@@ -14,14 +14,14 @@ import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StartupService {
+
+    private final Set<String> usedStartupIds = new HashSet<>();
     //есть смысл сделать кеш используемых стартапов. Хранить их resourceId, чтобы не лазить в бд, а сразу доставать
     //из монги и сверять. Нужно будет правда следить, чтобы он правильно обновлялся
     private final StartupRepository startupRepository;
@@ -72,17 +72,20 @@ public class StartupService {
     }
 
 
-    public Optional<StartupMongo> getNewUniqueStartup(String nicheId) {
-        //должны получить все стартапы заданной категории, которые уже отображаются
-        //должны получить все стартапы заданной категории, которые мы купили
-        //должны достать из монго рандомный стартап подходящей категории
-        //проверить не используем ли мы уже этот стартап
-        //повторить поиск стартапа пока не найдём уникальный
+//    public Optional<StartupMongo> getNewUniqueStartup(String nicheId) {
+//        //должны получить все стартапы заданной категории, которые уже отображаются
+//        //должны получить все стартапы заданной категории, которые мы купили
+//        //должны достать из монго рандомный стартап подходящей категории
+//        //проверить не используем ли мы уже этот стартап
+//        //повторить поиск стартапа пока не найдём уникальный
+//
+//        List<CurrentDisplayedStartup> currentDisplayedStartupsInCategory =
+//                currentDisplayedStartupRepository.findAllByNicheId(nicheId);
+//        return
+//
+//    }
 
-        List<CurrentDisplayedStartup> currentDisplayedStartupsInCategory =
-                currentDisplayedStartupRepository.findAllByNicheId(nicheId);
 
-    }
 
     /** По репозиториям что откуда тягается надо фиксить */
     public StartupReadDto findById() {

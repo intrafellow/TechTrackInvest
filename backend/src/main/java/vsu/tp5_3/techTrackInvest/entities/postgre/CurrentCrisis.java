@@ -17,6 +17,6 @@ public class CurrentCrisis {
     private String crisisId;
 
     @OneToOne(optional = false)
-    @JoinColumn(name = "session_id", nullable = false)
+    @JoinColumn(name = "session_id", nullable = false, unique = true)
     private Session session;
 }

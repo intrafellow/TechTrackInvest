@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 

@@ -40,7 +40,6 @@ public class Session {
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CrisisHistory> crisisHistory;
 
-    @Column
     @OneToOne(mappedBy = "session", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private CurrentCrisis currentCrisis;
 
