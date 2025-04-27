@@ -81,6 +81,12 @@ public class SessionServiceImpl implements SessionService {
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
         session.setCurrentDisplayedStartups(startups);
 
+        session.setConferences(new ArrayList<>());
+        session.setStartups(new ArrayList<>());
+        //не знаю может лучше не делать
+//        session.setCurrentCrisis(null);
+        session.setCrisisHistory(new ArrayList<>());
+
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
     }
 
