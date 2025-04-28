@@ -1,18 +1,14 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
-import vsu.tp5_3.techTrackInvest.dto.ExpertiseReadDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupListDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.ExpertiseService;
 import vsu.tp5_3.techTrackInvest.service.implementations.StartupService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,19 +16,16 @@ import java.util.Optional;
 public class StartupController {
     private final StartupService startupService;
     private final ExpertiseService expertiseService;
-    //будем возвращать
+    //метод для полного получения страницы стартапов
     @GetMapping
     public StartupListDto findAll() {
-        return new StartupListDto(List.of(), List.of());
+        return startupService.getAllAvailableStartups();
     }
 
-    /** пусть сервер наверное сам решает какой стартап возвращать, т.е
-     * проверяет куплен он или нет тут
-     * */
 
-    @GetMapping("/{id}")
-    public StartupReadDto findById(@PathVariable("id") String id) {
-        return startupService.findById();
+    @GetMapping("/niche/{nicheId}")
+    public ResponseEntity<List<StartupReadDto>> findAllDisplayedByNicheId(@PathVariable String nicheId) {
+        return ResponseEntity.ok(startupService.getCurrentDisplayedStartupsInNiche(nicheId));
     }
 
     @GetMapping("/{id}/expertise")

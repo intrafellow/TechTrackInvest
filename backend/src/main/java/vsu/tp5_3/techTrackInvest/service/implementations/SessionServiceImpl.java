@@ -76,16 +76,15 @@ public class SessionServiceImpl implements SessionService {
         step.setExpertiseList(expertiseList);
         step.setSession(session);
         session.getSteps().add(step);
-        session.setCurrentDisplayedConferences(getRandomConferences(0, 10, session));
+        session.setCurrentDisplayedConferences(getRandomConferences(1, 10, session));
 
-        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1")
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
         session.setCurrentDisplayedStartups(startups);
 
         session.setConferences(new ArrayList<>());
         session.setStartups(new ArrayList<>());
-        //не знаю может лучше не делать
-//        session.setCurrentCrisis(null);
+
         session.setCrisisHistory(new ArrayList<>());
 
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
@@ -106,11 +105,11 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @NeedTest
-    private List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
+    private List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
         Pageable pageable = PageRequest.of(0, count);
 
-        return startupMongoRepository.findByNicheId(nicheId, pageable);
-
+        List<StartupMongo> startupMongo = new ArrayList<>(startupMongoRepository.findByNiche(nicheId, pageable));
+        return startupMongo;
     }
 
     @Override
@@ -144,7 +143,7 @@ public class SessionServiceImpl implements SessionService {
         displayed.setName(mongoStartup.getName());
         displayed.setDescription(mongoStartup.getDescription());
         displayed.setPrice(mongoStartup.getPrice());
-        displayed.setNicheId(mongoStartup.getNicheId());
+        displayed.setNicheId(mongoStartup.getNiche());
         displayed.setSession(session);
 
         return displayed;

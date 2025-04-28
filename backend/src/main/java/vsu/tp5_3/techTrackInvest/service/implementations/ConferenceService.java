@@ -48,8 +48,8 @@ public class ConferenceService {
     }
 
     public Optional<ConferenceReadDto> findById(Long id) {
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
+//        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+//                .get().getSessions().getLast();
         return currentDisplayedConferenceRepository.findById(id)
                 .map(conferenceReadPostgresMapper::map);
     }
