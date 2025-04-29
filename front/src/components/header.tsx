@@ -24,20 +24,27 @@ const Header: React.FC = () => {
         backgroundColor: '#535C94',
         color: '#413545',
         width: '100%',
-        height: '12%',
+        height: { xs: '7vh', sm: '8vh', md: '9vh' },
+        padding: { xs: '0.3vh', sm: '0.5vh', md: '1vh' },
+        gap: { xs: '0.3vh', sm: '0.5vh', md: '1vh' }
       }}
     >
       {/* Левая часть: Лого + Очки действий */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '7vh' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: { xs: '0.5vh', sm: '1vh', md: '2vh' },
+        minWidth: 'fit-content'
+      }}>
         <Box
           sx={{
-            width: '10vh',
-            height: '8vh',
+            width: { xs: '5vh', sm: '6vh', md: '7vh' },
+            height: { xs: '3vh', sm: '4vh', md: '5vh' },
             backgroundImage: `url(${logo})`,
             backgroundSize: 'contain',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            marginLeft: '2.5vh',
+            marginLeft: { xs: '0.3vh', sm: '0.5vh', md: '1vh' },
           }}
         />
 
@@ -45,18 +52,18 @@ const Header: React.FC = () => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: '1vh',
-            padding: '0.5vh 1.5vh',
+            gap: '0.3vh',
+            padding: { xs: '0.2vh 0.3vh', sm: '0.3vh 0.5vh', md: '0.4vh 0.8vh' },
             backgroundColor: '#9CA0BA',
-            borderRadius: '1vh',
-            width: '18vh',
+            borderRadius: '0.3vh',
+            width: { xs: '8vh', sm: '10vh', md: '12vh' },
             justifyContent: 'center',
           }}
         >
           <Box
             sx={{
-              width: '4.5vh',
-              height: '4.5vh',
+              width: { xs: '2vh', sm: '2.5vh', md: '3vh' },
+              height: { xs: '2vh', sm: '2.5vh', md: '3vh' },
               backgroundImage: `url(${tea})`,
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
@@ -65,20 +72,20 @@ const Header: React.FC = () => {
           />
           <Typography
             sx={{
-			  color: '#413545',
-              fontSize: '1.5vh',
+              color: '#413545',
+              fontSize: { xs: '0.8vh', sm: '0.9vh', md: '1vh' },
               fontFamily: '"Lettersano Full Regular", sans-serif',
               whiteSpace: 'nowrap',
             }}
           >
-            Очки действий
+            Очки
           </Typography>
           <Typography
             sx={{
               color: '#FFFFFF',
-              fontSize: '2.5vh',
+              fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' },
               fontFamily: '"Lettersano Full Regular", sans-serif',
-              marginLeft: '1vh',
+              marginLeft: '0.3vh',
             }}
           >
             3
@@ -87,13 +94,24 @@ const Header: React.FC = () => {
       </Box>
 
       {/* Центр: Навигация */}
-      <Box sx={{ display: 'flex', gap: '3vh', alignItems: 'center', flexGrow: 1, justifyContent: 'center' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        gap: { xs: '0.5vh', sm: '1vh', md: '1.5vh' }, 
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: { xs: '0 1 auto', md: '1' }
+      }}>
         {navItems.map(({ label, icon }) => (
-          <Box key={label} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box key={label} sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center',
+            minWidth: { xs: '5vh', sm: '6vh', md: '7vh' }
+          }}>
             <Box
               sx={{
-                width: '10vh',
-                height: '8vh',
+                width: { xs: '5vh', sm: '6vh', md: '7vh' },
+                height: { xs: '3vh', sm: '4vh', md: '5vh' },
                 backgroundImage: `url(${icon})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
@@ -107,9 +125,9 @@ const Header: React.FC = () => {
             <Typography
               sx={{
                 color: '#9CA0BA',
-                fontSize: '1.3vh',
+                fontSize: { xs: '0.7vh', sm: '0.8vh', md: '0.9vh' },
                 fontFamily: '"Lettersano Full Regular", sans-serif',
-                marginTop: '1vh',
+                marginTop: '0.3vh',
               }}
             >
               {label}
@@ -119,22 +137,27 @@ const Header: React.FC = () => {
       </Box>
 
       {/* Правая часть: Календарь + Профиль */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '4vh' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: { xs: '0.5vh', sm: '1vh', md: '1.5vh' },
+        minWidth: 'fit-content'
+      }}>
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: '2vh',
-            padding: '0.5vh 1.5vh',
+            gap: { xs: '0.3vh', sm: '0.5vh', md: '0.8vh' },
+            padding: { xs: '0.2vh 0.3vh', sm: '0.3vh 0.5vh', md: '0.4vh 0.8vh' },
             backgroundColor: '#9CA0BA',
-            borderRadius: '1vh',
-            width: '20vh',
+            borderRadius: '0.3vh',
+            width: { xs: '10vh', sm: '12vh', md: '14vh' },
           }}
         >
           <Box
             sx={{
-              width: '5vh',
-              height: '5vh',
+              width: { xs: '2.5vh', sm: '3vh', md: '3.5vh' },
+              height: { xs: '2.5vh', sm: '3vh', md: '3.5vh' },
               backgroundImage: `url(${calender})`,
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
@@ -143,19 +166,19 @@ const Header: React.FC = () => {
           />
           <Typography
             sx={{
-			  color: '#413545',
-              fontSize: '2.5vh',
+              color: '#413545',
+              fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' },
               fontFamily: '"Lettersano Full Regular", sans-serif',
             }}
           >
-            Январь
+            Янв
           </Typography>
         </Box>
 
         <Box
           sx={{
-            width: '10vh',
-            height: '8vh',
+            width: { xs: '5vh', sm: '6vh', md: '7vh' },
+            height: { xs: '3vh', sm: '4vh', md: '5vh' },
             borderRadius: '50%',
             backgroundImage: `url(${boy})`,
             backgroundSize: 'cover',

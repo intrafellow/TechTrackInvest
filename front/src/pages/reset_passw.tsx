@@ -1,4 +1,3 @@
-// pages/ResetPasswordPage.tsx
 import React, { useState } from 'react';
 import {
   Box, Typography, Button, OutlinedInput, FormControl, FormLabel,
@@ -19,6 +18,13 @@ const ResetPasswordPage: React.FC = () => {
 
   const isEmailValid = (value: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ru|com|net|org|io|dev)$/.test(value);
   const isCodeValid = (value: string) => /^\d{6}$/.test(value);
+
+  const isPasswordValid = (value: string) => {
+    const hasLowerCase = /[a-z]/.test(value);
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    return value.length >= 6 && hasLowerCase && hasUpperCase && hasNumber;
+  };
 
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -49,7 +55,7 @@ const ResetPasswordPage: React.FC = () => {
         else setStep('password');
       } else if (step === 'password') {
         if (!form.newPassword || !form.confirmPassword) newErrors.confirmPassword = 'Введите и подтвердите пароль.';
-        else if (form.newPassword.length < 6) newErrors.newPassword = 'Пароль должен быть не менее 6 символов.';
+        else if (!isPasswordValid(form.newPassword)) newErrors.newPassword = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
         else if (form.newPassword !== form.confirmPassword) newErrors.confirmPassword = 'Пароли не совпадают.';
         else setSuccess(true);
       }

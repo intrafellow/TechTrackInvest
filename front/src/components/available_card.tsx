@@ -36,7 +36,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       sx={{
-        width: '35vh',
+        width: { xs: 'calc(100% - 4vh)', sm: '35vh' },
         height: '63.5vh',
         borderRadius: '1.29vh',
         background: isHighlighted
@@ -50,6 +50,9 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         cursor: 'default',
         transition: 'all 0.3s ease',
         transform: hovered || isHighlighted ? 'scale(1.05)' : 'scale(1)',
+        transformOrigin: 'center center',
+        position: 'relative',
+        zIndex: hovered || isHighlighted ? 2 : 1,
         padding: '1.3vh',
         marginBottom: '3.125vh',
         alignSelf: 'flex-start'

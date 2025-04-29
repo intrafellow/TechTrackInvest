@@ -13,23 +13,13 @@ const buttonBaseStyle = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-  gap: '1vh',
-  padding: '0 1vh',
-  borderRadius: '8px',
-  width: '13vh',
-  height: '5vh',
+  gap: '0.5vh',
+  padding: '0 0.5vh',
+  borderRadius: '0.3vh',
   backgroundColor: '#9CA0BA',
   transition: 'all 0.3s ease',
   cursor: 'pointer',
   flexShrink: 0,
-};
-
-const iconStyle = {
-  width: '4vh',
-  height: '5vh',
-  backgroundSize: 'contain',
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'center',
 };
 
 const Sidebar: React.FC = () => {
@@ -42,12 +32,12 @@ const Sidebar: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#535C94',
-        width: '16vh',
-        padding: '3vh 0',
+        width: { xs: '8vh', sm: '9vh', md: '10vh' },
+        padding: { xs: '1vh 0.3vh', sm: '1.5vh 0.4vh', md: '2vh 0.5vh' },
         alignItems: 'center',
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: '1vh', sm: '1.5vh', md: '2vh' } }}>
         {navItems.map(({ label, icon }) => {
           const isActive = active === label;
           const isHovered = hovered === label;
@@ -59,14 +49,25 @@ const Sidebar: React.FC = () => {
               onClick={() => setActive(label)}
               sx={{
                 ...buttonBaseStyle,
+                width: { xs: '7vh', sm: '8vh', md: '9vh' },
+                height: { xs: '3vh', sm: '3.5vh', md: '4vh' },
                 backgroundColor: isActive ? '#EAEAF0' : '#9CA0BA',
                 transform: isActive || isHovered ? 'scale(1.07)' : 'scale(1)',
               }}
             >
-              <Box sx={{ ...iconStyle, backgroundImage: `url(${icon})` }} />
+              <Box 
+                sx={{ 
+                  width: { xs: '2vh', sm: '2.2vh', md: '2.5vh' },
+                  height: { xs: '2vh', sm: '2.2vh', md: '2.5vh' },
+                  backgroundImage: `url(${icon})`,
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                }} 
+              />
               <Typography
                 sx={{
-                  fontSize: '1.3vh',
+                  fontSize: { xs: '0.8vh', sm: '0.9vh', md: '1vh' },
                   fontFamily: '"Lettersano Full Regular", sans-serif',
                   whiteSpace: 'nowrap',
                 }}
@@ -84,8 +85,8 @@ const Sidebar: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '3vh',
-          mb: '2.4vh',
+          gap: { xs: '1vh', sm: '1.5vh', md: '2vh' },
+          mb: { xs: '1vh', sm: '1.5vh', md: '2vh' },
         }}
       >
         <Box
@@ -94,6 +95,8 @@ const Sidebar: React.FC = () => {
           onClick={() => setActive('Завершить ход')}
           sx={{
             ...buttonBaseStyle,
+            width: { xs: '7vh', sm: '8vh', md: '9vh' },
+            height: { xs: '3vh', sm: '3.5vh', md: '4vh' },
             backgroundColor: active === 'Завершить ход' ? '#EAEAF0' : '#9CA0BA',
             transform:
               active === 'Завершить ход' || hovered === 'Завершить ход'
@@ -103,17 +106,22 @@ const Sidebar: React.FC = () => {
         >
           <Box
             sx={{
-              ...iconStyle,
+              width: { xs: '2vh', sm: '2.2vh', md: '2.5vh' },
+              height: { xs: '2vh', sm: '2.2vh', md: '2.5vh' },
               backgroundImage: `url(${time})`,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
             }}
           />
           <Typography
             sx={{
-              fontSize: '1.5vh',
+              fontSize: { xs: '0.8vh', sm: '0.9vh', md: '1vh' },
               fontFamily: '"Lettersano Full Regular", sans-serif',
+              whiteSpace: 'nowrap',
             }}
           >
-            Завершить ход
+            Завершить
           </Typography>
         </Box>
       </Box>

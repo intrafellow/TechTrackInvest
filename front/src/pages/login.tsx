@@ -18,8 +18,8 @@ import {
 import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
 
 const mockUsers = [
-  { email: 'test@example.com', password: 'password123' },
-  { email: 'user@domain.ru', password: '123456' },
+  { email: 'test@example.com', password: 'Password123' },
+  { email: 'user@domain.ru', password: 'Password123' },
 ];
 
 const LoginPage: React.FC = () => {
@@ -33,6 +33,13 @@ const LoginPage: React.FC = () => {
 
   const isEmailValid = (value: string) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ru|com|net|org|io|dev)$/.test(value);
+
+  const isPasswordValid = (value: string) => {
+    const hasLowerCase = /[a-z]/.test(value);
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    return value.length >= 6 && hasLowerCase && hasUpperCase && hasNumber;
+  };
 
   const isFormValid = () => {
     return email.trim() && password.trim() && Object.keys(errors).length === 0;
@@ -58,7 +65,7 @@ const LoginPage: React.FC = () => {
       if (!email) newErrors.email = 'Введите email.';
       else if (!isEmailValid(email)) newErrors.email = 'Неверный формат email.';
       if (!password) newErrors.password = 'Введите пароль.';
-      else if (password.length < 6) newErrors.password = 'Пароль должен содержать не менее 6 символов.';
+      else if (!isPasswordValid(password)) newErrors.password = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
 
       const user = mockUsers.find(u => u.email === email && u.password === password);
       if (!user && Object.keys(newErrors).length === 0) {
@@ -69,7 +76,7 @@ const LoginPage: React.FC = () => {
         setErrors(newErrors);
       } else {
         setSuccess(true);
-        setTimeout(() => navigate('/redirect'), 2000);
+        setTimeout(() => navigate('/profile'), 2000);
       }
       setLoading(false);
     }, 400);

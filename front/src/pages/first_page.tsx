@@ -1,8 +1,11 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import logo from '../icons/logo.png';
 
 const FirstPage: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
@@ -149,6 +152,7 @@ const FirstPage: React.FC = () => {
         <Box sx={{ mt: 5, display: 'flex', justifyContent: 'flex-start' }}>
           <Button
             variant="contained"
+            onClick={() => navigate('/login')}
             sx={{
               width: { xs: '28vh', sm: '30vh', md: '30vh' },
               height: { xs: '6vh', sm: '6.5vh', md: '6.5vh' },

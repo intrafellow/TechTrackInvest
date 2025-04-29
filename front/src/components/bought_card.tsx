@@ -40,7 +40,7 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '37.6vh',
+        width: { xs: 'calc(100% - 2vh)', sm: '37.6vh' },
         height: '8vh',
         margin: '0vh',
         padding: 0,
@@ -50,6 +50,9 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
         cursor: 'pointer',
         transition: 'all 0.3s ease',
         transform: hovered || active ? 'scale(1.05)' : 'scale(1)',
+        transformOrigin: 'center center',
+        position: 'relative',
+        zIndex: hovered || active ? 2 : 1
       }}
     >
       <div
