@@ -13,6 +13,7 @@ import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class StepService {
     //для этого отдельный сервис
     @NeedTest
     @Transactional
-    public StepValidationResult validateAndExecuteStep() {
+    public StepValidationResult validateStep() {
         // учитывать переменную степ каунт
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
@@ -35,11 +36,18 @@ public class StepService {
             return new StepValidationResult(false, "Все ходы завершены", null);
         }
 
-        //теперь нужно уменьшить это значение на 1, чтобы ход был совершён
-        session.setStepCount(availableCountOfSteps - 1);
 
         //теперь в степсРезалт будет записываться оставшееся количество ходов
-        return new StepValidationResult(true, null, availableCountOfSteps - 1);
+        return new StepValidationResult(true, null, availableCountOfSteps);
+    }
+
+    public StepValidationResult executeStep() {
+        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast();
+        int availableCountOfSteps = session.getStepCount();
+
+        session.setStepCount(availableCountOfSteps - 1);
+        return new StepValidationResult(true, null, availableCountOfSteps);
     }
 
 }

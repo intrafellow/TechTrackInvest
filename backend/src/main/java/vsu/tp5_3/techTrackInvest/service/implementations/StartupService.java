@@ -7,19 +7,24 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
+import vsu.tp5_3.techTrackInvest.dto.StartupExpertiseDTO;
 import vsu.tp5_3.techTrackInvest.dto.StartupListDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
+import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
+import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
+import vsu.tp5_3.techTrackInvest.mapper.StartupExpertiseMapper;
 import vsu.tp5_3.techTrackInvest.mapper.StartupReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.SessionRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
+import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 
 import java.util.*;
 
@@ -35,6 +40,8 @@ public class StartupService {
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
     private final StartupReadMapper startupReadMapper;
     private final UserRepository userRepository;
+    private final StepService stepService;
+    private final StartupExpertiseMapper startupExpertiseMapper;
     //это всё как я понимаю нам особо не нужно. Тут одни моки
 //    private final MockStartupRepository startupRepository;
 //    private final StartupReadMapper startupReadMapper;
@@ -82,7 +89,7 @@ public class StartupService {
     @Tested
     @Transactional
     //метод который отвечает за обновление n-го количества стартапов из какой-то ниши для покупки
-    public void updateDisplayedStartups(int startupsCount,String nicheId) {
+    public void updateDisplayedStartups(int startupsCount, String nicheId) {
         //получаем сессию и купленные/предлагаемых стартапы именно из неё
         //Собираем все id купленных стартапов из определённой ниши
         //Собираем все id показываемых стартапов из определённой ниши
@@ -125,9 +132,47 @@ public class StartupService {
         sessionRepository.save(session);
     }
 
+    //нужен метод который будет отвечать за покупку стартапа.Реализую его чуть позже
 
 
-    /** По репозиториям что откуда тягается надо фиксить */
+
+    //Метод, который отвечает за экспертизу
+    @Transactional
+    public StepActionDto<StartupExpertiseDTO> getExpertise(String resourceId, int expertisePrice) {
+        //логично было бы сделать ограничения на покупку экспертизы на один и тот же стартап на одном ходу
+        StepValidationResult validationResult = stepService.validateStep();
+
+        if (!validationResult.isValid()) {
+            return new StepActionDto<>(false, null,
+                    validationResult.getMessage(), 0);
+        }
+
+        StartupMongo originalStartup = startupMongoRepository.findById(resourceId).orElseThrow(
+                () -> new EntityNotFoundException("No startup found in mongoDB for resourceId " + resourceId)
+        );
+
+        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast();
+        Step currentStep = session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).orElseThrow(
+                () -> new EntityNotFoundException("No step found for session")
+        );
+
+        int currentPlayerCash = currentStep.getCash();
+        if (currentPlayerCash < expertisePrice) return new StepActionDto<>(false, null,
+                "Недостаточно средств для покупки экспертизы", validationResult.getSteps());
+
+        currentPlayerCash -= expertisePrice;
+        currentStep.setCash(currentPlayerCash);
+        stepService.executeStep();
+        StartupExpertiseDTO startupExpertiseDTO = startupExpertiseMapper.map(originalStartup);
+        return new StepActionDto<>(true, startupExpertiseDTO, null,
+                validationResult.getSteps() - 1);
+    }
+
+
+    /**
+     * По репозиториям что откуда тягается надо фиксить
+     */
     public StartupReadDto findById() {
         return null;
     }

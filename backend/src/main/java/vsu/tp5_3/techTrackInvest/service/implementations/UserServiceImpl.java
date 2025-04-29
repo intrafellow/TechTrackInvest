@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
+import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserReadMapper userReadMapper;
     private final PasswordEncoder passwordEncoder;
     private final NicheMongoRepository nicheMongoRepository;
+    private final NicheService nicheService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .orElseThrow();
     }
 
-    @NeedTest
+    @Tested
     @Override
     public Optional<MoneyDto> getMoney() {
         // Получаем монетки пользователя
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 + totalStartupsCost));
     }
 
-    @NeedTest
+    @Tested
     @Transactional
     @Override
     public Optional<ReputationDto> getReputation() {
@@ -92,7 +94,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     }
 
-    @NeedTest
+    @Tested
     @Override
     public Optional<ExpertiseDto> getExpertise() {
         //получаем названия категорий из монго(it и вся хрень)
@@ -105,12 +107,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Map<String, Integer> resutlExpertise = new HashMap<>();
         //сравниваем resource id эксперитзы, которые хранятся в постресе с id из монго, чтобы получить названия категорий
         for (Expertise expertise : currentPlayerExpertise) {
-            for (NicheMongo nicheMongo : nicheMongoList) {
-                if (expertise.getResourceId().equals(nicheMongo.getId())) {
-                    resutlExpertise.put(nicheMongo.getName(), expertise.getValue());
-                    break;
-                }
-            }
+            resutlExpertise.put(nicheService.getNicheName(expertise.getResourceId()), expertise.getValue());
         }
         return Optional.of(new ExpertiseDto(resutlExpertise));
     }
@@ -135,7 +132,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .orElse(false);
     }
 
-    @NeedTest
+    @Tested
     private Session getCurrentDBSession() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
