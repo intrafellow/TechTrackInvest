@@ -31,6 +31,13 @@ const theme = createTheme({
           font-weight: 700;
           font-style: normal;
         }
+        @font-face {
+          font-family: 'Raleway';
+          src: url('/fonts/Raleway-SemiBold.woff2') format('woff2'),
+               url('/fonts/Raleway-SemiBold.woff') format('woff');
+          font-weight: 600;
+          font-style: normal;
+        }
       `
     }
   }

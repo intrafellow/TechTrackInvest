@@ -166,7 +166,8 @@ const FirstPage: React.FC = () => {
               color: '#FFFFFF',
               fontSize: { xs: '2vh', sm: '2.3vh', md: '2.3vh' },
               fontWeight: 600,
-              fontFamily: 'Lettersano Full Regular',
+              fontFamily: 'Raleway',
+              textTransform: 'none',
               borderRadius: '8px',
               transition: 'all 0.3s ease-in-out',
               '&:hover': { backgroundColor: '#5f6999' }
