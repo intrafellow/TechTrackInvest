@@ -3,8 +3,8 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   typography: {
     fontFamily: [
+      'Full Lettersano',
       'Raleway',
-      'Lettersano Full Regular',
       'sans-serif'
     ].join(','),
   },
@@ -12,7 +12,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: `
         @font-face {
-          font-family: 'Lettersano Full Regular';
+          font-family: 'Full Lettersano';
           src: url('/fonts/Full Lettersano.ttf') format('truetype');
           font-weight: normal;
           font-style: normal;

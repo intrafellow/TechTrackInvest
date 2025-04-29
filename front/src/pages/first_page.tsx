@@ -65,6 +65,7 @@ const FirstPage: React.FC = () => {
       >
         <Box sx={{ textAlign: 'left' }}>
           <Typography sx={{
+            fontFamily: 'Raleway',
             fontSize: { xs: '4vh', sm: '6vh', md: '8vh' },
             fontWeight: 600,
             color: '#FFFFFF',
@@ -79,6 +80,7 @@ const FirstPage: React.FC = () => {
             ЗАХВАТИ
           </Typography>
           <Typography sx={{
+            fontFamily: 'Raleway',
             fontSize: { xs: '4vh', sm: '6vh', md: '8vh' },
             fontWeight: 600,
             color: '#C1CBFF',
@@ -93,6 +95,7 @@ const FirstPage: React.FC = () => {
             РАЗНЕСИ
           </Typography>
           <Typography sx={{
+            fontFamily: 'Raleway',
             fontSize: { xs: '4vh', sm: '6vh', md: '8vh' },
             fontWeight: 600,
             color: '#DEC3E6',
@@ -107,6 +110,7 @@ const FirstPage: React.FC = () => {
             УНИЧТОЖЬ
           </Typography>
           <Typography sx={{
+            fontFamily: 'Raleway',
             fontSize: { xs: '4vh', sm: '6vh', md: '8vh' },
             fontWeight: 600,
             color: '#FFFFFF',
@@ -124,6 +128,7 @@ const FirstPage: React.FC = () => {
 
         <Box sx={{ textAlign: 'left', mt: 3 }}>
           <Typography sx={{
+            fontFamily: 'Full Lettersano',
             fontSize: { xs: '2.4vh', sm: '2.6vh', md: '2.8vh' },
             color: 'rgba(255,255,255,0.7)',
             '@media (min-width:1023px) and (max-width:1025px) and (max-height:601px)': { fontSize: '3.5vh' },
@@ -136,6 +141,7 @@ const FirstPage: React.FC = () => {
             <strong>ДОМИНИРУЙ</strong> на рынках,
           </Typography>
           <Typography sx={{
+            fontFamily: 'Full Lettersano',
             fontSize: { xs: '2.4vh', sm: '2.6vh', md: '2.8vh' },
             color: 'rgba(255,255,255,0.7)',
             '@media (min-width:1023px) and (max-width:1025px) and (max-height:601px)': { fontSize: '3.5vh' },
@@ -160,7 +166,7 @@ const FirstPage: React.FC = () => {
               color: '#FFFFFF',
               fontSize: { xs: '2vh', sm: '2.3vh', md: '2.3vh' },
               fontWeight: 600,
-              fontFamily: 'Raleway, sans-serif',
+              fontFamily: 'Lettersano Full Regular',
               borderRadius: '8px',
               transition: 'all 0.3s ease-in-out',
               '&:hover': { backgroundColor: '#5f6999' }
