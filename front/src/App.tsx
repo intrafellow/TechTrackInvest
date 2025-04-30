@@ -1,5 +1,4 @@
 // Test CI/CD pipeline - проверка работоспособности
-// src/App.tsx
 import React from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
