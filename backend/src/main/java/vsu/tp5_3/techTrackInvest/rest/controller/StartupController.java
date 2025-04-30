@@ -2,12 +2,8 @@ package vsu.tp5_3.techTrackInvest.rest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vsu.tp5_3.techTrackInvest.dto.*;
-import vsu.tp5_3.techTrackInvest.service.implementations.ExpertiseService;
 import vsu.tp5_3.techTrackInvest.service.implementations.StartupService;
 
 import java.util.List;
@@ -36,15 +32,14 @@ public class StartupController {
         return ResponseEntity.ok(startupService.getExpertise(resourceId, price));
     }
 
-    @GetMapping("/buy/{startupResourceId}/{finalPrice}")
-    public ResponseEntity<StepActionDto<StartupReadDto>> confirmContract(@PathVariable Integer finalPrice,
-                                                                         @PathVariable String startupResourceId) {
-        var result = startupService.buyStartup(startupResourceId, finalPrice);
+    @PostMapping("/buy")
+    public ResponseEntity<StepActionDto<StartupReadDto>> confirmContract(@RequestBody StartupBuyDTO startupBuyDTO) {
+        var result = startupService.buyStartup(startupBuyDTO);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/sell/{startupResourceId}")
-    public ResponseEntity<StepActionDto<StartupSellDTO>> confirmContract(@PathVariable String startupResourceId) {
+    public ResponseEntity<StepActionDto<StartupSellDTO>> sellStartup(@PathVariable String startupResourceId) {
         var infoAboutSale = startupService.sellStartup(startupResourceId);
         return ResponseEntity.ok(infoAboutSale);
     }

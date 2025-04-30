@@ -2,6 +2,8 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,7 @@ public class ContractService {
                 () -> new EntityNotFoundException("Contract not found after trying to buy"));
         String startupResourceId = contract.getStartupId();
         CurrentDisplayedStartup startup = currentDisplayedStartupRepository.findByResourceId(startupResourceId).orElseThrow();
+        Pair<Integer, Integer> contractEffects = getEffectsFromContract(rollResult, contract);
 
         String messageDescription;
         if (rollResult < 7) {
@@ -68,9 +71,21 @@ public class ContractService {
 
         stepService.executeStep();
         ContractDealDTO conditions = new ContractDealDTO(contractId, startupResourceId,
-                startupName, messageDescription, finalContractPrice, rollResult);
+                startupName, messageDescription, finalContractPrice, rollResult,
+                contractEffects.getLeft(), contractEffects.getRight());
 
         return new StepActionDto<>(true, conditions, "", stepCheck.getSteps() - 1);
 
+    }
+
+    public Pair<Integer, Integer> getEffectsFromContract(int rollResult, Contract contract) {
+        int teamEffect = contract.getTeamEffect();
+        int reputationEffect = contract.getReputationEffect();
+
+        int factor = (rollResult < 11) ? -1 : 1;
+        teamEffect *= ((rollResult - 1) /19) * factor;
+        reputationEffect *= ((rollResult - 1) /19) * factor;
+
+        return new ImmutablePair<>(teamEffect, reputationEffect);
     }
 }

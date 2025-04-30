@@ -24,11 +24,8 @@ import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -123,7 +120,6 @@ public class SessionServiceImpl implements SessionService {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         user.getSessions().clear();
-        //sessionRepository.deleteByAppUser(user);
         return Optional.of(new FinishDto(id));
 
     }

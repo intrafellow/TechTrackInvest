@@ -150,27 +150,32 @@ public class StartupService {
     }
 
     @Transactional
-    public StepActionDto<StartupReadDto> buyStartup(String resourceId, int finalPrice) {
+    public StepActionDto<StartupReadDto> buyStartup(StartupBuyDTO startupBuyDTO) {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
         Step currentStep = session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).get();
         int playerCash = currentStep.getCash();
 
-        if (playerCash < finalPrice) {
+        if (playerCash < startupBuyDTO.getFinalPrice()) {
             return new StepActionDto<>(false, null, "У вас недостаточно денег для покупки",
                     session.getStepCount());
         }
 
-        StartupMongo originalStartup = startupMongoRepository.findById(resourceId).orElseThrow();
+        StartupMongo originalStartup = startupMongoRepository.findById(startupBuyDTO.getResourceId()).orElseThrow();
         Startup startup = startupMongoToBoughtStartupMapper.map(originalStartup);
 
-        currentStep.setCash(currentStep.getCash() - finalPrice);
+        currentStep.setCash(currentStep.getCash() - startupBuyDTO.getFinalPrice());
+        currentStep.setReputation(currentStep.getReputation() + startupBuyDTO.getReputationEffect());
+        startup.setTeam(startup.getTeam() + startupBuyDTO.getTeamEffect());
         startup.setSession(session);
         startupRepository.save(startup);
-        CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.findByResourceId(resourceId).orElseThrow();
+        CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.
+                findByResourceId(startupBuyDTO.getResourceId()).orElseThrow();
         currentDisplayedStartupRepository.delete(boughtStartup);
 
-        return new StepActionDto<>(true, new StartupReadDto(resourceId,
+
+
+        return new StepActionDto<>(true, new StartupReadDto(startupBuyDTO.getResourceId(),
                 nicheService.getNicheName(startup.getNicheId()), startup.getName(), startup.getDescription()),
                 "", session.getStepCount());
 
