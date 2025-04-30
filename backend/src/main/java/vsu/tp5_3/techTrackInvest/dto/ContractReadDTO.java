@@ -4,7 +4,7 @@ import lombok.Value;
 
 @Value
 public class ContractReadDTO {
-    private String contractId;
-    private Integer minPrice;
-    private Integer maxPrice;
+    String contractId;
+    Integer minPrice;
+    Integer maxPrice;
 }
