@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vsu.tp5_3.techTrackInvest.dto.ContractDealDTO;
 import vsu.tp5_3.techTrackInvest.dto.ContractReadDTO;
+import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.ContractService;
 import vsu.tp5_3.techTrackInvest.service.implementations.RollService;
 
@@ -22,9 +23,9 @@ public class ContractController {
     }
 
     @GetMapping("/finalCondition")
-    public ResponseEntity<ContractDealDTO> getFinalCondition(@RequestParam String contractId,
-                                                             @RequestParam Integer minPrice,
-                                                             @RequestParam Integer maxPrice) {
+    public ResponseEntity<StepActionDto<ContractDealDTO>> getFinalCondition(@RequestParam String contractId,
+                                                           @RequestParam Integer minPrice,
+                                                           @RequestParam Integer maxPrice) {
         int diceRollResult = rollService.getDiceRollResult();
         int finalPrice = contractService.getFinalContractPrice(diceRollResult, minPrice, maxPrice);
         var resultConditionsDTO = contractService.getContractFinalConditions(contractId, diceRollResult, finalPrice);

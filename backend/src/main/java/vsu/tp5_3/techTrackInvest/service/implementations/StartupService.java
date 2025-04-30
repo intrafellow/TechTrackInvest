@@ -18,6 +18,7 @@ import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.StartupExpertiseMapper;
+import vsu.tp5_3.techTrackInvest.mapper.StartupMongoToBoughtStartupMapper;
 import vsu.tp5_3.techTrackInvest.mapper.StartupReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
@@ -42,6 +43,7 @@ public class StartupService {
     private final UserRepository userRepository;
     private final StepService stepService;
     private final StartupExpertiseMapper startupExpertiseMapper;
+    private final StartupMongoToBoughtStartupMapper startupMongoToBoughtStartupMapper;
     //это всё как я понимаю нам особо не нужно. Тут одни моки
 //    private final MockStartupRepository startupRepository;
 //    private final StartupReadMapper startupReadMapper;
@@ -137,7 +139,6 @@ public class StartupService {
 
 
     //Метод, который отвечает за экспертизу
-    @Transactional
     public StepActionDto<StartupExpertiseDTO> getExpertise(String resourceId, int expertisePrice) {
         //логично было бы сделать ограничения на покупку экспертизы на один и тот же стартап на одном ходу
         StepValidationResult validationResult = stepService.validateStep();
@@ -169,6 +170,33 @@ public class StartupService {
                 validationResult.getSteps() - 1);
     }
 
+    @Transactional
+    public StepActionDto<StartupReadDto> buyStartup(String resourceId, int finalPrice) {
+        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast();
+        Step currentStep = session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).get();
+        int playerCash = currentStep.getCash();
+
+        if (playerCash < finalPrice) {
+            return new StepActionDto<>(false, null, "У вас недостаточно денег для покупки",
+                    session.getStepCount());
+        }
+
+        StartupMongo originalStartup = startupMongoRepository.findById(resourceId).orElseThrow();
+        Startup startup = startupMongoToBoughtStartupMapper.map(originalStartup);
+
+        currentStep.setCash(currentStep.getCash() - finalPrice);
+        startup.setSession(session);
+        startupRepository.save(startup);
+        CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.findByResourceId(resourceId).orElseThrow();
+        currentDisplayedStartupRepository.delete(boughtStartup);
+
+//        sessionRepository.save(session);
+        return new StepActionDto<>(true, new StartupReadDto(resourceId,
+                nicheService.getNicheName(startup.getNicheId()), startup.getName(), startup.getDescription()),
+                "", session.getStepCount());
+
+    }
 
     /**
      * По репозиториям что откуда тягается надо фиксить

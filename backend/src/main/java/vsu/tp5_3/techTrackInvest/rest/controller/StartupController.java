@@ -41,5 +41,12 @@ public class StartupController {
         return ResponseEntity.ok(startupService.getExpertise(resourceId, price));
     }
 
+    @GetMapping("/buy/{startupResourceId}/{finalPrice}")
+    public ResponseEntity<StepActionDto<StartupReadDto>> confirmContract(@PathVariable Integer finalPrice,
+                                                                         @PathVariable String startupResourceId) {
+        var result = startupService.buyStartup(startupResourceId, finalPrice);
+        return ResponseEntity.ok(result);
+    }
+
 
 }

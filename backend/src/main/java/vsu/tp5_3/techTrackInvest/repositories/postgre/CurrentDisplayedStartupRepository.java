@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface CurrentDisplayedStartupRepository extends JpaRepository<CurrentDisplayedStartup, Long> {
     List<CurrentDisplayedStartup> findAllByNicheId(String nicheId);
     Optional<CurrentDisplayedStartup> findByResourceId(String resourceId);
+    boolean deleteByResourceId(String resourceId);
 }

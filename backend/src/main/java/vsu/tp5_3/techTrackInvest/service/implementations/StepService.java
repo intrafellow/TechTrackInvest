@@ -41,13 +41,13 @@ public class StepService {
         return new StepValidationResult(true, null, availableCountOfSteps);
     }
 
-    public StepValidationResult executeStep() {
+    public void executeStep() {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
         int availableCountOfSteps = session.getStepCount();
 
         session.setStepCount(availableCountOfSteps - 1);
-        return new StepValidationResult(true, null, availableCountOfSteps);
+//        return new StepValidationResult(true, null, availableCountOfSteps);
     }
 
 }
