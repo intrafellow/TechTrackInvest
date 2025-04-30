@@ -110,7 +110,7 @@ public class SessionServiceImpl implements SessionService {
     public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
         Pageable pageable = PageRequest.of(0, count);
 
-        return startupMongoRepository.findByNicheId(nicheId, pageable);
+        return startupMongoRepository.findByNiche(nicheId, pageable);
 
     }
 
@@ -145,20 +145,9 @@ public class SessionServiceImpl implements SessionService {
         displayed.setName(mongoStartup.getName());
         displayed.setDescription(mongoStartup.getDescription());
         displayed.setPrice(mongoStartup.getPrice());
-        displayed.setNicheId(mongoStartup.getNicheId());
+        displayed.setNicheId(mongoStartup.getNiche());
         displayed.setSession(session);
 
         return displayed;
     }
-
-    /*public List<CurrentDisplayedConference> getRandomConferences(int min, int max, Session session) {
-        int count = ThreadLocalRandom.current().nextInt(min, max + 1);
-        List<ConferenceMongo> allConferences = conferenceMongoRepository.findAll();
-        Collections.shuffle(allConferences);
-
-        return allConferences.stream()
-                .limit(count)
-                .map(conference -> convertToDisplayedConference(conference, session))
-                .collect(Collectors.toList());
-    }*/
 }

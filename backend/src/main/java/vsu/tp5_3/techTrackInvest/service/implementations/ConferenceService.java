@@ -57,9 +57,9 @@ public class ConferenceService {
     @Transactional
     public StepActionDto<ConferenceMongo> attend(ConferenceAttendDto conferenceAttendDto) {
         // 1. Проверка возможности хода и его совершение
-        StepValidationResult validationResult = stepService.validateAndExecuteStep();
+        StepValidationResult validationResult = stepService.validateStep();
         if (!validationResult.isValid()) {
-            return new StepActionDto<>(false, null, validationResult.getMessage(), 0, null);
+            return new StepActionDto<>(false, null, validationResult.getMessage(), 0);
         }
 
         // 2. Получение пользователя
@@ -80,8 +80,10 @@ public class ConferenceService {
 
         // 5. Проверка денег
         if (step.getCash() < conferenceMongo.getEnrollPrice()) {
-            return new StepActionDto<>(false, null, "Недостаточно средств", 0, null);
+            return new StepActionDto<>(false, null, "Недостаточно средств", 0);
         }
+
+        stepService.executeStep();
 
         // 6. Обновление данных
         // 6.1. Обновление денег
@@ -97,7 +99,7 @@ public class ConferenceService {
         List<Expertise> newExpertise = new ArrayList<>(step.getExpertiseList());
         for (ExpertiseChange ec : expertiseChanges) {
             for (Expertise e : newExpertise) {
-                if (e.getResourceId().equals(ec.getExpertiseId())) {
+                if (e.getResourceId().equals(ec.getNicheId())) {
                     e.setValue(e.getValue() + ec.getChange());
                 }
                 e.setStep(step);
@@ -132,6 +134,6 @@ public class ConferenceService {
         conference.setSession(session);
         conferenceRepository.save(conference);
 
-        return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps(), null);
+        return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps());
     }
 }
