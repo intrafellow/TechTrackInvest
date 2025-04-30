@@ -1,3 +1,4 @@
+// Test CI/CD pipeline - проверка работоспособности
 // src/App.tsx
 import React from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
