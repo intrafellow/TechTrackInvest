@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "conferences")
+@Document(collection = "conference")
 public class ConferenceMongo {
     @Id
     private String id;
@@ -24,7 +24,7 @@ public class ConferenceMongo {
     private String description;
 
     // хранится id, ссылающийся на нишу, в которой проходит эта конференция
-    @Field(name = "niche")
+//    @Field(name = "niche")
     private String nicheId;
 
     private Integer enrollPrice;

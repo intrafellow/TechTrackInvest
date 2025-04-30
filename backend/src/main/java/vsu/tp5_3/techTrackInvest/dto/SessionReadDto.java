@@ -20,8 +20,5 @@ public class SessionReadDto {
     int stepCount;
     Timestamp startDate;
     int cash;
-    List<CurrentDisplayedConference> conferencesToShow;
-    List<CurrentDisplayedStartup> startupsToShow;
-    List<Conference> pastConferences;
-    List<Startup> boughtStartups;
+    List<StartupReadDto> startupsToShow;
 }

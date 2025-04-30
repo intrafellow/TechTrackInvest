@@ -12,6 +12,7 @@ import java.util.Comparator;
 @RequiredArgsConstructor
 public class SessionReadMapper implements Mapper<Session, SessionReadDto>{
     //добавил маппинг остальных методов, чтобы мы отправляли на фрон абсолютно все что есть в сессии основного
+    private final DisplayedStartupReadMapper startupReadMapper;
     @Override
     public SessionReadDto map(Session object) {
         return new SessionReadDto(
@@ -21,10 +22,7 @@ public class SessionReadMapper implements Mapper<Session, SessionReadDto>{
                 object.getStepCount(),
                 object.getStartDate(),
                 object.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).get().getCash(),
-                object.getCurrentDisplayedConferences(),
-                object.getCurrentDisplayedStartups(),
-                object.getConferences(),
-                object.getStartups()
+                object.getCurrentDisplayedStartups().stream().map(startupReadMapper::map).toList()
         );
     }
 }
