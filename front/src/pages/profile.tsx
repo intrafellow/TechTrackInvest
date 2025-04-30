@@ -155,6 +155,7 @@ const ProfilePage: React.FC = () => {
               fontWeight: 600,
               fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
               height: '6.5vh',
+              textTransform: 'none',
               '&:hover': { backgroundColor: '#5f6999' }
             }}
           >
@@ -172,6 +173,7 @@ const ProfilePage: React.FC = () => {
               fontWeight: 600,
               fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
               height: '6.5vh',
+              textTransform: 'none',
               boxShadow: 'none',
               '&:hover': { backgroundColor: '#4a4d75' }
             }}

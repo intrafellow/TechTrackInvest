@@ -162,7 +162,17 @@ const ChangePasswordPage: React.FC = () => {
             variant="contained"
             disabled={!isStepValid() || loading}
             startIcon={success ? <CheckCircleOutline /> : undefined}
-            sx={{ backgroundColor: success ? '#4caf50' : '#737EB5', color: '#F6F7FF', fontFamily: 'Raleway', fontWeight: 600, fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, height: '6.5vh', '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' }, '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } }}
+            sx={{ 
+              backgroundColor: success ? '#4caf50' : '#737EB5', 
+              color: '#F6F7FF', 
+              fontFamily: 'Raleway',
+              fontWeight: 600,
+              fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, 
+              height: '6.5vh', 
+              textTransform: 'none',
+              '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' }, 
+              '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } 
+            }}
           >
             {loading ? <CircularProgress size={24} sx={{ color: '#F6F7FF' }} /> :
               step === 'code' ? 'Подтвердить код' :

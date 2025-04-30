@@ -123,7 +123,7 @@ const RegisterPage: React.FC = () => {
   return (
     <>
       <Box sx={{ width: '100vw', minHeight: '100vh', backgroundColor: '#585C87', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', color: '#F6F7FF' }}>
-        <Typography sx={{ fontSize: { xs: '4vh', sm: '5vh', md: '6vh' }, fontWeight: 600, mb: 4 }}>
+        <Typography sx={{ fontSize: { xs: '4vh', sm: '5vh', md: '6vh' }, fontWeight: 600, mb: 4, letterSpacing: '0.04em' }}>
           {isVerificationStage ? 'Подтверждение email' : 'Регистрация'}
         </Typography>
         <Box sx={{ width: '90%', maxWidth: 500, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -201,7 +201,17 @@ const RegisterPage: React.FC = () => {
             fullWidth
             disabled={isVerificationStage ? !verificationCode : !isFormValid()}
             startIcon={success ? <CheckCircleOutline /> : undefined}
-            sx={{ backgroundColor: success ? '#4caf50' : '#737EB5', color: '#F6F7FF', fontWeight: 600, fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, height: '6.5vh', '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' }, '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } }}
+            sx={{ 
+              backgroundColor: success ? '#4caf50' : '#737EB5', 
+              color: '#F6F7FF', 
+              fontFamily: 'Raleway',
+              fontWeight: 600,
+              fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, 
+              height: '6.5vh', 
+              textTransform: 'none',
+              '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' }, 
+              '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } 
+            }}
           >
             {success ? 'Успешно!' : (isVerificationStage ? 'Подтвердить' : 'Создать аккаунт')}
           </Button>
