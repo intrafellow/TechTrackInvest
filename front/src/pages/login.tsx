@@ -140,7 +140,8 @@ const LoginPage: React.FC = () => {
             fontWeight: 600,
             marginBottom: 4,
             textAlign: 'center',
-            color: '#F6F7FF'
+            color: '#F6F7FF',
+			letterSpacing: '0.04em'
           }}
         >
           Добро пожаловать
@@ -209,6 +210,7 @@ const LoginPage: React.FC = () => {
                 fontWeight: 600,
                 fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
                 height: '6.5vh',
+                textTransform: 'none',
                 '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' },
                 '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' }
               }}
@@ -227,6 +229,7 @@ const LoginPage: React.FC = () => {
                 fontWeight: 600,
                 fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
                 height: '6.5vh',
+                textTransform: 'none',
                 boxShadow: 'none',
                 '&:hover': { backgroundColor: '#4a4d75' }
               }}

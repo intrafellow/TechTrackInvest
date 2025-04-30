@@ -11,31 +11,12 @@ const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: `
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap&subset=cyrillic');
+        
         @font-face {
           font-family: 'Full Lettersano';
           src: url('/fonts/Full Lettersano.ttf') format('truetype');
           font-weight: normal;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: 'Raleway';
-          src: url('/fonts/Raleway-Regular.woff2') format('woff2'),
-               url('/fonts/Raleway-Regular.woff') format('woff');
-          font-weight: 400;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: 'Raleway';
-          src: url('/fonts/Raleway-Bold.woff2') format('woff2'),
-               url('/fonts/Raleway-Bold.woff') format('woff');
-          font-weight: 700;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: 'Raleway';
-          src: url('/fonts/Raleway-SemiBold.woff2') format('woff2'),
-               url('/fonts/Raleway-SemiBold.woff') format('woff');
-          font-weight: 600;
           font-style: normal;
         }
       `
