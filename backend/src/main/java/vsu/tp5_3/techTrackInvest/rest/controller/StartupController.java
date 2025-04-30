@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vsu.tp5_3.techTrackInvest.dto.StartupExpertiseDTO;
-import vsu.tp5_3.techTrackInvest.dto.StartupListDto;
-import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
-import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
+import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.service.implementations.ExpertiseService;
 import vsu.tp5_3.techTrackInvest.service.implementations.StartupService;
 
@@ -20,9 +17,7 @@ import java.util.List;
 @RequestMapping("/api/v1/startups")
 public class StartupController {
     private final StartupService startupService;
-    private final ExpertiseService expertiseService;
 
-    //метод для полного получения страницы стартапов
     @GetMapping
     public StartupListDto findAll() {
         return startupService.getAllAvailableStartups();
@@ -48,5 +43,10 @@ public class StartupController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/sell/{startupResourceId}")
+    public ResponseEntity<StepActionDto<StartupSellDTO>> confirmContract(@PathVariable String startupResourceId) {
+        var infoAboutSale = startupService.sellStartup(startupResourceId);
+        return ResponseEntity.ok(infoAboutSale);
+    }
 
 }

@@ -1,5 +1,6 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,12 @@ public class StepService {
         int availableCountOfSteps = session.getStepCount();
 
         session.setStepCount(availableCountOfSteps - 1);
-//        return new StepValidationResult(true, null, availableCountOfSteps);
+    }
+
+    public Step getCurrentStep(Session session) {
+        return session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).orElseThrow(
+                () -> new EntityNotFoundException("Not found current step")
+        );
     }
 
 }

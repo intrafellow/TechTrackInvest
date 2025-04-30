@@ -7,10 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
-import vsu.tp5_3.techTrackInvest.dto.StartupExpertiseDTO;
-import vsu.tp5_3.techTrackInvest.dto.StartupListDto;
-import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
-import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
+import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
@@ -44,21 +41,6 @@ public class StartupService {
     private final StepService stepService;
     private final StartupExpertiseMapper startupExpertiseMapper;
     private final StartupMongoToBoughtStartupMapper startupMongoToBoughtStartupMapper;
-    //это всё как я понимаю нам особо не нужно. Тут одни моки
-//    private final MockStartupRepository startupRepository;
-//    private final StartupReadMapper startupReadMapper;
-//    private final StartupShortReadMapper startupShortReadMapper;
-//    public StartupListDto findAll(CategoryFilter categoryFilter) {
-//        List<StartupShortReadDto> list1 = startupRepository.findPurchased(categoryFilter)
-//                .stream()
-//                .map(startupShortReadMapper::map)
-//                .toList();
-//        List<StartupReadDto> list2 = startupRepository.findAvailable(categoryFilter)
-//                .stream()
-//                .map(startupReadMapper::map)
-//                .toList();
-//        return new StartupListDto(list1, list2);
-//    }
 
     @Tested
     //нужен чтобы получать все доступные стартапы для покупки по определённой категории(в ui есть такой выбор)
@@ -134,10 +116,6 @@ public class StartupService {
         sessionRepository.save(session);
     }
 
-    //нужен метод который будет отвечать за покупку стартапа.Реализую его чуть позже
-
-
-
     //Метод, который отвечает за экспертизу
     @Transactional
     public StepActionDto<StartupExpertiseDTO> getExpertise(String resourceId, int expertisePrice) {
@@ -192,17 +170,33 @@ public class StartupService {
         CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.findByResourceId(resourceId).orElseThrow();
         currentDisplayedStartupRepository.delete(boughtStartup);
 
-//        sessionRepository.save(session);
         return new StepActionDto<>(true, new StartupReadDto(resourceId,
                 nicheService.getNicheName(startup.getNicheId()), startup.getName(), startup.getDescription()),
                 "", session.getStepCount());
 
     }
 
-    /**
-     * По репозиториям что откуда тягается надо фиксить
-     */
-    public StartupReadDto findById() {
-        return null;
+    @Transactional
+    public StepActionDto<StartupSellDTO> sellStartup(String resourceId) {
+        StepValidationResult validationResult = stepService.validateStep();
+        if (!validationResult.isValid()) {
+            return new StepActionDto<>(false, null, validationResult.getMessage(), 0);
+        }
+
+        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast();
+
+        Startup startupToSell = startupRepository.findById(resourceId).orElseThrow(
+                () -> new EntityNotFoundException("No startup found in startup postgresql to sell"));
+
+        int salePrice = startupToSell.getSalePrice();
+        Step currentStep = stepService.getCurrentStep(session);
+        int newPlayerCash = currentStep.getCash() + salePrice;
+        currentStep.setCash(newPlayerCash);
+        startupRepository.delete(startupToSell);
+        stepService.executeStep();
+
+        var resultDTO = new StartupSellDTO(startupToSell.getName(), salePrice);
+        return new StepActionDto<>(true, resultDTO, "", session.getStepCount());
     }
 }
