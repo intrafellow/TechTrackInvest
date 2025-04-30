@@ -41,6 +41,7 @@ public class StepService {
         return new StepValidationResult(true, null, availableCountOfSteps);
     }
 
+
     public void executeStep() {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();

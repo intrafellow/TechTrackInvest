@@ -139,6 +139,7 @@ public class StartupService {
 
 
     //Метод, который отвечает за экспертизу
+    @Transactional
     public StepActionDto<StartupExpertiseDTO> getExpertise(String resourceId, int expertisePrice) {
         //логично было бы сделать ограничения на покупку экспертизы на один и тот же стартап на одном ходу
         StepValidationResult validationResult = stepService.validateStep();

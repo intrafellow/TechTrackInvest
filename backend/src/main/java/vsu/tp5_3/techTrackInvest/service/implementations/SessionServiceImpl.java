@@ -102,8 +102,9 @@ public class SessionServiceImpl implements SessionService {
 
     @NeedTest
     public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId, Session session) {
-        Pageable pageable = PageRequest.of(0, count);
-        return conferenceMongoRepository.findByNicheId(nicheId, pageable);
+        /*Pageable pageable = PageRequest.of(0, count);
+        return conferenceMongoRepository.findByNicheId(nicheId, pageable);*/
+        return conferenceMongoRepository.findAll();
     }
 
     @NeedTest

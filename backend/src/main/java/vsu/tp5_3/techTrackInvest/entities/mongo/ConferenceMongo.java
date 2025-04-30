@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "conference")
+@Document(collection = "conferences")
 public class ConferenceMongo {
     @Id
     private String id;

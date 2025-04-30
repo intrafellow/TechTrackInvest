@@ -134,6 +134,6 @@ public class ConferenceService {
         conference.setSession(session);
         conferenceRepository.save(conference);
 
-        return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps());
+        return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps() - 1);
     }
 }
