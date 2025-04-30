@@ -36,8 +36,9 @@ public class ConferenceService {
     private final StepService stepService;
     private final ExpertiseRepository expertiseRepository;
 
+    // удаление отображаемых и создание рандомных
 
-
+    // допилить
     public List<ConferenceReadDto> findAll(CategoryFilter categoryFilter) {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
@@ -48,8 +49,6 @@ public class ConferenceService {
     }
 
     public Optional<ConferenceReadDto> findById(Long id) {
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
         return currentDisplayedConferenceRepository.findById(id)
                 .map(conferenceReadPostgresMapper::map);
     }
@@ -93,6 +92,18 @@ public class ConferenceService {
 
         // 6.3. Безопасное обновление экспертиз
         // посмотреть что не так
+        List<ExpertiseChange> expertiseChanges = conferenceMongo.getExpertiseChanges();
+        //List<Expertise> expertiseList = step.getExpertiseList();
+        List<Expertise> newExpertise = new ArrayList<>(step.getExpertiseList());
+        for (ExpertiseChange ec : expertiseChanges) {
+            for (Expertise e : newExpertise) {
+                if (e.getResourceId().equals(ec.getExpertiseId())) {
+                    e.setValue(e.getValue() + ec.getChange());
+                }
+                e.setStep(step);
+            }
+        }
+        step.setExpertiseList(newExpertise);
         /*List<Expertise> updatedExpertiseList = new ArrayList<>();
         for (Expertise existingExpertise : step.getExpertiseList()) {
             Expertise updatedExpertise = new Expertise();

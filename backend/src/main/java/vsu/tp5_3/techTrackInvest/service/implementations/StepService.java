@@ -26,6 +26,7 @@ public class StepService {
     @NeedTest
     @Transactional
     public StepValidationResult validateAndExecuteStep() {
+
         // учитывать переменную степ каунт
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();

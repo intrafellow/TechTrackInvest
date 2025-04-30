@@ -33,4 +33,8 @@ public class Step {
     @Column
     @OneToMany(mappedBy = "step", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Expertise> expertiseList;
+
+    public void setReputation(int reputation) {
+        this.reputation = Math.min(reputation, 100);
+    }
 }

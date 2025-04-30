@@ -76,7 +76,13 @@ public class SessionServiceImpl implements SessionService {
         step.setExpertiseList(expertiseList);
         step.setSession(session);
         session.getSteps().add(step);
-        session.setCurrentDisplayedConferences(getRandomConferences(0, 10, session));
+
+        // стартуем с первой ниши? и где рандом?
+
+        List<CurrentDisplayedConference> currentDisplayedConferences = getRandomConferencesIntoNiche(1, "niche-1", session)
+                .stream().map(c -> convertToDisplayedConference(c, session)).toList();
+        session.setCurrentDisplayedConferences(currentDisplayedConferences);
+
 
         List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
@@ -94,19 +100,14 @@ public class SessionServiceImpl implements SessionService {
     //вообще мы же должны получать определённое количество конференций(4 с каждой категории). Первый раз по 4, потом
     //если сходил на какую-то то вместое неё одну. Тоже самое относится и к стартапам.
 
-    private List<CurrentDisplayedConference> getRandomConferences(int min, int max, Session session) {
-        int count = ThreadLocalRandom.current().nextInt(min, max + 1);
-        List<ConferenceMongo> allConferences = conferenceMongoRepository.findAll();
-        Collections.shuffle(allConferences);
-
-        return allConferences.stream()
-                .limit(count)
-                .map(conference -> convertToDisplayedConference(conference, session))
-                .collect(Collectors.toList());
+    @NeedTest
+    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId, Session session) {
+        Pageable pageable = PageRequest.of(0, count);
+        return conferenceMongoRepository.findByNicheId(nicheId, pageable);
     }
 
     @NeedTest
-    private List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
+    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
         Pageable pageable = PageRequest.of(0, count);
 
         return startupMongoRepository.findByNicheId(nicheId, pageable);
@@ -126,7 +127,7 @@ public class SessionServiceImpl implements SessionService {
 
     }
 
-    private CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session) {
+    public CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session) {
         CurrentDisplayedConference displayed = new CurrentDisplayedConference();
         displayed.setResourceId(mongoConf.getId());
         displayed.setName(mongoConf.getName());
@@ -137,7 +138,7 @@ public class SessionServiceImpl implements SessionService {
         return displayed;
     }
 
-    private CurrentDisplayedStartup convertToDisplayedStartup(StartupMongo mongoStartup, Session session) {
+    public CurrentDisplayedStartup convertToDisplayedStartup(StartupMongo mongoStartup, Session session) {
         CurrentDisplayedStartup displayed = new CurrentDisplayedStartup();
 
         displayed.setResourceId(mongoStartup.getId());
@@ -149,4 +150,15 @@ public class SessionServiceImpl implements SessionService {
 
         return displayed;
     }
+
+    /*public List<CurrentDisplayedConference> getRandomConferences(int min, int max, Session session) {
+        int count = ThreadLocalRandom.current().nextInt(min, max + 1);
+        List<ConferenceMongo> allConferences = conferenceMongoRepository.findAll();
+        Collections.shuffle(allConferences);
+
+        return allConferences.stream()
+                .limit(count)
+                .map(conference -> convertToDisplayedConference(conference, session))
+                .collect(Collectors.toList());
+    }*/
 }

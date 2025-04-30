@@ -115,10 +115,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return Optional.of(new ExpertiseDto(resutlExpertise));
     }
 
-    /** Возвращать в дальнейшем надо нормальный опшионал юзер дто */
-    /**
-     * ещё бы точно знать, что нужно в этом dto возвращать
-     */
     public Optional<AppUser> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }

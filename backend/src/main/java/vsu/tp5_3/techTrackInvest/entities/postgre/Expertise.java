@@ -25,4 +25,7 @@ public class Expertise {
     @JoinColumn(name = "step_id", nullable = false)
     private Step step;
 
+    public void setValue(int value) {
+        this.value = Math.min(value, 100);
+    }
 }
