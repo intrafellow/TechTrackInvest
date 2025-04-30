@@ -17,7 +17,7 @@ public class PasswordResetController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         passwordResetService.sendPasswordResetToken(email);
-        return ResponseEntity.ok("Password reset token sent to email");
+        return ResponseEntity.ok("Токен отправлен на электронную почту");
     }
     @PostMapping("/validate-token")
     public ResponseEntity<?> validateToken(
@@ -27,12 +27,13 @@ public class PasswordResetController {
         boolean isValid = passwordResetService.validateToken(email, token);
 
         if (isValid) {
-            return ResponseEntity.ok("Token is valid");
+            return ResponseEntity.ok("Токен валиден");
         } else {
-            return ResponseEntity.badRequest().body("Invalid or expired token");
+            return ResponseEntity.badRequest().body("Токен не валиден");
         }
     }
 
+    // улучшить ситуация
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
         if (!userService.updatePassword(passwordResetDto.getEmail(), passwordResetDto.getNewPassword())) {

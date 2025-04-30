@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/events")
+@RequestMapping("/api/v1/conference")
 @RequiredArgsConstructor
 public class ConferenceController {
     private final ConferenceService conferenceService;
@@ -41,7 +41,7 @@ public class ConferenceController {
                 ));
     }
 
-    // todo
+
     @PostMapping("/{id}/attend")
     public ResponseEntity<StepActionDto<ConferenceMongo>> attend(@PathVariable("id") Long id) {
         ConferenceAttendDto conferenceAttendDto = new ConferenceAttendDto(id, SecurityContextHolder.getContext().getAuthentication().getName());

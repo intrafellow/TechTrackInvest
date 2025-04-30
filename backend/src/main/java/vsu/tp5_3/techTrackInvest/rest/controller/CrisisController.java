@@ -14,7 +14,7 @@ import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisService;
 @RequestMapping("/api/v1/crisis")
 public class CrisisController {
     private final CrisisService crisisService;
-    @GetMapping("/current")
+    @GetMapping()
     public ResponseEntity<CrisisReadDto> findById() {
         return crisisService.getCrisis()
                 .map(ResponseEntity::ok)

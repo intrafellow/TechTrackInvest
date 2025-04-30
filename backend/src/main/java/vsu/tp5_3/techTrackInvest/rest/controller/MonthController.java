@@ -21,7 +21,7 @@ import java.util.Optional;
 public class MonthController {
     private final MonthService monthService;
     /** Завершение хода, который месяц */
-    @GetMapping()
+    @GetMapping("/finish")
     public ResponseEntity<?> endMonth() {
         monthService.endMonth();
         return ResponseEntity.ok("");
