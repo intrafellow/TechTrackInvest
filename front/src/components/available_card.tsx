@@ -1,4 +1,3 @@
-// src/components/VerticalCard.tsx
 import React, { useState } from 'react';
 import { Card, Typography, Button, Box } from '@mui/material';
 import itIcon from '../icons/IT.png';
@@ -62,7 +61,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         <Box sx={{ width: '100%', textAlign: 'left' }}>
           <Typography
             sx={{
-              fontFamily: 'Lettersano Full Regular, sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               fontWeight: 700,
               fontSize: '2.08vh',
               color: '#413545'
@@ -72,7 +71,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
           </Typography>
           <Typography
             sx={{
-              fontFamily: 'Raleway, sans-serif',
+              fontFamily: 'Raleway',
               fontWeight: 400,
               fontSize: '1.82vh',
               color: '#413545'
@@ -107,7 +106,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         >
           <Typography
             sx={{
-              fontFamily: 'Lettersano Full Regular, sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               fontWeight: 700,
               fontSize: '2.08vh',
               color: '#413545'
@@ -118,7 +117,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
 
           <Typography
             sx={{
-              fontFamily: 'Raleway, sans-serif',
+              fontFamily: 'Raleway',
               fontWeight: 400,
               fontSize: '1.5vh',
               marginTop: '4.16vh'
@@ -143,7 +142,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
             borderRadius: '50vh',
             padding: '0.8vh 2.4vh',
             fontSize: '1.5vh',
-            fontFamily: 'Raleway, sans-serif',
+            fontFamily: 'Raleway',
             '&:hover': { borderColor: '#65558F', color: '#65558F' },
             flex: 1
           }}

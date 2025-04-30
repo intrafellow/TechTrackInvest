@@ -68,7 +68,7 @@ const Sidebar: React.FC = () => {
               <Typography
                 sx={{
                   fontSize: { xs: '0.8vh', sm: '0.9vh', md: '1vh' },
-                  fontFamily: '"Lettersano Full Regular", sans-serif',
+                  fontFamily: 'Lettersano Full, sans-serif',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
           <Typography
             sx={{
               fontSize: { xs: '0.8vh', sm: '0.9vh', md: '1vh' },
-              fontFamily: '"Lettersano Full Regular", sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               whiteSpace: 'nowrap',
             }}
           >

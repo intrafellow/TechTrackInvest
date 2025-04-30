@@ -63,7 +63,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         <Box sx={{ width: '100%', textAlign: 'left' }}>
           <Typography
             sx={{
-              fontFamily: 'Lettersano Full Regular, sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               fontWeight: 700,
               fontSize: '2.08vh',
               color: '#F8F9FA'
@@ -108,7 +108,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         >
           <Typography
             sx={{
-              fontFamily: 'Lettersano Full Regular, sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               fontWeight: 700,
               fontSize: '2.08vh',
               color: '#F8F9FA'

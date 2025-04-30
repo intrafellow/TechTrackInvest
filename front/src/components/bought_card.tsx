@@ -67,13 +67,13 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
       >
         <Typography
           sx={{
-            fontFamily: '"Lettersano Full Regular", sans-serif',
+            fontFamily: 'Lettersano Full, sans-serif',
             fontWeight: 700,
             fontSize: '2.08vh',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-			color: '#413545',
+            color: '#413545',
           }}
         >
           {title}
@@ -86,7 +86,7 @@ const HorizontalCard: React.FC<HorizontalCardProps> = ({ title, subtitle, image 
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-			color: '#413545',
+            color: '#413545',
           }}
         >
           {subtitle}

@@ -74,7 +74,7 @@ const Header: React.FC = () => {
             sx={{
               color: '#413545',
               fontSize: { xs: '0.8vh', sm: '0.9vh', md: '1vh' },
-              fontFamily: '"Lettersano Full Regular", sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               whiteSpace: 'nowrap',
             }}
           >
@@ -84,7 +84,7 @@ const Header: React.FC = () => {
             sx={{
               color: '#FFFFFF',
               fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' },
-              fontFamily: '"Lettersano Full Regular", sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
               marginLeft: '0.3vh',
             }}
           >
@@ -126,8 +126,8 @@ const Header: React.FC = () => {
               sx={{
                 color: '#9CA0BA',
                 fontSize: { xs: '0.7vh', sm: '0.8vh', md: '0.9vh' },
-                fontFamily: '"Lettersano Full Regular", sans-serif',
-                marginTop: '0.3vh',
+                fontFamily: 'Raleway, sans-serif',
+                marginTop: { xs: '0.5vh', sm: '0.6vh', md: '0.7vh' },
               }}
             >
               {label}
@@ -168,7 +168,24 @@ const Header: React.FC = () => {
             sx={{
               color: '#413545',
               fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' },
-              fontFamily: '"Lettersano Full Regular", sans-serif',
+              fontFamily: 'Lettersano Full, sans-serif',
+              display: 'none',
+              '@media (min-width: 900px)': {
+                display: 'block'
+              }
+            }}
+          >
+            Январь
+          </Typography>
+          <Typography
+            sx={{
+              color: '#413545',
+              fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' },
+              fontFamily: 'Lettersano Full, sans-serif',
+              display: 'block',
+              '@media (min-width: 900px)': {
+                display: 'none'
+              }
             }}
           >
             Янв
