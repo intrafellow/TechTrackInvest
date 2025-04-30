@@ -9,6 +9,8 @@ import java.util.List;
 @Value
 public class MonthEndDto {
     Integer stepCount;
+
+
     List<CurrentDisplayedConference> currentDisplayedConferences;
     List<CurrentDisplayedStartup> currentDisplayedStartups;
 }

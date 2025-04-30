@@ -47,6 +47,6 @@ public class MonthServiceImpl implements MonthService {
                 .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
         session.setCurrentDisplayedStartups(currentDisplayedStartups);
-        return Optional.of(new MonthEndDto(session.getStepCount()));
+        return Optional.of(new MonthEndDto(session.getStepCount(), currentDisplayedConferences, currentDisplayedStartups));
     }
 }
