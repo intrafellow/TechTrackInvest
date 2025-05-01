@@ -29,7 +29,6 @@ public class ContractService {
     private final ContractMongoRepository contractMongoRepository;
     private final ContractReadMapper contractReadMapper;
     private final CurrentDisplayedStartupRepository currentDisplayedStartupRepository;
-    private final UserRepository userRepository;
     private final StepService stepService;
 
     public ContractReadDTO getContractByStartupId(String startupId) {
