@@ -1,5 +1,6 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import vsu.tp5_3.techTrackInvest.service.implementations.StartupService;
 
 import java.util.List;
 
+@Tag(name = "Отладка", description = "Никак не задействуется в приложении напрямую")
 @RestController
 @RequestMapping("/api/v1/debug")
 @RequiredArgsConstructor

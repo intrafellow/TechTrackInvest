@@ -1,5 +1,7 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +14,17 @@ import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.Optional;
 
+@Tag(name = "Управление пользователем", description = "Предоставляем основные операции юзера. Получение денег, репутации...")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
 public class UserController {
     private final UserService userService;
+
+    @Operation(
+            summary = "Получение текущего состояния игрока",
+            description = "Получаем все его активы. Кол-во денег на руках и суммарную стоимость стартапов"
+    )
     @GetMapping("/money")
     public ResponseEntity<MoneyDto> getMoney() {
         return userService.getMoney()
@@ -26,6 +34,10 @@ public class UserController {
                         "Пользователь не найден"
                 ));
     }
+
+    @Operation(
+            summary = "Получаем репутацию игрока"
+    )
     @GetMapping("/reputation")
     public ResponseEntity<ReputationDto> getReputation() {
         return userService.getReputation()
@@ -35,6 +47,10 @@ public class UserController {
                         "Пользователь не найден"
                 ));
     }
+
+    @Operation(
+            summary = "Получаем его экспертизу во всех нишах"
+    )
     @GetMapping("/expertise")
     public ResponseEntity<ExpertiseDto> getExpertise() {
         return userService.getExpertise()

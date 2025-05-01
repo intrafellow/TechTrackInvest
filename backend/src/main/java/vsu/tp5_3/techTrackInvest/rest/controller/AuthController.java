@@ -1,5 +1,8 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import vsu.tp5_3.techTrackInvest.dto.LoginDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
 
+@Tag(name = "Авторизация", description = "Реализует функции логина в приложение. Выдаёт jwt токен вошедшим пользователям")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/login")
@@ -25,6 +29,11 @@ public class AuthController {
     private final UserServiceImpl userService;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
+
+    @Operation(summary = "Проводит авторизацию пользователя и выдаёт ему jwt токен",
+        description = "нужен чтобы зарегистрированный пользователь получил jwt токен, так как без него другие контроллеры" +
+                "не будут работать"
+    )
     @PostMapping()
     public ResponseEntity<JwtResponseDto> createAuthToken(@RequestBody LoginDto authRequest) {
         try {
