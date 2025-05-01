@@ -40,10 +40,10 @@ public class MonthServiceImpl implements MonthService {
         newStep.setSession(session);
         session.getSteps().add(newStep);
 
-        List<CurrentDisplayedConference> currentDisplayedConferences = sessionService.getRandomConferencesIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedConference> currentDisplayedConferences = sessionService.getRandomConferencesIntoNiche(1, "niche-1")
                 .stream().map(c -> sessionService.convertToDisplayedConference(c, session)).toList();
 
-        List<CurrentDisplayedStartup> currentDisplayedStartups = sessionService.getRandomStartupsIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedStartup> currentDisplayedStartups = sessionService.getRandomStartupsIntoNiche(1, "niche-1")
                 .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
         session.setCurrentDisplayedStartups(currentDisplayedStartups);

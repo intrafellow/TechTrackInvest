@@ -76,19 +76,18 @@ public class SessionServiceImpl implements SessionService {
 
         // стартуем с первой ниши? и где рандом?
 
-        List<CurrentDisplayedConference> currentDisplayedConferences = getRandomConferencesIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedConference> currentDisplayedConferences = getRandomConferencesIntoNiche(1, "niche-1")
                 .stream().map(c -> convertToDisplayedConference(c, session)).toList();
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
 
-        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1")
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
         session.setCurrentDisplayedStartups(startups);
 
         session.setConferences(new ArrayList<>());
         session.setStartups(new ArrayList<>());
-        //не знаю может лучше не делать
-//        session.setCurrentCrisis(null);
+
         session.setCrisisHistory(new ArrayList<>());
 
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
@@ -98,18 +97,15 @@ public class SessionServiceImpl implements SessionService {
     //если сходил на какую-то то вместое неё одну. Тоже самое относится и к стартапам.
 
     @NeedTest
-    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId, Session session) {
-        /*Pageable pageable = PageRequest.of(0, count);
-        return conferenceMongoRepository.findByNicheId(nicheId, pageable);*/
-        return conferenceMongoRepository.findAll();
+    @Override
+    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId) {
+        return conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
     }
 
     @NeedTest
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
-        Pageable pageable = PageRequest.of(0, count);
-
-        return startupMongoRepository.findByNiche(nicheId, pageable);
-
+    @Override
+    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
+        return startupMongoRepository.findRandomStartupsByNiche(nicheId, count);
     }
 
     @Override
