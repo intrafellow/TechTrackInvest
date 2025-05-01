@@ -1,5 +1,6 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,6 +8,7 @@ import vsu.tp5_3.techTrackInvest.dto.PasswordResetDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.PasswordResetServiceImpl;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
+@Tag(name = "Восстановление данных для входа", description = "Реализует восстановление пароля с помощью письма на почту")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
