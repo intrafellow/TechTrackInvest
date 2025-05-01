@@ -13,16 +13,14 @@ import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
-import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
-import vsu.tp5_3.techTrackInvest.mapper.StartupExpertiseMapper;
-import vsu.tp5_3.techTrackInvest.mapper.StartupMongoToBoughtStartupMapper;
-import vsu.tp5_3.techTrackInvest.mapper.StartupReadMapper;
+import vsu.tp5_3.techTrackInvest.mapper.*;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.SessionRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
+import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.util.*;
 
@@ -41,6 +39,8 @@ public class StartupService {
     private final StepService stepService;
     private final StartupExpertiseMapper startupExpertiseMapper;
     private final StartupMongoToBoughtStartupMapper startupMongoToBoughtStartupMapper;
+    private final SessionService sessionService;
+    private final StartupStatisticsMapper startupStatisticsMapper;
 
     @Tested
     //нужен чтобы получать все доступные стартапы для покупки по определённой категории(в ui есть такой выбор)
@@ -203,5 +203,12 @@ public class StartupService {
 
         var resultDTO = new StartupSellDTO(startupToSell.getName(), salePrice);
         return new StepActionDto<>(true, resultDTO, "", session.getStepCount());
+    }
+
+    public StartupStatisticsDTO getStartupStatistics(String resourceId) {
+        Session session = sessionService.getCurrentSession();
+        Startup startup = startupRepository.findById(resourceId).orElseThrow();
+
+        return startupStatisticsMapper.map(startup);
     }
 }

@@ -18,4 +18,5 @@ public interface SessionService {
     List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId);
     CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session);
     CurrentDisplayedStartup convertToDisplayedStartup(StartupMongo mongoStartup, Session session);
+    Session getCurrentSession();
 }

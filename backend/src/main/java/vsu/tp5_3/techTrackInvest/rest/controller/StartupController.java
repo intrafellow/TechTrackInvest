@@ -73,4 +73,15 @@ public class StartupController {
         return ResponseEntity.ok(infoAboutSale);
     }
 
+    @Operation(
+            summary = "Получение детальной статистики о купленном стартапе",
+            description = "Возвращает все текущие показатели стартапа, чтобы игрок мог понять, стоит ли его держать или лучше продать"
+    )
+    @GetMapping("/statistics/{startupResourceId}")
+    public ResponseEntity<StartupStatisticsDTO> getStatisticsAboutPlayerStartup(@PathVariable String startupResourceId) {
+        var statistics = startupService.getStartupStatistics(startupResourceId);
+
+        return ResponseEntity.ok(statistics);
+    }
+
 }

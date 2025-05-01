@@ -143,4 +143,10 @@ public class SessionServiceImpl implements SessionService {
 
         return displayed;
     }
+
+    @Override
+    public Session getCurrentSession() {
+        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow().getSessions().getLast();
+    }
 }
