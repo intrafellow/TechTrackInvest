@@ -1,5 +1,6 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -9,8 +10,7 @@ import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedConference;
 import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.StepRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
+import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
 import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
@@ -23,7 +23,12 @@ import java.util.Optional;
 public class MonthServiceImpl implements MonthService {
     private final UserRepository userRepository;
     private final StepRepository stepRepository;
+    private final SessionRepository sessionRepository;
     private final SessionService sessionService;
+    private final ConferenceService conferenceService;
+    private final CurrentDisplayedStartupRepository startupRepository;
+    private final CurrentDisplayedConferenceRepository conferenceRepository;
+    private final EntityManager entityManager;
     @Override
     @Transactional
     public Optional<MonthEndDto> endMonth() {
@@ -40,13 +45,18 @@ public class MonthServiceImpl implements MonthService {
         newStep.setSession(session);
         session.getSteps().add(newStep);
 
-        List<CurrentDisplayedConference> currentDisplayedConferences = sessionService.getRandomConferencesIntoNiche(1, "niche-1")
-                .stream().map(c -> sessionService.convertToDisplayedConference(c, session)).toList();
+        session.getCurrentDisplayedConferences().clear();
+        session.getCurrentDisplayedStartups().clear();
+        entityManager.flush();
 
-        List<CurrentDisplayedStartup> currentDisplayedStartups = sessionService.getRandomStartupsIntoNiche(1, "niche-1")
+        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, session);
+        session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
+
+        List<CurrentDisplayedStartup> startups = sessionService.getRandomStartupsIntoNiche(1, "niche-1", session)
                 .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();
-        session.setCurrentDisplayedConferences(currentDisplayedConferences);
-        session.setCurrentDisplayedStartups(currentDisplayedStartups);
-        return Optional.of(new MonthEndDto(session.getStepCount(), currentDisplayedConferences, currentDisplayedStartups));
+        //session.getCurrentDisplayedStartups().addAll(startups);
+
+
+        return Optional.of(new MonthEndDto(session.getStepCount(), newCurrentDisplayedConferences, startups));
     }
 }

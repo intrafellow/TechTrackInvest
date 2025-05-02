@@ -1,7 +1,9 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ExpertiseChange;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
+import vsu.tp5_3.techTrackInvest.mapper.ConferenceMongoToDisplayedMapper;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.ConferenceMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.ConferenceRepository;
@@ -34,11 +37,11 @@ public class ConferenceService {
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final UserRepository userRepository;
     private final StepService stepService;
-    private final ExpertiseRepository expertiseRepository;
-
+    private final ConferenceMongoToDisplayedMapper conferenceMongoToDisplayedMapper;
+    private final EntityManager entityManager;
     // удаление отображаемых и создание рандомных
 
-    // допилить
+    // допилить, чтобы было получение по нише
     public List<ConferenceReadDto> findAll(CategoryFilter categoryFilter) {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
@@ -53,49 +56,46 @@ public class ConferenceService {
                 .map(conferenceReadPostgresMapper::map);
     }
 
-    // что-то не обработалось
     @Transactional
     public StepActionDto<ConferenceMongo> attend(ConferenceAttendDto conferenceAttendDto) {
-        // 1. Проверка возможности хода и его совершение
+        // Проверка возможности хода и его совершение
         StepValidationResult validationResult = stepService.validateStep();
         if (!validationResult.isValid()) {
             return new StepActionDto<>(false, null, validationResult.getMessage(), 0);
         }
 
-        // 2. Получение пользователя
+        // Получение пользователя
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        // 3. Получение информации о конференции
+        // Получение информации о конференции
         CurrentDisplayedConference displayedConference = currentDisplayedConferenceRepository.findById(conferenceAttendDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Conference not found"));
 
         ConferenceMongo conferenceMongo = conferenceMongoRepository.findById(displayedConference.getResourceId())
                 .orElseThrow(() -> new EntityNotFoundException("Conference details not found"));
 
-        // 4. Получение текущего шага
+        // Получение текущего шага
         Session session = user.getSessions().getLast();
         Step step = session.getSteps().getLast();
 
-        // 5. Проверка денег
+        // Проверка денег
         if (step.getCash() < conferenceMongo.getEnrollPrice()) {
             return new StepActionDto<>(false, null, "Недостаточно средств", 0);
         }
 
         stepService.executeStep();
 
-        // 6. Обновление данных
-        // 6.1. Обновление денег
+        // Обновление данных
+        // Обновление денег
         step.setCash(step.getCash() - conferenceMongo.getEnrollPrice());
 
-        // 6.2. Обновление репутации
+        // Обновление репутации
         step.setReputation(step.getReputation() + conferenceMongo.getGainedReputation());
 
-        // 6.3. Безопасное обновление экспертиз
-        // посмотреть что не так
+        // Безопасное обновление экспертиз
         List<ExpertiseChange> expertiseChanges = conferenceMongo.getExpertiseChanges();
-        //List<Expertise> expertiseList = step.getExpertiseList();
         List<Expertise> newExpertise = new ArrayList<>(step.getExpertiseList());
         for (ExpertiseChange ec : expertiseChanges) {
             for (Expertise e : newExpertise) {
@@ -105,35 +105,24 @@ public class ConferenceService {
                 e.setStep(step);
             }
         }
-        step.setExpertiseList(newExpertise);
-        /*List<Expertise> updatedExpertiseList = new ArrayList<>();
-        for (Expertise existingExpertise : step.getExpertiseList()) {
-            Expertise updatedExpertise = new Expertise();
-            updatedExpertise.setId(existingExpertise.getId());
-            updatedExpertise.setResourceId(existingExpertise.getResourceId());
-            updatedExpertise.setValue(existingExpertise.getValue());
-            updatedExpertise.setStep(step);
-
-            for (ExpertiseChange change : conferenceMongo.getExpertiseChanges()) {
-                if (existingExpertise.getResourceId().equals(change.getExpertiseId())) {
-                    updatedExpertise.setValue(existingExpertise.getValue() + change.getChange());
-                }
-            }
-            updatedExpertiseList.add(updatedExpertise);
-        }
-
-        for (Expertise expertise : step.getExpertiseList()) {
-            expertiseRepository.delete(expertise);
-        }
         step.getExpertiseList().clear();
-        step.getExpertiseList().addAll(updatedExpertiseList);*/
+        step.getExpertiseList().addAll(newExpertise);
 
-        // 7. Сохранение конференции
+
+        // Сохранение конференции
         Conference conference = new Conference();
         conference.setId(conferenceMongo.getId());
         conference.setSession(session);
         conferenceRepository.save(conference);
 
+        // удаление из отображаемых
+        currentDisplayedConferenceRepository.delete(displayedConference);
+
         return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps() - 1);
+    }
+
+    public List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, Session session) {
+        List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferences(count);
+        return conferenceMongos.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
     }
 }

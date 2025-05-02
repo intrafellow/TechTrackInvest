@@ -24,8 +24,11 @@ import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,7 @@ public class SessionServiceImpl implements SessionService {
     private final ConferenceMongoRepository conferenceMongoRepository;
     private final NicheMongoRepository nicheMongoRepository;
     private final StartupMongoRepository startupMongoRepository;
+    private final ConferenceService conferenceService;
 
     @NeedTest
     @Override
@@ -76,18 +80,34 @@ public class SessionServiceImpl implements SessionService {
 
         // стартуем с первой ниши? и где рандом?
 
-        List<CurrentDisplayedConference> currentDisplayedConferences = getRandomConferencesIntoNiche(1, "niche-1")
+        /*List<CurrentDisplayedConference> currentDisplayedConferences = getRandomConferencesIntoNiche(1, "niche-1", session)
                 .stream().map(c -> convertToDisplayedConference(c, session)).toList();
-        session.setCurrentDisplayedConferences(currentDisplayedConferences);
+        session.setCurrentDisplayedConferences(currentDisplayedConferences);*/
+        /** Учитывать уже посещенные конференции и не отображать их, но будет ли такое количество конференций? */
+        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, session);
+        if (session.getCurrentDisplayedConferences() != null) {
+            session.getCurrentDisplayedConferences().clear();
+            session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
+        } else {
+            session.setCurrentDisplayedConferences(newCurrentDisplayedConferences);
+        }
 
 
-        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1")
+        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
-        session.setCurrentDisplayedStartups(startups);
+        if (session.getCurrentDisplayedStartups() != null) {
+            session.getCurrentDisplayedStartups().clear();
+            session.getCurrentDisplayedStartups().addAll(startups);
+        } else {
+            session.setCurrentDisplayedStartups(startups);
+        }
+
+
 
         session.setConferences(new ArrayList<>());
         session.setStartups(new ArrayList<>());
-
+        //не знаю может лучше не делать
+//        session.setCurrentCrisis(null);
         session.setCrisisHistory(new ArrayList<>());
 
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
@@ -97,15 +117,18 @@ public class SessionServiceImpl implements SessionService {
     //если сходил на какую-то то вместое неё одну. Тоже самое относится и к стартапам.
 
     @NeedTest
-    @Override
-    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId) {
-        return conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
+    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId, Session session) {
+        /*Pageable pageable = PageRequest.of(0, count);
+        return conferenceMongoRepository.findByNicheId(nicheId, pageable);*/
+        return conferenceMongoRepository.findAll();
     }
 
     @NeedTest
-    @Override
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
-        return startupMongoRepository.findRandomStartupsByNiche(nicheId, count);
+    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
+        Pageable pageable = PageRequest.of(0, count);
+
+        return startupMongoRepository.findByNiche(nicheId, pageable);
+
     }
 
     @Override
@@ -116,6 +139,7 @@ public class SessionServiceImpl implements SessionService {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         user.getSessions().clear();
+        //sessionRepository.deleteByAppUser(user);
         return Optional.of(new FinishDto(id));
 
     }
@@ -142,11 +166,5 @@ public class SessionServiceImpl implements SessionService {
         displayed.setSession(session);
 
         return displayed;
-    }
-
-    @Override
-    public Session getCurrentSession() {
-        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow().getSessions().getLast();
     }
 }

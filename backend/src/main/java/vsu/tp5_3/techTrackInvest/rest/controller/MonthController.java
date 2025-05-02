@@ -30,8 +30,7 @@ public class MonthController {
             summary = "Переход на следующий месяц игры"
     )
     @GetMapping("/finish")
-    public ResponseEntity<?> endMonth() {
-        monthService.endMonth();
-        return ResponseEntity.ok("");
+    public ResponseEntity<MonthEndDto> endMonth() {
+        return ResponseEntity.ok(monthService.endMonth().get());
     }
 }
