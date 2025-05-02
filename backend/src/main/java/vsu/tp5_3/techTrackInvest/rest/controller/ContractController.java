@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vsu.tp5_3.techTrackInvest.dto.ContractDealDTO;
+import vsu.tp5_3.techTrackInvest.dto.ContractGetConditionsDTO;
 import vsu.tp5_3.techTrackInvest.dto.ContractReadDTO;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.service.implementations.ContractService;
@@ -36,13 +37,14 @@ public class ContractController {
             description = "Передаём сюда id договора по стартапу и диапазон, чтобы нам вернулись точные условия покупки. " +
                     "Далее уже нужно будет передать эту цену в контроллер стартапа и купить его"
     )
-    @GetMapping("/finalCondition")
-    public ResponseEntity<StepActionDto<ContractDealDTO>> getFinalCondition(@RequestParam String contractId,
-                                                           @RequestParam Integer minPrice,
-                                                           @RequestParam Integer maxPrice) {
+    @PostMapping("/finalCondition")
+    public ResponseEntity<StepActionDto<ContractDealDTO>> getFinalCondition(
+            @RequestBody ContractGetConditionsDTO contractGetConditionsDTO) {
         int diceRollResult = rollService.getDiceRollResult();
-        int finalPrice = contractService.getFinalContractPrice(diceRollResult, minPrice, maxPrice);
-        var resultConditionsDTO = contractService.getContractFinalConditions(contractId, diceRollResult, finalPrice);
+        int finalPrice = contractService.getFinalContractPrice(diceRollResult, contractGetConditionsDTO.getMinPrice(),
+                contractGetConditionsDTO.getMaxPrice(), contractGetConditionsDTO.getUserOfferedPrice());
+        var resultConditionsDTO = contractService.getContractFinalConditions(contractGetConditionsDTO.getContractId(),
+                diceRollResult, finalPrice);
 
         return ResponseEntity.ok(resultConditionsDTO);
     }

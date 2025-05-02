@@ -38,8 +38,15 @@ public class ContractService {
         return contractReadMapper.map(contract);
     }
 
-    public int getFinalContractPrice(int rollResult, int minPrice, int maxPrice) {
-        return (int) (maxPrice - ((double) (rollResult - 1) / 19) * (maxPrice - minPrice));
+    public int getFinalContractPrice(int rollResult, int minPrice, int maxPrice, int suggestedPrice) {
+//        return (int) (maxPrice - ((double) (rollResult - 1) / 19) * (maxPrice - minPrice));
+        if (suggestedPrice > maxPrice || suggestedPrice < minPrice) {
+            throw new IllegalArgumentException("Suggested price cannot be greater than max price");
+        }
+
+        int delta = maxPrice - suggestedPrice;
+        int badCasePrice = (int) (suggestedPrice + delta * ((double) (rollResult - 1) / 19));
+        return (rollResult < 10) ? suggestedPrice : badCasePrice;
     }
 
     //тут добавлю интерфейс, который будет возвращать сообщение. Чтобы потом было удобно всё заменить нейронкой
@@ -58,12 +65,10 @@ public class ContractService {
         Pair<Integer, Integer> contractEffects = getEffectsFromContract(rollResult, contract);
 
         String messageDescription;
-        if (rollResult < 7) {
-            messageDescription = "Вам, к сожалению, не повезло на переговорах";
-        } else if (rollResult < 14) {
-            messageDescription = "Вы оказались не настолько хороши, чтобы продавить все свои условия, но Вы смогли выбить себе скидку";
+        if (rollResult < 10) {
+            messageDescription = "Вам повезло, Вы смогли продавить свои условия сделки";
         } else {
-            messageDescription = "Вы очень удачливы, поэтому смогли получить максимальную скидку";
+            messageDescription = "К сожалению, Вы не смогли продавить свои условия сделки";
         }
 
         String startupName = startup.getName();

@@ -73,48 +73,49 @@ public class StartupService {
     @Tested
     @Transactional
     //метод который отвечает за обновление n-го количества стартапов из какой-то ниши для покупки
-    public void updateDisplayedStartups(int startupsCount, String nicheId) {
-        //получаем сессию и купленные/предлагаемых стартапы именно из неё
-        //Собираем все id купленных стартапов из определённой ниши
-        //Собираем все id показываемых стартапов из определённой ниши
-        //формируем set из этих значений
-        //делаем запрос к монго, чтобы она нашла n-ое количество уникальных стартапов
+        public void updateDisplayedStartups(int startupsCount, String nicheId) {
+            //получаем сессию и купленные/предлагаемых стартапы именно из неё
+            //Собираем все id купленных стартапов из определённой ниши
+            //Собираем все id показываемых стартапов из определённой ниши
+            //формируем set из этих значений
+            //делаем запрос к монго, чтобы она нашла n-ое количество уникальных стартапов
 
-        Set<String> usedStartupIds = new HashSet<>();
+            Set<String> usedStartupIds = new HashSet<>();
 
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
+            Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                    .get().getSessions().getLast();
 
-        session.getCurrentDisplayedStartups().forEach(startup -> usedStartupIds.add(startup.getResourceId()));
-        session.getStartups().forEach(startup -> usedStartupIds.add(startup.getId()));
+            session.getCurrentDisplayedStartups().forEach(startup -> usedStartupIds.add(startup.getResourceId()));
+            session.getStartups().forEach(startup -> usedStartupIds.add(startup.getId()));
 
-        List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
+            List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
 
-        PageRequest pageRequest = PageRequest.of(0, startupsCount);
-        List<StartupMongo> retrievedStartups = startupMongoRepository.findAllByNicheAndIdNotIn(nicheId,
-                new ArrayList<>(usedStartupIds), pageRequest);
-
-        if (retrievedStartups.isEmpty()) {
-            throw new EntityNotFoundException("No startup found for id " + nicheId);
+//            PageRequest pageRequest = PageRequest.of(0, startupsCount);
+//            List<StartupMongo> retrievedStartups = startupMongoRepository.findAllByNicheAndIdNotIn(nicheId,
+//                    new ArrayList<>(usedStartupIds), pageRequest);
+            List<StartupMongo> retrievedStartups = startupMongoRepository.findRandomStartupsByNicheAndExcludedIds(nicheId,
+                    new ArrayList<>(usedStartupIds), startupsCount);
+            if (retrievedStartups.isEmpty()) {
+                throw new EntityNotFoundException("No startup found for id " + nicheId);
+            }
+            //заполнили новую сущность, привязали к сессии, добавили в список новых стартапов
+            for (StartupMongo startup : retrievedStartups) {
+                CurrentDisplayedStartup currentDisplayedStartup = new CurrentDisplayedStartup();
+                currentDisplayedStartup.setNicheId(startup.getNiche());
+                currentDisplayedStartup.setResourceId(startup.getId());
+                currentDisplayedStartup.setName(startup.getName());
+                currentDisplayedStartup.setDescription(startup.getDescription());
+                currentDisplayedStartup.setPrice(startup.getPrice());
+                currentDisplayedStartup.setSession(session);
+                resultNewStartups.add(currentDisplayedStartup);
+            }
+            //нам нужно удалить все старые стартапы, которые раньше предлагались к покупке
+            session.getCurrentDisplayedStartups().clear();
+            //добавляем новых
+            session.getCurrentDisplayedStartups().addAll(resultNewStartups);
+            //нужно сохранить сессию
+            sessionRepository.save(session);
         }
-        //заполнили новую сущность, привязали к сессии, добавили в список новых стартапов
-        for (StartupMongo startup : retrievedStartups) {
-            CurrentDisplayedStartup currentDisplayedStartup = new CurrentDisplayedStartup();
-            currentDisplayedStartup.setNicheId(startup.getNiche());
-            currentDisplayedStartup.setResourceId(startup.getId());
-            currentDisplayedStartup.setName(startup.getName());
-            currentDisplayedStartup.setDescription(startup.getDescription());
-            currentDisplayedStartup.setPrice(startup.getPrice());
-            currentDisplayedStartup.setSession(session);
-            resultNewStartups.add(currentDisplayedStartup);
-        }
-        //нам нужно удалить все старые стартапы, которые раньше предлагались к покупке
-        session.getCurrentDisplayedStartups().clear();
-        //добавляем новых
-        session.getCurrentDisplayedStartups().addAll(resultNewStartups);
-        //нужно сохранить сессию
-        sessionRepository.save(session);
-    }
 
     //Метод, который отвечает за экспертизу
     @Transactional

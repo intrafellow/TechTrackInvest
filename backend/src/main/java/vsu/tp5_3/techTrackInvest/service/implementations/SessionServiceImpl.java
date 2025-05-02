@@ -24,11 +24,8 @@ import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +90,7 @@ public class SessionServiceImpl implements SessionService {
         }
 
 
-        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-2")
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
         if (session.getCurrentDisplayedStartups() != null) {
             session.getCurrentDisplayedStartups().clear();
@@ -124,7 +121,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @NeedTest
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
+    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
         Pageable pageable = PageRequest.of(0, count);
 
         return startupMongoRepository.findRandomStartupsByNiche(nicheId, count);
@@ -146,11 +143,6 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId) {
-        return List.of();
-    }
-
-    @Override
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
         return List.of();
     }
 
