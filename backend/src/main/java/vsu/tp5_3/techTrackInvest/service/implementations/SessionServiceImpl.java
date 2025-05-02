@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class SessionServiceImpl implements SessionService {
     private final StartupMongoRepository startupMongoRepository;
     private final ConferenceService conferenceService;
 
-    @NeedTest
+
     @Override
     @Transactional
     public Optional<SessionReadDto> creteSession() {
@@ -84,30 +85,52 @@ public class SessionServiceImpl implements SessionService {
                 .stream().map(c -> convertToDisplayedConference(c, session)).toList();
         session.setCurrentDisplayedConferences(currentDisplayedConferences);*/
         /** Учитывать уже посещенные конференции и не отображать их, но будет ли такое количество конференций? */
-        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, "niche-1", session);
+        /*List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, "niche-1", session);
         if (session.getCurrentDisplayedConferences() != null) {
             session.getCurrentDisplayedConferences().clear();
             session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
         } else {
             session.setCurrentDisplayedConferences(newCurrentDisplayedConferences);
-        }
+        }*/
+        List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>();
+        List<CurrentDisplayedConference> niche1C = conferenceService.getRandomConferencesByNiche(2, "niche-1", session);
+        List<CurrentDisplayedConference> niche2C = conferenceService.getRandomConferencesByNiche(2, "niche-2", session);
+        List<CurrentDisplayedConference> niche3C = conferenceService.getRandomConferencesByNiche(2, "niche-3", session);
+        List<CurrentDisplayedConference> niche4C = conferenceService.getRandomConferencesByNiche(2, "niche-4", session);
+        currentDisplayedConferences.addAll(niche1C);
+        currentDisplayedConferences.addAll(niche2C);
+        currentDisplayedConferences.addAll(niche3C);
+        currentDisplayedConferences.addAll(niche4C);
+        session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
-
-        List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
+        /*List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
         if (session.getCurrentDisplayedStartups() != null) {
             session.getCurrentDisplayedStartups().clear();
             session.getCurrentDisplayedStartups().addAll(startups);
         } else {
             session.setCurrentDisplayedStartups(startups);
-        }
+        }*/
+        List<CurrentDisplayedStartup> currentDisplayedStartups = new ArrayList<>();
+        List<CurrentDisplayedStartup> niche1S = getRandomStartupsIntoNiche(2, "niche-1", session)
+                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
+        List<CurrentDisplayedStartup> niche2S = getRandomStartupsIntoNiche(2, "niche-2", session)
+                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
+        List<CurrentDisplayedStartup> niche3S = getRandomStartupsIntoNiche(2, "niche-3", session)
+                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
+        List<CurrentDisplayedStartup> niche4S = getRandomStartupsIntoNiche(2, "niche-4", session)
+                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
+        currentDisplayedStartups.addAll(niche1S);
+        currentDisplayedStartups.addAll(niche2S);
+        currentDisplayedStartups.addAll(niche3S);
+        currentDisplayedStartups.addAll(niche4S);
+        session.setCurrentDisplayedStartups(currentDisplayedStartups);
 
 
 
         session.setConferences(new ArrayList<>());
         session.setStartups(new ArrayList<>());
-        //не знаю может лучше не делать
-//        session.setCurrentCrisis(null);
+
         session.setCrisisHistory(new ArrayList<>());
 
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
