@@ -1,9 +1,14 @@
 package vsu.tp5_3.techTrackInvest.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import vsu.tp5_3.techTrackInvest.dto.UserReadDto;
 import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
+import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
+
 @Component
 @RequiredArgsConstructor
 public class UserReadMapper implements Mapper<AppUser, UserReadDto>{

@@ -1,5 +1,6 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +20,9 @@ import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
+import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -32,6 +35,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final PasswordEncoder passwordEncoder;
     private final NicheMongoRepository nicheMongoRepository;
     private final NicheService nicheService;
+    private final JwtTokenUtils jwtTokenUtils;
+    private final EntityManager entityManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -51,11 +56,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         // какие-то логичные ошибки если такой же логин или почта
         String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
         registrationDto.setPassword(hashedPassword);
-        return Optional.ofNullable(registrationDto)
+        UserReadDto userReadDto = Optional.ofNullable(registrationDto)
                 .map(userCreateEditMapper::map)
-                .map(userRepository::save)
+                .map(userRepository::saveAndFlush)
                 .map(userReadMapper::map)
                 .orElseThrow();
+
+        return userReadDto;
     }
 
     @Tested
