@@ -51,14 +51,4 @@ public class DebugController {
         return ResponseEntity.ok(startupService.getCurrentDisplayedStartupsInNiche(nicheId));
     }
 
-    @GetMapping("/randomConferences")
-    public ResponseEntity<List<ConferenceMongo>> findRandomConferences() {
-        return ResponseEntity.ok(conferenceMongoRepository.findRandomConferences(1));
-    }
-
-    @GetMapping("/displRandomConferences")
-    public ResponseEntity<List<CurrentDisplayedConference>> findDisplRandomConferences() {
-        AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get();
-        return ResponseEntity.ok(conferenceService.getRandomConferencesByNiche(1, user.getSessions().getLast()));
-    }
 }

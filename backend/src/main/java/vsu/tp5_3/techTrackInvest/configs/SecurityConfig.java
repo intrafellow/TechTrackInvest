@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import vsu.tp5_3.techTrackInvest.security.JwtRequestFilter;
 import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.Arrays;
 
@@ -26,7 +27,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
     private final PasswordEncoder passwordEncoder;
 

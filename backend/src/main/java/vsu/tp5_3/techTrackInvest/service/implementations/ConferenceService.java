@@ -121,8 +121,8 @@ public class ConferenceService {
         return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps() - 1);
     }
 
-    public List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, Session session) {
-        List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferences(count);
+    public List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, String nicheId, Session session) {
+        List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
         return conferenceMongos.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
     }
 }

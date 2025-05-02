@@ -84,7 +84,7 @@ public class SessionServiceImpl implements SessionService {
                 .stream().map(c -> convertToDisplayedConference(c, session)).toList();
         session.setCurrentDisplayedConferences(currentDisplayedConferences);*/
         /** Учитывать уже посещенные конференции и не отображать их, но будет ли такое количество конференций? */
-        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, session);
+        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, "niche-1", session);
         if (session.getCurrentDisplayedConferences() != null) {
             session.getCurrentDisplayedConferences().clear();
             session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
@@ -127,7 +127,7 @@ public class SessionServiceImpl implements SessionService {
     public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
         Pageable pageable = PageRequest.of(0, count);
 
-        return startupMongoRepository.findByNiche(nicheId, pageable);
+        return startupMongoRepository.findRandomStartupsByNiche(nicheId, count);
 
     }
 
@@ -142,6 +142,16 @@ public class SessionServiceImpl implements SessionService {
         //sessionRepository.deleteByAppUser(user);
         return Optional.of(new FinishDto(id));
 
+    }
+
+    @Override
+    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId) {
+        return List.of();
+    }
+
+    @Override
+    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
+        return List.of();
     }
 
     public CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session) {
@@ -166,5 +176,12 @@ public class SessionServiceImpl implements SessionService {
         displayed.setSession(session);
 
         return displayed;
+
+    }
+
+    @Override
+    public Session getCurrentSession() {
+        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow().getSessions().getLast();
     }
 }

@@ -23,7 +23,7 @@ public class CrisisController {
                         "Кризис не найден"
                 ));
     }
-    @GetMapping("/solution/{solutionId}")
+    @PostMapping("/solution/{solutionId}")
     public ResponseEntity<?> solve(@PathVariable String solutionId) {
         crisisService.solve(solutionId);
         return ResponseEntity.ok("");

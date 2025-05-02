@@ -49,10 +49,10 @@ public class MonthServiceImpl implements MonthService {
         session.getCurrentDisplayedStartups().clear();
         entityManager.flush();
 
-        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, session);
+        List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, "niche-1", session);
         session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
 
-        List<CurrentDisplayedStartup> startups = sessionService.getRandomStartupsIntoNiche(1, "niche-1", session)
+        List<CurrentDisplayedStartup> startups = sessionService.getRandomStartupsIntoNiche(1, "niche-1")
                 .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();
         //session.getCurrentDisplayedStartups().addAll(startups);
 

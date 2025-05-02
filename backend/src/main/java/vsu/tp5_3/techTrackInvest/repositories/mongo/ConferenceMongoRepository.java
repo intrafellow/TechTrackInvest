@@ -12,4 +12,5 @@ public interface ConferenceMongoRepository extends MongoRepository<ConferenceMon
             "{ '$sample': { 'size': ?1 } }"
     })
     List<ConferenceMongo> findRandomConferencesByNiche(String nicheId, int conferenceCount);
+
 }
