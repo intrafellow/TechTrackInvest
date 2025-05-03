@@ -54,8 +54,9 @@ public class StartupService {
     public StartupListDto getAllAvailableStartups() {
         //получить все купленные стартапы
         //получить все, что может сейчас купить
-        List<Startup> allBoughtStartups = startupRepository.findAll();
-        List<CurrentDisplayedStartup> allReadyToBuyStartups = currentDisplayedStartupRepository.findAll();
+        Session session = sessionService.getCurrentSession();
+        List<Startup> allBoughtStartups = session.getStartups();
+        List<CurrentDisplayedStartup> allReadyToBuyStartups = session.getCurrentDisplayedStartups();
 
         //маппим всё в startupReadDTO поскольку показываем по стандарту только эти данные
 
