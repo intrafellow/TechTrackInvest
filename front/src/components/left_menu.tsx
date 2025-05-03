@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import mic from '../icons/mic.png';
 import start from '../icons/start.png';
 import time from '../icons/time.png';
@@ -22,19 +22,37 @@ const buttonBaseStyle = {
   flexShrink: 0,
 };
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onTypeChange: (type: 'startups' | 'events') => void;
+  onEndTurn?: () => void;
+  disabled?: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onTypeChange, onEndTurn, disabled = false }) => {
   const [active, setActive] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
+
+  const handleItemClick = (label: string) => {
+    if (disabled) return;
+    setActive(label);
+    if (label === 'Стартапы') {
+      onTypeChange('startups');
+    } else if (label === 'Мероприятия') {
+      onTypeChange('events');
+    }
+  };
 
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#535C94',
+        backgroundColor: '#59618C',
         width: { xs: '8vh', sm: '9vh', md: '10vh' },
         padding: { xs: '1vh 0.3vh', sm: '1.5vh 0.4vh', md: '2vh 0.5vh' },
         alignItems: 'center',
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? 'none' : 'auto',
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: '1vh', sm: '1.5vh', md: '2vh' } }}>
@@ -46,13 +64,15 @@ const Sidebar: React.FC = () => {
               key={label}
               onMouseEnter={() => setHovered(label)}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => setActive(label)}
+              onClick={() => handleItemClick(label)}
               sx={{
                 ...buttonBaseStyle,
                 width: { xs: '7vh', sm: '8vh', md: '9vh' },
                 height: { xs: '3vh', sm: '3.5vh', md: '4vh' },
                 backgroundColor: isActive ? '#EAEAF0' : '#9CA0BA',
                 transform: isActive || isHovered ? 'scale(1.07)' : 'scale(1)',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled ? 0.5 : 1
               }}
             >
               <Box 
@@ -92,7 +112,7 @@ const Sidebar: React.FC = () => {
         <Box
           onMouseEnter={() => setHovered('Завершить ход')}
           onMouseLeave={() => setHovered(null)}
-          onClick={() => setActive('Завершить ход')}
+          onClick={onEndTurn}
           sx={{
             ...buttonBaseStyle,
             width: { xs: '7vh', sm: '8vh', md: '9vh' },
@@ -102,6 +122,8 @@ const Sidebar: React.FC = () => {
               active === 'Завершить ход' || hovered === 'Завершить ход'
                 ? 'scale(1.07)'
                 : 'scale(1)',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            opacity: disabled ? 0.5 : 1
           }}
         >
           <Box
@@ -121,7 +143,7 @@ const Sidebar: React.FC = () => {
               whiteSpace: 'nowrap',
             }}
           >
-            Завершить
+            Завершить ход
           </Typography>
         </Box>
       </Box>

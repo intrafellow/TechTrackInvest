@@ -4,11 +4,7 @@ import {
   FormControl, FormLabel, FormHelperText, Snackbar, Alert
 } from '@mui/material';
 import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
-
-const mockRegisteredUsers = [
-  { email: 'user@example.com', username: 'existinguser' },
-  { email: 'test@test.com', username: 'tester' }
-];
+import { authAPI } from '../api/apiClient';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -59,16 +55,14 @@ const RegisterPage: React.FC = () => {
     setSuccess(false);
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const newErrors: { [key: string]: string } = {};
 
     if (!email) newErrors.email = 'Введите email.';
     else if (!isEmailValid(email)) newErrors.email = 'Неверный формат email.';
-    else if (mockRegisteredUsers.some((u) => u.email === email)) newErrors.email = 'Email уже зарегистрирован.';
 
     if (!username) newErrors.username = 'Введите логин.';
     else if (!isUsernameValid(username)) newErrors.username = 'Логин может содержать только английские буквы и цифры.';
-    else if (mockRegisteredUsers.some((u) => u.username === username)) newErrors.username = 'Логин уже занят.';
 
     if (!password) newErrors.password = 'Введите пароль.';
     else if (!isPasswordValid(password)) newErrors.password = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
@@ -79,15 +73,28 @@ const RegisterPage: React.FC = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      setErrors({});
-      setIsVerificationStage(true);
+      try {
+        await authAPI.register(email, username, password);
+        setErrors({});
+        setIsVerificationStage(true);
+      } catch (error: any) {
+        if (error.response?.data?.message) {
+          setErrors({ email: error.response.data.message });
+        } else {
+          setErrors({ email: 'Произошла ошибка при регистрации' });
+        }
+      }
     }
   };
 
-  const handleVerification = () => {
-    if (verificationCode === '123456') {
+  const handleVerification = async () => {
+    try {
+      await authAPI.validateToken(email, verificationCode);
       setSuccess(true);
-    } else {
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    } catch (error: any) {
       setErrors({ verificationCode: 'Неверный код подтверждения' });
     }
   };
@@ -123,7 +130,13 @@ const RegisterPage: React.FC = () => {
   return (
     <>
       <Box sx={{ width: '100vw', minHeight: '100vh', backgroundColor: '#585C87', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', color: '#F6F7FF' }}>
-        <Typography sx={{ fontSize: { xs: '4vh', sm: '5vh', md: '6vh' }, fontWeight: 600, mb: 4, letterSpacing: '0.04em' }}>
+        <Typography sx={{ 
+          fontSize: { xs: '4vh', sm: '5vh', md: '6vh' }, 
+          fontWeight: 600, 
+          mb: 4, 
+          letterSpacing: '0.04em',
+          fontFamily: '"Lettersano Full", sans-serif'
+        }}>
           {isVerificationStage ? 'Подтверждение email' : 'Регистрация'}
         </Typography>
         <Box sx={{ width: '90%', maxWidth: 500, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 3 }}>

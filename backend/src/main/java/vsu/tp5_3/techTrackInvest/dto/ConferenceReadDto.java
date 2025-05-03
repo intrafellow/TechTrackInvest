@@ -9,4 +9,5 @@ public class ConferenceReadDto {
     String name;
     String description;
     String category;
+    Integer price;
 }

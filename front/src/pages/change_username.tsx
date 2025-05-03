@@ -14,8 +14,7 @@ import {
 } from '@mui/material';
 import { CheckCircleOutline } from '@mui/icons-material';
 import logo from '../icons/logo.png';
-
-const mockExistingUsernames = ['existinguser', 'tester'];
+import { userAPI } from '../api/apiClient';
 
 const ChangeUsernamePage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ const ChangeUsernamePage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const isUsernameValid = (value: string) => /^[a-zA-Z0-9]+$/.test(value);
+  const isUsernameValid = (value: string) => /^[a-zA-Z0-9_]{3,20}$/.test(value);
 
   const handleChange = (value: string) => {
     setUsername(value);
@@ -40,23 +39,21 @@ const ChangeUsernamePage: React.FC = () => {
     setErrors({});
     setLoading(true);
 
-    setTimeout(() => {
-      const newErrors: { [key: string]: string } = {};
-
-      if (!username) {
-        newErrors.username = 'Введите логин.';
-      } else if (!isUsernameValid(username)) {
-        newErrors.username = 'Логин может содержать только английские буквы и цифры.';
-      } else if (mockExistingUsernames.includes(username)) {
-        newErrors.username = 'Логин уже занят.';
+    try {
+      if (!username) throw new Error('Введите имя пользователя.');
+      if (!isUsernameValid(username)) throw new Error('Имя пользователя должно содержать от 3 до 20 символов (буквы, цифры и _).');
+      await userAPI.updateUsername(username);
+      setSuccess(true);
+      setTimeout(() => navigate('/profile'), 2000);
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        setErrors({ username: error.response.data.message });
       } else {
-        setSuccess(true);
-        setTimeout(() => navigate('/profile'), 2000);
+        setErrors({ username: error.message });
       }
-
-      setErrors(newErrors);
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   const handleCloseSuccess = () => {
@@ -151,10 +148,11 @@ const ChangeUsernamePage: React.FC = () => {
             marginBottom: 4,
             textAlign: 'center',
             color: '#F6F7FF',
-            letterSpacing: '0.04em'
+            letterSpacing: '0.04em',
+            fontFamily: '"Lettersano Full", sans-serif'
           }}
         >
-          Смена логина
+          Смена имени пользователя
         </Typography>
 
         <Box
@@ -168,7 +166,7 @@ const ChangeUsernamePage: React.FC = () => {
           }}
         >
           <FormControl variant="outlined" fullWidth error={!!errors.username}>
-            <FormLabel sx={commonLabelStyle}>Новый логин</FormLabel>
+            <FormLabel sx={commonLabelStyle}>Новое имя пользователя</FormLabel>
             <OutlinedInput
               type="text"
               value={username}
@@ -200,7 +198,7 @@ const ChangeUsernamePage: React.FC = () => {
             ) : success ? (
               'Успешно!'
             ) : (
-              'Сменить логин'
+              'Сменить имя'
             )}
           </Button>
         </Box>
@@ -208,7 +206,7 @@ const ChangeUsernamePage: React.FC = () => {
 
       <Snackbar open={success} autoHideDuration={4000} onClose={handleCloseSuccess}>
         <Alert onClose={handleCloseSuccess} severity="success">
-          Логин успешно изменён
+          Имя пользователя успешно изменено
         </Alert>
       </Snackbar>
     </>

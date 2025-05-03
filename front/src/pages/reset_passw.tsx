@@ -4,9 +4,7 @@ import {
   IconButton, InputAdornment, FormHelperText, Snackbar, Alert, CircularProgress
 } from '@mui/material';
 import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
-
-const mockRegisteredEmails = ['user@example.com', 'test@test.com'];
-const validCode = '123456';
+import { authAPI } from '../api/apiClient';
 
 const ResetPasswordPage: React.FC = () => {
   const [step, setStep] = useState<'email' | 'code' | 'password'>('email');
@@ -40,29 +38,33 @@ const ResetPasswordPage: React.FC = () => {
     setErrors({});
     setLoading(true);
 
-    setTimeout(() => {
-      const newErrors: { [key: string]: string } = {};
-
+    try {
       if (step === 'email') {
-        if (!form.email) newErrors.email = 'Введите email.';
-        else if (!isEmailValid(form.email)) newErrors.email = 'Неверный формат email.';
-        else if (!mockRegisteredEmails.includes(form.email)) newErrors.email = 'Пользователь с таким email не найден.';
-        else setStep('code');
+        if (!form.email) throw new Error('Введите email.');
+        if (!isEmailValid(form.email)) throw new Error('Неверный формат email.');
+        await authAPI.forgotPassword(form.email);
+        setStep('code');
       } else if (step === 'code') {
-        if (!form.code) newErrors.code = 'Введите код из письма.';
-        else if (!isCodeValid(form.code)) newErrors.code = 'Код должен содержать 6 цифр.';
-        else if (form.code !== validCode) newErrors.code = 'Неверный код.';
-        else setStep('password');
+        if (!form.code) throw new Error('Введите код из письма.');
+        if (!isCodeValid(form.code)) throw new Error('Код должен содержать 6 цифр.');
+        await authAPI.validateToken(form.email, form.code);
+        setStep('password');
       } else if (step === 'password') {
-        if (!form.newPassword || !form.confirmPassword) newErrors.confirmPassword = 'Введите и подтвердите пароль.';
-        else if (!isPasswordValid(form.newPassword)) newErrors.newPassword = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
-        else if (form.newPassword !== form.confirmPassword) newErrors.confirmPassword = 'Пароли не совпадают.';
-        else setSuccess(true);
+        if (!form.newPassword || !form.confirmPassword) throw new Error('Введите и подтвердите пароль.');
+        if (!isPasswordValid(form.newPassword)) throw new Error('Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.');
+        if (form.newPassword !== form.confirmPassword) throw new Error('Пароли не совпадают.');
+        await authAPI.resetPassword(form.email, form.newPassword);
+        setSuccess(true);
       }
-
-      setErrors(newErrors);
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        setErrors({ [step]: error.response.data.message });
+      } else {
+        setErrors({ [step]: error.message });
+      }
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -90,7 +92,17 @@ const ResetPasswordPage: React.FC = () => {
   return (
     <>
       <Box sx={{ width: '100vw', minHeight: '100vh', backgroundColor: '#585C87', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: '"Lettersano Full", sans-serif', color: '#F6F7FF', padding: 0 }}>
-        <Typography sx={{ fontSize: { xs: '4vh', sm: '5vh', md: '6vh' }, fontWeight: 600, marginBottom: 4, textAlign: 'center', color: '#F6F7FF' }}>Восстановление пароля</Typography>
+        <Typography sx={{ 
+          fontSize: { xs: '4vh', sm: '5vh', md: '6vh' }, 
+          fontWeight: 600, 
+          marginBottom: 4, 
+          textAlign: 'center', 
+          color: '#F6F7FF',
+          letterSpacing: '0.04em',
+          fontFamily: '"Lettersano Full", sans-serif'
+        }}>
+          Восстановление пароля
+        </Typography>
         <Box sx={{ width: '90%', maxWidth: 500, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {step === 'email' && (
             <FormControl variant="outlined" fullWidth error={!!errors.email}>

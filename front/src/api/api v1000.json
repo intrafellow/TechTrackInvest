@@ -1,0 +1,1921 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Tech track invest game",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Отладка",
+      "description": "Никак не задействуется в приложении напрямую"
+    },
+    {
+      "name": "Регистрация",
+      "description": "регистрация нового пользователя с уникальной почтой и ником"
+    },
+    {
+      "name": "Заключение договоров",
+      "description": "Реализует логику покупки стартапов через договоры, чтобы мы могли получить цену стартапа после броска кубика"
+    },
+    {
+      "name": "Управление конференциями",
+      "description": "Предоставляет все апи для посещения, просмотра конференций"
+    },
+    {
+      "name": "Управление ходами",
+      "description": "Переход на новый месяц игры, где обновляются стартапы, конференции и кол-во доступных очков действий"
+    },
+    {
+      "name": "Восстановление данных для входа",
+      "description": "Реализует восстановление пароля с помощью письма на почту"
+    },
+    {
+      "name": "Управление кризисами",
+      "description": "Основные методы получения и решение кризисов"
+    },
+    {
+      "name": "Управление игровой сессией",
+      "description": "Можем начать сессию и завершить её"
+    },
+    {
+      "name": "Управление пользователем",
+      "description": "Предоставляем основные операции юзера. Получение денег, репутации..."
+    },
+    {
+      "name": "Управление стартапами",
+      "description": "Предоставляем основные методы игры по работе со стартапами(покупка, продажа, получение экспертизы"
+    },
+    {
+      "name": "Авторизация",
+      "description": "Реализует функции логина в приложение. Выдаёт jwt токен вошедшим пользователям"
+    }
+  ],
+  "paths": {
+    "/api/v1/startups/buy": {
+      "post": {
+        "tags": [
+          "Управление стартапами"
+        ],
+        "summary": "Покупаем стартап по финальной цене после переговоров",
+        "description": "Происходит покупка по окончательной цене, которую мы получаем только после того, какполучили финальную цену из за ролла кубика. Это происходит после вызова метод контроллера договор",
+        "operationId": "confirmContract",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartupBuyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepActionDtoStartupReadDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registration": {
+      "post": {
+        "tags": [
+          "Регистрация"
+        ],
+        "summary": "Регистрация",
+        "description": "Необходимо для начала игры",
+        "operationId": "createNewUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/login": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Проводит авторизацию пользователя и выдаёт ему jwt токен",
+        "description": "нужен чтобы зарегистрированный пользователь получил jwt токен, так как без него другие контроллерыне будут работать",
+        "operationId": "createAuthToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crisis/solution/{solutionId}": {
+      "post": {
+        "tags": [
+          "Управление кризисами"
+        ],
+        "summary": "Выбираем решение кризиса",
+        "description": "Передаем id варианта решения кризиса, которое мы выбрали, чтобы применить эффекты",
+        "operationId": "solve",
+        "parameters": [
+          {
+            "name": "solutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepActionDtoCrisisReadDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contract/finalCondition": {
+      "post": {
+        "tags": [
+          "Заключение договоров"
+        ],
+        "summary": "Получаем финальную сумму покупки стартапа после броска кубика",
+        "description": "Передаём сюда id договора по стартапу и диапазон, чтобы нам вернулись точные условия покупки. Далее уже нужно будет передать эту цену в контроллер стартапа и купить его",
+        "operationId": "getFinalCondition",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractGetConditionsDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepActionDtoContractDealDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conference/{id}/attend": {
+      "post": {
+        "tags": [
+          "Управление конференциями"
+        ],
+        "summary": "Посещаем конференцию по её id",
+        "operationId": "attend",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id конференции, которую хотим посетить",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepActionDtoConferenceMongo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/validate-token": {
+      "post": {
+        "tags": [
+          "Восстановление данных для входа"
+        ],
+        "operationId": "validateToken",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Восстановление данных для входа"
+        ],
+        "operationId": "resetPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Восстановление данных для входа"
+        ],
+        "operationId": "forgotPassword",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/reputation": {
+      "get": {
+        "tags": [
+          "Управление пользователем"
+        ],
+        "summary": "Получаем репутацию игрока",
+        "operationId": "getReputation",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReputationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/money": {
+      "get": {
+        "tags": [
+          "Управление пользователем"
+        ],
+        "summary": "Получение текущего состояния игрока",
+        "description": "Получаем все его активы. Кол-во денег на руках и суммарную стоимость стартапов",
+        "operationId": "getMoney",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/expertise": {
+      "get": {
+        "tags": [
+          "Управление пользователем"
+        ],
+        "summary": "Получаем его экспертизу во всех нишах",
+        "operationId": "getExpertise",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpertiseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/startups": {
+      "get": {
+        "tags": [
+          "Управление стартапами"
+        ],
+        "summary": "Возвращает все стартапы",
+        "description": "Вернёт список стартапов неотсортированный по нишам для общего отображения, где будут уже купленные игроком и те, что он может купить на этом ходу",
+        "operationId": "findAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartupListDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/startups/{resourceId}/expertise/{price}": {
+      "get": {
+        "tags": [
+          "Управление стартапами"
+        ],
+        "summary": "Получение детальной информации о стартапе",
+        "description": "Заказываем экспертизы и получаем все текущие показатели стартапа",
+        "operationId": "getExpertise_1",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "path",
+            "description": "Id стартапа для которого заказываем экспертизу. Это строка",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "startup-1"
+          },
+          {
+            "name": "price",
+            "in": "path",
+            "description": "Цена экспертизы. У нас фиксированная 10000",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 10000
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepActionDtoStartupExpertiseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/startups/statistics/{startupResourceId}": {
+      "get": {
+        "tags": [
+          "Управление стартапами"
+        ],
+        "summary": "Получение детальной статистики о купленном стартапе",
+        "description": "Возвращает все текущие показатели стартапа, чтобы игрок мог понять, стоит ли его держать или лучше продать",
+        "operationId": "getStatisticsAboutPlayerStartup",
+        "parameters": [
+          {
+            "name": "startupResourceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartupStatisticsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/startups/sell/{startupResourceId}": {
+      "get": {
+        "tags": [
+          "Управление стартапами"
+        ],
+        "summary": "Продаём стартап по его id",
+        "description": "Цену стартапа можно узнать открыв его статистику. Передать необходимо его id",
+        "operationId": "sellStartup",
+        "parameters": [
+          {
+            "name": "startupResourceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepActionDtoStartupSellDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/startups/niche/{nicheId}": {
+      "get": {
+        "tags": [
+          "Управление стартапами"
+        ],
+        "summary": "Отсортированные по нише стартапы, предлагаемые к покупке",
+        "operationId": "findAllDisplayedByNicheId",
+        "parameters": [
+          {
+            "name": "nicheId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StartupReadDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/session/start": {
+      "get": {
+        "tags": [
+          "Управление игровой сессией"
+        ],
+        "summary": "Запускаем новую игровую сессию",
+        "description": "Возвращаем основные показатели, доступные к покупке стартапы и кол-во действий",
+        "operationId": "createSession",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionReadDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/session/finish": {
+      "get": {
+        "tags": [
+          "Управление игровой сессией"
+        ],
+        "summary": "Завершаем игровую сессию",
+        "operationId": "finishSession",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/month/finish": {
+      "get": {
+        "tags": [
+          "Управление ходами"
+        ],
+        "summary": "Переход на следующий месяц игры",
+        "operationId": "endMonth",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthEndDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/debug/updateStartups": {
+      "get": {
+        "tags": [
+          "Отладка"
+        ],
+        "operationId": "updateStartups",
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "nicheId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StartupReadDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/debug/startups": {
+      "get": {
+        "tags": [
+          "Отладка"
+        ],
+        "operationId": "getAllStartups",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StartupMongo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/debug/conferences": {
+      "get": {
+        "tags": [
+          "Отладка"
+        ],
+        "operationId": "getAllConferences",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConferenceMongo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crisis": {
+      "get": {
+        "tags": [
+          "Управление кризисами"
+        ],
+        "summary": "Получение случайного нового кризиса",
+        "description": "В случайный момент времени клиент запрашивает кризис, чтобы предоставить игроку решение",
+        "operationId": "findById",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrisisReadDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contract/{startupId}": {
+      "get": {
+        "tags": [
+          "Заключение договоров"
+        ],
+        "summary": "Получаем условия покупки стартапа",
+        "description": "Возвращает какая минимальная и максимальная цена стартапа может быть. В этом диапазоне будет выбирать финальная сумма договора",
+        "operationId": "getContract",
+        "parameters": [
+          {
+            "name": "startupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractReadDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conference": {
+      "get": {
+        "tags": [
+          "Управление конференциями"
+        ],
+        "summary": "Получаем все доступные для посещения конференции",
+        "operationId": "findAll_1",
+        "parameters": [
+          {
+            "name": "categoryFilter",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CategoryFilter"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConferenceReadDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conference/{id}": {
+      "get": {
+        "tags": [
+          "Управление конференциями"
+        ],
+        "summary": "Получаем конференцию по её id(число) из постгреса",
+        "operationId": "findById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConferenceReadDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StartupBuyDTO": {
+        "title": "Объект для покупки стартапа",
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "description": "id в виде строки(не числовое)",
+            "example": "startup-1"
+          },
+          "finalPrice": {
+            "type": "integer",
+            "description": "Цена, которую мы получили после броска кубика",
+            "format": "int32"
+          },
+          "teamEffect": {
+            "type": "integer",
+            "description": "Влияние на команду стартапа. Зависит тоже от броска кубика",
+            "format": "int32",
+            "example": -10
+          },
+          "reputationEffect": {
+            "type": "integer",
+            "description": "Влияние сделки на репутацию игрока",
+            "format": "int32",
+            "example": -10
+          }
+        }
+      },
+      "StartupReadDto": {
+        "type": "object",
+        "properties": {
+          "id стартапа, по которому его можно найти в монго и постгрес": {
+            "type": "string"
+          },
+          "Название ниши": {
+            "type": "string",
+            "example": "MedTech"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "description": "Возвращает специфичные данные для каждого действия"
+      },
+      "StepActionDtoStartupReadDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Показывает успешно ли совершили действие"
+          },
+          "content": {
+            "$ref": "#/components/schemas/StartupReadDto"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Если успешно выполнили, то пуская строка. Если нет сообщение об ошибке",
+            "example": "У вас закончились ходы"
+          },
+          "stepsLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращается каждый раз, когда игрок совершает действие отнимающее очки действия. Указывает было ли оно успешно совершено"
+      },
+      "RegistrationDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AppUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Session"
+            }
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "passwordHash": {
+            "type": "string"
+          },
+          "registrationDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "balance": {
+            "type": "integer"
+          }
+        }
+      },
+      "Conference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "CrisisHistory": {
+        "type": "object",
+        "properties": {
+          "crisisHistoryId": {
+            "type": "string"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "CurrentCrisis": {
+        "type": "object",
+        "properties": {
+          "crisisId": {
+            "type": "string"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "CurrentDisplayedConference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "nicheName": {
+            "type": "string"
+          },
+          "enrollPrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "CurrentDisplayedStartup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nicheId": {
+            "type": "string"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "Expertise": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "step": {
+            "$ref": "#/components/schemas/Step"
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Session"
+            }
+          },
+          "registrationDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "balance": {
+            "type": "integer"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "appUser": {
+            "$ref": "#/components/schemas/AppUser"
+          },
+          "monthCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stepCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Step"
+            }
+          },
+          "crisisHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrisisHistory"
+            }
+          },
+          "currentCrisis": {
+            "$ref": "#/components/schemas/CurrentCrisis"
+          },
+          "conferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conference"
+            }
+          },
+          "startups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Startup"
+            }
+          },
+          "currentDisplayedStartups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CurrentDisplayedStartup"
+            }
+          },
+          "currentDisplayedConferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CurrentDisplayedConference"
+            }
+          }
+        }
+      },
+      "Startup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nicheId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "salePrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastMonthRevenue": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expenses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "team": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "budget": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "progress": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputation": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "IDEA",
+              "MVP",
+              "MARKET",
+              "SCALE"
+            ]
+          }
+        }
+      },
+      "Step": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sequenceNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cash": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputation": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          },
+          "expertiseList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Expertise"
+            }
+          }
+        }
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "почта пользователя",
+            "example": "leo.chep@mail.ru"
+          },
+          "password": {
+            "type": "string",
+            "description": "пароль",
+            "example": "mama123f"
+          }
+        },
+        "description": "Данные для входа пользователя"
+      },
+      "JwtResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "CrisisReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "nichesId": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "possibleSolutions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SolutionReadDto"
+            }
+          }
+        },
+        "description": "Возвращает специфичные данные для каждого действия"
+      },
+      "Effect": {
+        "type": "object",
+        "properties": {
+          "priceDelta": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expensesDelta": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "teamDelta": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productDelta": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputationDelta": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SolutionReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "effect": {
+            "$ref": "#/components/schemas/Effect"
+          }
+        }
+      },
+      "StepActionDtoCrisisReadDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Показывает успешно ли совершили действие"
+          },
+          "content": {
+            "$ref": "#/components/schemas/CrisisReadDto"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Если успешно выполнили, то пуская строка. Если нет сообщение об ошибке",
+            "example": "У вас закончились ходы"
+          },
+          "stepsLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращается каждый раз, когда игрок совершает действие отнимающее очки действия. Указывает было ли оно успешно совершено"
+      },
+      "ContractGetConditionsDTO": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "string"
+          },
+          "minPrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userOfferedPrice": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ContractDealDTO": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "string"
+          },
+          "startupId": {
+            "type": "string"
+          },
+          "startupName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "finalPrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rollResult": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "teamEffect": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputationEffect": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращает специфичные данные для каждого действия"
+      },
+      "StepActionDtoContractDealDTO": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Показывает успешно ли совершили действие"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ContractDealDTO"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Если успешно выполнили, то пуская строка. Если нет сообщение об ошибке",
+            "example": "У вас закончились ходы"
+          },
+          "stepsLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращается каждый раз, когда игрок совершает действие отнимающее очки действия. Указывает было ли оно успешно совершено"
+      },
+      "ConferenceMongo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "nicheId": {
+            "type": "string"
+          },
+          "enrollPrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gainedReputation": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expertiseChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpertiseChange"
+            }
+          }
+        },
+        "description": "Возвращает специфичные данные для каждого действия"
+      },
+      "ExpertiseChange": {
+        "type": "object",
+        "properties": {
+          "nicheId": {
+            "type": "string"
+          },
+          "change": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "StepActionDtoConferenceMongo": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Показывает успешно ли совершили действие"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ConferenceMongo"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Если успешно выполнили, то пуская строка. Если нет сообщение об ошибке",
+            "example": "У вас закончились ходы"
+          },
+          "stepsLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращается каждый раз, когда игрок совершает действие отнимающее очки действия. Указывает было ли оно успешно совершено"
+      },
+      "PasswordResetDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "ReputationDto": {
+        "type": "object",
+        "properties": {
+          "reputation": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "MoneyDto": {
+        "type": "object",
+        "properties": {
+          "cash": {
+            "type": "number",
+            "format": "double"
+          },
+          "investment": {
+            "type": "number",
+            "format": "double"
+          },
+          "total": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "ExpertiseDto": {
+        "type": "object",
+        "properties": {
+          "map": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "StartupListDto": {
+        "type": "object",
+        "properties": {
+          "purchasedStartups": {
+            "type": "array",
+            "description": "купленные стартапы",
+            "items": {
+              "$ref": "#/components/schemas/StartupReadDto"
+            }
+          },
+          "availableStartups": {
+            "type": "array",
+            "description": "предлагаемые к покупке стартапы",
+            "items": {
+              "$ref": "#/components/schemas/StartupReadDto"
+            }
+          }
+        }
+      },
+      "StartupExpertiseDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uniqueProductOffer": {
+            "type": "string"
+          },
+          "lastMonthRevenue": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expenses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "team": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "budget": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "product": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputation": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "IDEA",
+              "MVP",
+              "MARKET",
+              "SCALE"
+            ]
+          }
+        },
+        "description": "Возвращает специфичные данные для каждого действия"
+      },
+      "StepActionDtoStartupExpertiseDTO": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Показывает успешно ли совершили действие"
+          },
+          "content": {
+            "$ref": "#/components/schemas/StartupExpertiseDTO"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Если успешно выполнили, то пуская строка. Если нет сообщение об ошибке",
+            "example": "У вас закончились ходы"
+          },
+          "stepsLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращается каждый раз, когда игрок совершает действие отнимающее очки действия. Указывает было ли оно успешно совершено"
+      },
+      "StartupStatisticsDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "salePrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expenses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastMonthRevenue": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "team": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "budget": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "progress": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputation": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "IDEA",
+              "MVP",
+              "MARKET",
+              "SCALE"
+            ]
+          }
+        }
+      },
+      "StartupSellDTO": {
+        "type": "object",
+        "properties": {
+          "startupName": {
+            "type": "string"
+          },
+          "sellPrice": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Показывает какой стартап и за сколько мы продали"
+      },
+      "StepActionDtoStartupSellDTO": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Показывает успешно ли совершили действие"
+          },
+          "content": {
+            "$ref": "#/components/schemas/StartupSellDTO"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Если успешно выполнили, то пуская строка. Если нет сообщение об ошибке",
+            "example": "У вас закончились ходы"
+          },
+          "stepsLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Возвращается каждый раз, когда игрок совершает действие отнимающее очки действия. Указывает было ли оно успешно совершено"
+      },
+      "SessionReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "appUserId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "monthCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stepCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cash": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startupsToShow": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StartupReadDto"
+            }
+          }
+        }
+      },
+      "ConferenceReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      },
+      "MonthEndDto": {
+        "type": "object",
+        "properties": {
+          "monthCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stepCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentDisplayedConferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceReadDto"
+            }
+          },
+          "currentDisplayedStartups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StartupReadDto"
+            }
+          }
+        }
+      },
+      "StartupMongo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uniqueProductOffer": {
+            "type": "string"
+          },
+          "lastMonthRevenue": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expenses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "team": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "budget": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "product": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reputation": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "IDEA",
+              "MVP",
+              "MARKET",
+              "SCALE"
+            ]
+          },
+          "niche": {
+            "type": "string"
+          }
+        }
+      },
+      "ContractReadDTO": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "string"
+          },
+          "minPrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPrice": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CategoryFilter": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    }
+  }
+}

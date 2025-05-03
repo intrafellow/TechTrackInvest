@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import boyAvatar from '../icons/boy.png';
 import logo from '../icons/logo.png';
+import { sessionAPI } from '../api/apiClient';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -18,8 +19,13 @@ const ProfilePage: React.FC = () => {
     username: 'testuser'
   };
 
-  const handleStartGame = () => {
-    navigate('/first-month');
+  const handleStartGame = async () => {
+    try {
+      await sessionAPI.start();
+      navigate('/first-month');
+    } catch (error) {
+      console.error('Ошибка при создании сессии:', error);
+    }
   };
 
   return (

@@ -17,7 +17,8 @@ public class ConferenceReadPostgresMapper implements Mapper<CurrentDisplayedConf
                 object.getResourceId(),
                 object.getName(),
                 object.getDescription(),
-                object.getNicheName()
+                object.getNicheName(),
+                object.getEnrollPrice()
         );
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.SessionReadDto;
 import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
-
 @Tag(name = "Управление игровой сессией", description = "Можем начать сессию и завершить её")
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +24,7 @@ public class SessionController {
     )
     @GetMapping("/start")
     public ResponseEntity<SessionReadDto> createSession() {
+        sessionService.finishSession();
         return sessionService.creteSession()
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(

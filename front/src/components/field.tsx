@@ -1,156 +1,193 @@
-import React, { useState } from 'react';
-import HorizontalCard from './bought_card';
-import VerticalCard from './available_card';
-import Event from './event'
+import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Divider,
   Typography,
   FormControl,
   Select,
-  MenuItem
+  MenuItem,
+  CircularProgress,
+  Alert,
+  Divider
 } from '@mui/material';
+import VerticalCard from './available_card';
+import BoughtCard from './bought_card';
+import EventsList from './event';
+import { startupsAPI, conferenceAPI } from '../api/apiClient';
 
-const Field: React.FC = () => {
-  const [selected, setSelected] = useState('');
-  const [isBlurred, setIsBlurred] = useState(false);
+interface Startup {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  nicheId: string;
+}
+
+interface Event {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  nicheId: string;
+}
+
+interface FieldProps {
+  type: 'startups' | 'events';
+  showDividers?: boolean;
+}
+
+const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
+  const [selected, setSelected] = useState<string>('');
+  const [startups, setStartups] = useState<Startup[]>([]);
+  const [boughtStartups, setBoughtStartups] = useState<Startup[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadStartups = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await startupsAPI.getAll();
+      const filteredStartups = selected ? data.availableStartups.filter((startup: Startup) => startup.nicheId === selected) : data.availableStartups;
+      setStartups(filteredStartups);
+      setBoughtStartups(data.purchasedStartups);
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Произошла ошибка при загрузке стартапов');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadEvents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await conferenceAPI.getAll();
+      const filteredEvents = selected ? data.filter((event: Event) => event.nicheId === selected) : data;
+      setEvents(filteredEvents);
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Произошла ошибка при загрузке мероприятий');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (type === 'startups') {
+      loadStartups();
+    } else {
+      loadEvents();
+    }
+  }, [selected, type]);
 
   const handleChange = (event: any) => {
     setSelected(event.target.value);
   };
 
-  const handleOpen = () => {
-    setIsBlurred(true);
-  };
-
-  const handleClose = () => {
-    setIsBlurred(false);
-  };
-
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '2vh',
-        fontFamily: 'Raleway, sans-serif',
-        color: '#E3E6FF',
-        filter: isBlurred ? 'blur(5px)' : 'none',
-        transition: 'filter 0.3s ease',
-      }}
-    >
-      <Box
-        sx={{
-          marginTop: '6.3vh',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <FormControl
+    <Box>
+      <FormControl fullWidth sx={{ marginBottom: 3 }}>
+        <Select
+          value={selected}
+          onChange={handleChange}
+          displayEmpty
           sx={{
-            backgroundColor: '#EAEAF0',
-            borderRadius: '8px',
-            fontFamily: 'Raleway, sans-serif',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '12px',
+            '& .MuiSelect-select': {
+              fontFamily: 'Raleway',
+              color: '#000000'
+            }
           }}
         >
-          <Select
-            style={{ width: '22.22vh', height: '5.19vh' }}
-            value={selected}
-            onChange={handleChange}
-            onOpen={handleOpen}
-            onClose={handleClose}
-            displayEmpty
-            renderValue={(value) => {
-              if (!value) {
-                return <Typography style={{ display: "flex", justifyContent: "center" }} sx={{ color: '#413545' }}>Выберите отрасль</Typography>;
-              }
-              switch (value) {
-                case 'one':
-                  return 'IT';
-                case 'two':
-                  return 'GreenTech';
-                case 'three':
-                  return 'MedTech';
-                case 'four':
-                  return 'SpaceTech';
-                default:
-                  return '';
-              }
-            }}
+          <MenuItem value="">
+            <em>Все отрасли</em>
+          </MenuItem>
+          <MenuItem value="it">IT</MenuItem>
+          <MenuItem value="medtech">MedTech</MenuItem>
+          <MenuItem value="greentech">GreenTech</MenuItem>
+          <MenuItem value="spacetech">SpaceTech</MenuItem>
+        </Select>
+      </FormControl>
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+          <CircularProgress sx={{ color: '#737EB5' }} />
+        </Box>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : type === 'startups' ? (
+        <>
+          {showDividers && (
+            <>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  marginBottom: '1vh', 
+                  marginTop: { xs: '2vh', sm: '3vh', md: '4vh' },
+                  color: '#E3E6FF',
+                  fontSize: { xs: '1.8vh', sm: '2vh', md: '2.2vh' }
+                }}
+              >
+                Купленные стартапы
+              </Typography>
+              <Divider sx={{ backgroundColor: '#CAC4D0', marginBottom: '2vh' }} />
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+                  gap: 2,
+                  marginBottom: '4vh'
+                }}
+              >
+                {boughtStartups.map((startup) => (
+                  <BoughtCard
+                    key={startup.id}
+                    title={startup.name}
+                    subtitle={startup.nicheId}
+                    resourceId={startup.id}
+                  />
+                ))}
+              </Box>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  marginBottom: '1vh', 
+                  marginTop: { xs: '2vh', sm: '3vh', md: '4vh' },
+                  color: '#E3E6FF',
+                  fontSize: { xs: '1.8vh', sm: '2vh', md: '2.2vh' }
+                }}
+              >
+                Доступные стартапы
+              </Typography>
+              <Divider sx={{ backgroundColor: '#CAC4D0', marginBottom: '2vh' }} />
+            </>
+          )}
+          <Box
             sx={{
-              color: '#413545',
-              fontFamily: 'Raleway, sans-serif',
-              '& fieldset': { border: 'none' },
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              textAlign: 'center',
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 3fr' },
+              gap: 3
             }}
           >
-            <MenuItem value="one">IT</MenuItem>
-            <MenuItem value="two">GreenTech</MenuItem>
-            <MenuItem value="three">MedTech</MenuItem>
-            <MenuItem value="four">SpaceTech</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-
-      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '6vh'}}>
-        Купленные стартапы
-      </Typography>
-      <Divider sx={{ backgroundColor: '#CAC4D0', marginBottom: '2vh' }} />
-
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '2.4vh',
-        }}
-      >
-        <HorizontalCard title="CodeMind AI" subtitle="IT" />
-        <HorizontalCard title="GreenFuelX" subtitle="GreenTech" />
-        <HorizontalCard title="BioScan Pro" subtitle="MedTech" />
-		<HorizontalCard title="BioScan Pro" subtitle="MedTech" />
-      </Box>
-
-      <Typography variant="h6" sx={{ marginBottom: '1vh', marginTop: '2vh' }}>
-        Доступные стартапы
-      </Typography>
-      <Divider sx={{ backgroundColor: '#CAC4D0' }} />
-
-      <Box
-        sx={{
-          marginTop: '3vh',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '2.4vh',
-        }}
-      >
-        <VerticalCard
-          title="NeuroSync AI"
-          subtitle="IT"
-          description="Неинвазивный AI-ассистент для мониторинга и коррекции нейронной активности в реальном времени"
-        />
-        <VerticalCard
-          title="EcoPanel"
-          subtitle="GreenTech"
-          description="Инновационные солнечные панели с высокой КПД и лёгкой интеграцией"
-        />
-        <VerticalCard
-          title="MediTrack"
-          subtitle="MedTech"
-          description="Платформа отслеживания и анализа медицинских показателей в домашних условиях"
-        />
-        <Event
-          title="OrbitalConnect"
-          subtitle="SpaceTech"
-          description="Связь нового поколения для спутников на низкой орбите"
-        />
-      </Box>
+            {startups.map((startup) => (
+              <VerticalCard
+                key={startup.id}
+                title={startup.name}
+                subtitle={startup.nicheId}
+                description={startup.description}
+                resourceId={startup.id}
+                startupId={startup.id}
+                price={startup.price}
+                onDealStart={() => {}}
+                onDealEnd={() => {}}
+              />
+            ))}
+          </Box>
+        </>
+      ) : (
+        <EventsList events={events} />
+      )}
     </Box>
   );
 };

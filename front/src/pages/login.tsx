@@ -16,11 +16,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
-
-const mockUsers = [
-  { email: 'test@example.com', password: 'Password123' },
-  { email: 'user@domain.ru', password: 'Password123' },
-];
+import { authAPI } from '../api/apiClient';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -56,30 +52,24 @@ const LoginPage: React.FC = () => {
     setSuccess(false);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setErrors({});
     setLoading(true);
 
-    setTimeout(() => {
-      const newErrors: { [key: string]: string } = {};
-      if (!email) newErrors.email = 'Введите email.';
-      else if (!isEmailValid(email)) newErrors.email = 'Неверный формат email.';
-      if (!password) newErrors.password = 'Введите пароль.';
-      else if (!isPasswordValid(password)) newErrors.password = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
-
-      const user = mockUsers.find(u => u.email === email && u.password === password);
-      if (!user && Object.keys(newErrors).length === 0) {
-        newErrors.password = 'Неверный email или пароль.';
-      }
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
+    try {
+      const response = await authAPI.login(email, password);
+      localStorage.setItem('token', response.token);
+      setSuccess(true);
+      setTimeout(() => navigate('/profile'), 2000);
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        setErrors({ password: error.response.data.message });
       } else {
-        setSuccess(true);
-        setTimeout(() => navigate('/profile'), 2000);
+        setErrors({ password: 'Неверный email или пароль' });
       }
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -141,7 +131,8 @@ const LoginPage: React.FC = () => {
             marginBottom: 4,
             textAlign: 'center',
             color: '#F6F7FF',
-			letterSpacing: '0.04em'
+            letterSpacing: '0.04em',
+            fontFamily: '"Lettersano Full", sans-serif'
           }}
         >
           Добро пожаловать

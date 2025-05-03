@@ -1,34 +1,95 @@
 import React, { useState } from 'react';
 import { Card, Typography, Button, Box } from '@mui/material';
-import itIcon from '../icons/IT.png';
-import medtechIcon from '../icons/Med.png';
-import greentechIcon from '../icons/Green.png';
-import spacetechIcon from '../icons/Space.png';
+import it from '../icons/IT.png';
+import med from '../icons/Med.png';
+import green from '../icons/Green.png';
+import space from '../icons/Space.png';
+import { startupsAPI, contractAPI } from '../api/apiClient';
+import { useNavigate } from 'react-router-dom';
+
+const NICHE_MAP: { [key: string]: { id: string; name: string; icon: string } } = {
+  'IT': { id: 'IT', name: 'IT', icon: it },
+  'GreenTech': { id: 'GreenTech', name: 'GreenTech', icon: green },
+  'MedTech': { id: 'MedTech', name: 'MedTech', icon: med },
+  'SpaceTech': { id: 'SpaceTech', name: 'SpaceTech', icon: space }
+};
 
 interface VerticalCardProps {
   title: string;
   subtitle: string;
   description: string;
   image?: string;
+  resourceId: string;
+  startupId: string;
+  price: number;
+  onDealStart: () => void;
+  onDealEnd: () => void;
+  isDemo?: boolean;
 }
 
-const getIconBySubtitle = (subtitle: string): string => {
-  switch (subtitle) {
-    case 'IT': return itIcon;
-    case 'MedTech': return medtechIcon;
-    case 'GreenTech': return greentechIcon;
-    case 'SpaceTech': return spacetechIcon;
-    default: return itIcon;
-  }
-};
-
-const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, description, image }) => {
+const VerticalCard: React.FC<VerticalCardProps> = ({
+  title,
+  subtitle,
+  description,
+  image,
+  resourceId,
+  startupId,
+  price,
+  onDealStart,
+  onDealEnd,
+  isDemo = false
+}) => {
   const [active, setActive] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [expertiseDone, setExpertiseDone] = useState(false);
-  const backgroundImage = image || getIconBySubtitle(subtitle);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const nicheInfo = NICHE_MAP[subtitle] || NICHE_MAP['IT'];
+  const backgroundImage = image || nicheInfo.icon;
   const isHighlighted = active || expertiseDone;
+  const navigate = useNavigate();
+
+  const handleExpertise = async () => {
+    try {
+      setLoading(true);
+      const expertiseData = await startupsAPI.getExpertise(resourceId, price);
+      setExpertiseDone(true);
+      // Здесь можно обновить данные карточки на основе полученной экспертизы
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Ошибка при получении экспертизы');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleContract = async () => {
+    try {
+      setLoading(true);
+      onDealStart();
+      try {
+        const contractData = await contractAPI.getContract(resourceId);
+        navigate(`/deal/${startupId}`);
+      } catch (apiError) {
+        // Если API недоступен, используем демо-режим
+        console.log('API недоступен, используем демо-режим');
+        navigate(`/deal/${startupId}`, { 
+          state: { 
+            isDemo: true,
+            startupId,
+            startupName: title,
+            description,
+            minPrice: price,
+            nicheId: subtitle
+          } 
+        });
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Ошибка при заключении договора');
+    } finally {
+      setLoading(false);
+      onDealEnd();
+    }
+  };
 
   return (
     <Card
@@ -57,6 +118,12 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
         alignSelf: 'flex-start'
       }}
     >
+      {error && (
+        <Typography color="error" sx={{ fontSize: '1.2vh', textAlign: 'center' }}>
+          {error}
+        </Typography>
+      )}
+
       <Box>
         <Box sx={{ width: '100%', textAlign: 'left' }}>
           <Typography
@@ -131,10 +198,8 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
       <Box sx={{ display: 'flex', gap: '1vh' }}>
         <Button
           variant="outlined"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpertiseDone(prev => !prev);
-          }}
+          onClick={handleExpertise}
+          disabled={loading || expertiseDone}
           sx={{
             borderColor: '#79747E',
             color: '#65558F',
@@ -152,19 +217,17 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ title, subtitle, descriptio
 
         <Button
           variant="contained"
-          onClick={(e) => {
-            e.stopPropagation();
-            setActive(prev => !prev);
-          }}
+          onClick={handleContract}
+          disabled={loading || active}
           sx={{
-            backgroundColor: active ? '#929292' : '#7A9E8A',
-            color: '#F8F9FA',
+            backgroundColor: active ? '#929292' : (isDemo ? '#E8DEF8' : '#7A9E8A'),
+            color: '#4A4459',
             textTransform: 'none',
             borderRadius: '50vh',
             padding: '0.8vh 2.4vh',
             fontSize: '1.5vh',
             fontFamily: 'Raleway, sans-serif',
-            '&:hover': { backgroundColor: active ? '#7f7f7f' : '#688c79' },
+            '&:hover': { backgroundColor: active ? '#7f7f7f' : (isDemo ? '#D0BCFF' : '#688c79') },
             flex: 1
           }}
         >

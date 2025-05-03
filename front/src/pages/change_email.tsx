@@ -14,24 +14,23 @@ import {
 } from '@mui/material';
 import { CheckCircleOutline } from '@mui/icons-material';
 import logo from '../icons/logo.png';
-
-const validCode = '123456';
+import { userAPI } from '../api/apiClient';
 
 const ChangeEmailPage: React.FC = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'email' | 'code'>('email');
-  const [form, setForm] = useState({ email: '', code: '' });
+  const [email, setEmail] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isVerificationStage, setIsVerificationStage] = useState(false);
 
   const isEmailValid = (value: string) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ru|com|net|org|io|dev)$/.test(value);
 
-  const isCodeValid = (value: string) => /^\d{6}$/.test(value);
-
   const handleChange = (field: string, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    if (field === 'email') setEmail(value);
+    if (field === 'verificationCode') setVerificationCode(value);
     setErrors((prev) => {
       const updated = { ...prev };
       delete updated[field];
@@ -40,30 +39,31 @@ const ChangeEmailPage: React.FC = () => {
     setSuccess(false);
   };
 
-  const handleNextStep = async () => {
+  const handleSubmit = async () => {
     setErrors({});
     setLoading(true);
 
-    setTimeout(() => {
-      const newErrors: { [key: string]: string } = {};
-
-      if (step === 'email') {
-        if (!form.email) newErrors.email = 'Введите email.';
-        else if (!isEmailValid(form.email)) newErrors.email = 'Неверный формат email.';
-        else setStep('code');
-      } else if (step === 'code') {
-        if (!form.code) newErrors.code = 'Введите код из письма.';
-        else if (!isCodeValid(form.code)) newErrors.code = 'Код должен содержать 6 цифр.';
-        else if (form.code !== validCode) newErrors.code = 'Неверный код.';
-        else {
-          setSuccess(true);
-          setTimeout(() => navigate('/profile'), 2000);
-        }
+    try {
+      if (!isVerificationStage) {
+        if (!email) throw new Error('Введите email.');
+        if (!isEmailValid(email)) throw new Error('Неверный формат email.');
+        await userAPI.updateEmail(email);
+        setIsVerificationStage(true);
+      } else {
+        if (!verificationCode) throw new Error('Введите код подтверждения.');
+        await userAPI.validateEmailToken(email, verificationCode);
+        setSuccess(true);
+        setTimeout(() => navigate('/profile'), 2000);
       }
-
-      setErrors(newErrors);
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        setErrors({ [isVerificationStage ? 'verificationCode' : 'email']: error.response.data.message });
+      } else {
+        setErrors({ [isVerificationStage ? 'verificationCode' : 'email']: error.message });
+      }
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   const handleCloseSuccess = () => {
@@ -158,10 +158,11 @@ const ChangeEmailPage: React.FC = () => {
             marginBottom: 4,
             textAlign: 'center',
             color: '#F6F7FF',
-            letterSpacing: '0.04em'
+            letterSpacing: '0.04em',
+            fontFamily: '"Lettersano Full", sans-serif'
           }}
         >
-          {step === 'email' ? 'Смена email' : 'Подтверждение email'}
+          Смена email
         </Typography>
 
         <Box
@@ -174,12 +175,12 @@ const ChangeEmailPage: React.FC = () => {
             gap: 3
           }}
         >
-          {step === 'email' ? (
+          {!isVerificationStage ? (
             <FormControl variant="outlined" fullWidth error={!!errors.email}>
               <FormLabel sx={commonLabelStyle}>Новый email</FormLabel>
               <OutlinedInput
                 type="email"
-                value={form.email}
+                value={email}
                 onChange={(e) => handleChange('email', e.target.value)}
                 sx={commonInputStyle}
               />
@@ -188,25 +189,25 @@ const ChangeEmailPage: React.FC = () => {
           ) : (
             <>
               <Typography sx={{ textAlign: 'center', mb: 2 }}>
-                На ваш email {form.email} был отправлен код подтверждения
+                На ваш email {email} был отправлен код подтверждения
               </Typography>
-              <FormControl variant="outlined" fullWidth error={!!errors.code}>
+              <FormControl variant="outlined" fullWidth error={!!errors.verificationCode}>
                 <FormLabel sx={commonLabelStyle}>Код подтверждения</FormLabel>
                 <OutlinedInput
                   type="text"
-                  value={form.code}
-                  onChange={(e) => handleChange('code', e.target.value)}
+                  value={verificationCode}
+                  onChange={(e) => handleChange('verificationCode', e.target.value)}
                   sx={commonInputStyle}
                 />
-                {errors.code && <FormHelperText sx={errorTextStyle}>{errors.code}</FormHelperText>}
+                {errors.verificationCode && <FormHelperText sx={errorTextStyle}>{errors.verificationCode}</FormHelperText>}
               </FormControl>
             </>
           )}
 
           <Button
-            onClick={handleNextStep}
+            onClick={handleSubmit}
             variant="contained"
-            disabled={loading}
+            disabled={loading || (!isVerificationStage ? !email : !verificationCode)}
             startIcon={success ? <CheckCircleOutline /> : undefined}
             sx={{
               backgroundColor: success ? '#4caf50' : '#737EB5',
@@ -224,10 +225,10 @@ const ChangeEmailPage: React.FC = () => {
               <CircularProgress size={24} sx={{ color: '#F6F7FF' }} />
             ) : success ? (
               'Успешно!'
-            ) : step === 'email' ? (
-              'Получить код'
-            ) : (
+            ) : isVerificationStage ? (
               'Подтвердить'
+            ) : (
+              'Сменить email'
             )}
           </Button>
         </Box>
