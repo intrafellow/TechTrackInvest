@@ -42,7 +42,7 @@ public class ConferenceService {
     // удаление отображаемых и создание рандомных
 
     // допилить, чтобы было получение по нише
-    public List<ConferenceReadDto> findAll(CategoryFilter categoryFilter) {
+    public List<ConferenceReadDto> findAll() {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
         return session.getCurrentDisplayedConferences()
@@ -55,6 +55,8 @@ public class ConferenceService {
         return currentDisplayedConferenceRepository.findById(id)
                 .map(conferenceReadPostgresMapper::map);
     }
+
+
 
     @Transactional
     public StepActionDto<ConferenceMongo> attend(ConferenceAttendDto conferenceAttendDto) {
@@ -124,5 +126,9 @@ public class ConferenceService {
     public List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, String nicheId, Session session) {
         List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
         return conferenceMongos.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
+    }
+
+    public List<ConferenceReadDto> findAllByNiche(String nicheId) {
+        return null;
     }
 }

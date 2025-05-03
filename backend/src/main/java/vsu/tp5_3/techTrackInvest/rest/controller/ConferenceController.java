@@ -33,8 +33,8 @@ public class ConferenceController {
             summary = "Получаем все доступные для посещения конференции"
     )
     @GetMapping
-    public ResponseEntity<List<ConferenceReadDto>> findAll(CategoryFilter categoryFilter) {
-        List<ConferenceReadDto> list = conferenceService.findAll(categoryFilter);
+    public ResponseEntity<List<ConferenceReadDto>> findAll() {
+        List<ConferenceReadDto> list = conferenceService.findAll();
         return ResponseEntity.ok(list);
     }
 
@@ -51,6 +51,10 @@ public class ConferenceController {
                 ));
     }
 
+    @GetMapping("/niche/{nicheId}")
+    public ResponseEntity<List<ConferenceReadDto>> findAllBiNiche(@PathVariable String nicheId) {
+        return ResponseEntity.ok(conferenceService.findAllByNiche(nicheId));
+    }
 
     @Operation(
             summary = "Посещаем конференцию по её id"

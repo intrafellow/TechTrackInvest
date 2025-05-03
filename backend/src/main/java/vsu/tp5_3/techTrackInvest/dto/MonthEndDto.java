@@ -9,6 +9,7 @@ import java.util.List;
 
 @Value
 public class MonthEndDto {
+    Integer monthCount;
     Integer stepCount;
 
 

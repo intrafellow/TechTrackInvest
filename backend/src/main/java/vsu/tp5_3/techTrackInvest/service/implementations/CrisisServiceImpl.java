@@ -6,13 +6,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.CrisisReadDto;
+import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.CrisisMongo;
 import vsu.tp5_3.techTrackInvest.entities.mongo.Effect;
 import vsu.tp5_3.techTrackInvest.entities.mongo.Solution;
-import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
-import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentCrisis;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
+import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.CrisisReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.CurrentCrisisMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.CrisisMongoRepository;
@@ -20,6 +18,7 @@ import vsu.tp5_3.techTrackInvest.repositories.mongo.SolutionMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentCrisisRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
+import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisService;
 
 import java.util.List;
@@ -36,6 +35,7 @@ public class CrisisServiceImpl implements CrisisService {
     private final CrisisReadMapper crisisReadMapper;
     private final CurrentCrisisMapper currentCrisisMapper;
     private final EntityManager entityManager;
+    private final StepService stepService;
     @Override
     @Transactional
     public Optional<CrisisReadDto> getCrisis() {
@@ -55,7 +55,14 @@ public class CrisisServiceImpl implements CrisisService {
 
     @Override
     @Transactional
-    public void solve(String solutionId) {
+    public StepActionDto<CrisisReadDto> solve(String solutionId) {
+        StepValidationResult validationResult = stepService.validateStep();
+        if (!validationResult.isValid()) {
+            return new StepActionDto<>(false, null, validationResult.getMessage(), 0);
+        }
+
+        stepService.executeStep();
+
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get().getSessions().getLast();
         CrisisMongo crisisMongo = crisisMongoRepository.findById(session.getCurrentCrisis().getCrisisId()).get();
         Solution solution = solutionMongoRepository.findById(solutionId).orElseThrow();
@@ -72,5 +79,7 @@ public class CrisisServiceImpl implements CrisisService {
                 }
             }
         }
+
+        return new StepActionDto<CrisisReadDto>(true, crisisReadMapper.map(crisisMongo), null, validationResult.getSteps() - 1);
     }
 }

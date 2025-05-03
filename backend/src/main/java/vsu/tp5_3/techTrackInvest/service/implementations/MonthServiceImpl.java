@@ -68,6 +68,7 @@ public class MonthServiceImpl implements MonthService {
         newCurrentDisplayedConferences.addAll(niche3C);
         newCurrentDisplayedConferences.addAll(niche4C);
         session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
+        session.setMonthCount(session.getMonthCount() + 1);
         entityManager.flush();
         List<ConferenceReadDto> conferenceReadDtos = session.getCurrentDisplayedConferences().stream().map(conferenceReadPostgresMapper::map).toList();
 
@@ -77,12 +78,12 @@ public class MonthServiceImpl implements MonthService {
                 .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();*/
         //session.getCurrentDisplayedStartups().addAll(startups);
         startupService.updateDisplayedStartups(4, "niche-1");
-        startupService.updateDisplayedStartups(4, "niche-2");
+        /*startupService.updateDisplayedStartups(4, "niche-2");
         startupService.updateDisplayedStartups(4, "niche-3");
-        startupService.updateDisplayedStartups(4, "niche-4");
+        startupService.updateDisplayedStartups(4, "niche-4");*/
         List<CurrentDisplayedStartup> startups = session.getCurrentDisplayedStartups();
         List<StartupReadDto> startupReadDtos = startups.stream().map(displayedStartupReadMapper::map).toList();
 
-        return Optional.of(new MonthEndDto(session.getStepCount(), conferenceReadDtos, startupReadDtos));
+        return Optional.of(new MonthEndDto(session.getMonthCount() + 1, session.getStepCount(), conferenceReadDtos, startupReadDtos));
     }
 }

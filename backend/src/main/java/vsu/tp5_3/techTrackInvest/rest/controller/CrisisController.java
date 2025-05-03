@@ -9,6 +9,7 @@ import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.CrisisReadDto;
+import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisService;
 
 @Tag(name = "Управление кризисами", description = "Основные методы получения и решение кризисов")
@@ -37,8 +38,7 @@ public class CrisisController {
             description = "Передаем id варианта решения кризиса, которое мы выбрали, чтобы применить эффекты"
     )
     @PostMapping("/solution/{solutionId}")
-    public ResponseEntity<?> solve(@PathVariable String solutionId) {
-        crisisService.solve(solutionId);
-        return ResponseEntity.ok("");
+    public ResponseEntity<StepActionDto<CrisisReadDto>> solve(@PathVariable String solutionId) {
+        return ResponseEntity.ok(crisisService.solve(solutionId));
     }
 }
