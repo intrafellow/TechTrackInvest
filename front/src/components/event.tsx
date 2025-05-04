@@ -72,59 +72,42 @@ const EventDialog: React.FC<{
         </Typography>
       </DialogTitle>
       <DialogContent>
-        {success ? (
-          <Box sx={{ textAlign: 'center', padding: '2vh' }}>
-            <Typography
-              sx={{
-                fontFamily: 'Raleway, sans-serif',
-                fontWeight: 500,
-                color: '#2E7D32',
-                fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }
-              }}
-            >
-              Конференция успешно посещена, ваши характеристики изменились!
-            </Typography>
-          </Box>
-        ) : (
-          <>
-            <Typography
-              sx={{
-                fontFamily: 'Raleway, sans-serif',
-                fontWeight: 300,
-                color: '#49454F',
-                fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
-                marginBottom: '2vh'
-              }}
-            >
-              {event.description}
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '2vh' }}>
-              <Button
-                onClick={onAttend}
-                disabled={loading || success || visited}
-                sx={{
-                  backgroundColor: visited || success ? '#E6E0E9' : '#E8DEF8',
-                  color: '#4A4459',
-                  fontFamily: 'Raleway, sans-serif',
-                  fontWeight: 600,
-                  '&:hover': {
-                    backgroundColor: visited || success ? '#E6E0E9' : '#D0BCFF'
-                  },
-                  '&.Mui-disabled': {
-                    backgroundColor: '#E6E0E9',
-                    color: '#49454F'
-                  }
-                }}
-              >
-                {visited || success ? 'Посещено' : loading ? (
-                  <CircularProgress size={24} sx={{ color: '#4A4459' }} />
-                ) : (
-                  `Посетить за ${event.price} ₽`
-                )}
-              </Button>
-            </Box>
-          </>
-        )}
+        <Typography
+          sx={{
+            fontFamily: 'Raleway, sans-serif',
+            fontWeight: 300,
+            color: '#49454F',
+            fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
+            marginBottom: '2vh'
+          }}
+        >
+          {event.description}
+        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '2vh' }}>
+          <Button
+            onClick={onAttend}
+            disabled={loading || success || visited}
+            sx={{
+              backgroundColor: visited || success ? '#E6E0E9' : '#E8DEF8',
+              color: '#4A4459',
+              fontFamily: 'Raleway, sans-serif',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: visited || success ? '#E6E0E9' : '#D0BCFF'
+              },
+              '&.Mui-disabled': {
+                backgroundColor: '#E6E0E9',
+                color: '#49454F'
+              }
+            }}
+          >
+            {visited || success ? 'Посещено' : loading ? (
+              <CircularProgress size={24} sx={{ color: '#4A4459' }} />
+            ) : (
+              `Посетить за ${event.price} ₽`
+            )}
+          </Button>
+        </Box>
       </DialogContent>
     </Dialog>
   );
