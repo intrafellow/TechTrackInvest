@@ -108,6 +108,13 @@ const StartupStatisticsDialog: React.FC<StartupStatisticsDialogProps> = ({
   statistics,
   previousStatistics
 }) => {
+  console.log('StartupStatisticsDialog рендерится:', {
+    open,
+    startupName,
+    statistics,
+    previousStatistics
+  });
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -125,7 +132,28 @@ const StartupStatisticsDialog: React.FC<StartupStatisticsDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="md" 
+      fullWidth
+      onClick={(e) => {
+        console.log('Клик по StartupStatisticsDialog');
+        e.stopPropagation();
+      }}
+      sx={{
+        '& .MuiDialog-paper': {
+          backgroundColor: '#F7FCF9',
+          borderRadius: '12px',
+          margin: { xs: '1vh', sm: '2vh', md: '3vh' },
+          position: 'absolute',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: { xs: '90%', sm: '80%', md: '70%' }
+        }
+      }}
+    >
       <DialogTitle>
         <Typography
           sx={{

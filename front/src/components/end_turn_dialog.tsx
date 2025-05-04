@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   Typography,
+  Divider,
+  LinearProgress,
   Button,
   Box
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { gameAPI } from '../api/apiClient';
+import { sessionAPI } from '../api/apiClient';
 
 interface EndTurnDialogProps {
   open: boolean;
@@ -15,20 +17,61 @@ interface EndTurnDialogProps {
 }
 
 const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
+  const [progress1, setProgress1] = useState(0);
+  const [progress2, setProgress2] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    if (open) {
+      // Сброс прогресса при открытии
+      setProgress1(0);
+      setProgress2(0);
+      
+      // Анимация первого прогресс-бара
+      const timer1 = setInterval(() => {
+        setProgress1((oldProgress) => {
+          if (oldProgress === 100) {
+            clearInterval(timer1);
+            return 100;
+          }
+          return Math.min(oldProgress + 2, 100);
+        });
+      }, 50);
+
+      // Анимация второго прогресс-бара
+      const timer2 = setInterval(() => {
+        setProgress2((oldProgress) => {
+          if (oldProgress === 100) {
+            clearInterval(timer2);
+            return 100;
+          }
+          return Math.min(oldProgress + 1, 100);
+        });
+      }, 50);
+
+      return () => {
+        clearInterval(timer1);
+        clearInterval(timer2);
+      };
+    }
+  }, [open]);
+
   const handleNextMonth = async () => {
     try {
-      await gameAPI.nextMonth();
+      // Вызов API для перехода к следующему месяцу
+      const response = await sessionAPI.endMonth();
+      // После успешного перехода, закрываем диалог и обновляем страницу
       onClose();
       navigate('/first-month', { 
         state: { 
           monthChanged: true,
-          justBought: location.state?.justBought
+          justBought: location.state?.justBought, // Сохраняем информацию о купленном стартапе
+          monthData: response // Передаем данные о новом месяце
         } 
       });
     } catch (error) {
+      // В случае ошибки API, используем демо-режим
       console.log('API недоступен, используем демо-режим');
       onClose();
       navigate('/first-month', { 
@@ -36,7 +79,7 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
           monthChanged: true, 
           isDemo: true, 
           currentMonth: 1,
-          justBought: location.state?.justBought
+          justBought: location.state?.justBought // Сохраняем информацию о купленном стартапе
         } 
       });
     }
@@ -46,13 +89,13 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="xs"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
           backgroundColor: '#EAEAF0',
           borderRadius: '8px',
-          padding: '16px'
+          padding: '20px'
         }
       }}
     >
@@ -66,20 +109,60 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
             marginBottom: '16px'
           }}
         >
-          Ходы закончились
+          Идет сверка документов за прошедший месяц
         </Typography>
         
-        <Typography
-          sx={{
-            fontFamily: 'Raleway',
-            fontWeight: 300,
-            color: '#2C2C2C',
-            textAlign: 'center',
-            marginBottom: '24px'
-          }}
-        >
-          Завершите ход, чтобы перейти к следующему месяцу
-        </Typography>
+        <Divider sx={{ marginBottom: '24px', backgroundColor: '#CAC4D0' }} />
+        
+        <Box sx={{ marginBottom: '32px' }}>
+          <Typography
+            sx={{
+              fontFamily: 'Raleway',
+              fontWeight: 300,
+              color: '#2C2C2C',
+              marginBottom: '8px'
+            }}
+          >
+            Происходит анализ ваших решений
+          </Typography>
+          <LinearProgress
+            variant="determinate"
+            value={progress1}
+            sx={{
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: '#CAC4D0',
+              '& .MuiLinearProgress-bar': {
+                backgroundColor: '#444A6B'
+              }
+            }}
+          />
+        </Box>
+
+        <Box sx={{ marginBottom: '32px' }}>
+          <Typography
+            sx={{
+              fontFamily: 'Raleway',
+              fontWeight: 300,
+              color: '#2C2C2C',
+              marginBottom: '8px'
+            }}
+          >
+            Происходит расчет вашей прибыли
+          </Typography>
+          <LinearProgress
+            variant="determinate"
+            value={progress2}
+            sx={{
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: '#CAC4D0',
+              '& .MuiLinearProgress-bar': {
+                backgroundColor: '#444A6B'
+              }
+            }}
+          />
+        </Box>
 
         <Button
           variant="contained"
@@ -99,7 +182,7 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
             }
           }}
         >
-          Завершить ход
+          Перейти в следующий месяц
         </Button>
       </DialogContent>
     </Dialog>

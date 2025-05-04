@@ -50,12 +50,8 @@ const FirstMonthPage: React.FC = () => {
 
   // Функция для проверки появления кризиса
   const checkForCrisis = async () => {
-    // Проверяем, может ли кризис появиться в этом месяце
-    if (!hasCrisisThisMonth) return;
-
-    // 5% шанс появления кризиса при каждом действии
     // Кризис не может появиться во время сделки
-    if (!isDealInProgress && Math.random() < 0.05) {
+    if (!isDealInProgress && hasCrisisThisMonth) {
       try {
         const crisisData = await crisisAPI.getCrisis();
         setCurrentCrisis(crisisData);
@@ -63,6 +59,7 @@ const FirstMonthPage: React.FC = () => {
         // После появления кризиса в этом месяце больше кризисов не будет
         setHasCrisisThisMonth(false);
       } catch (error) {
+        console.log('API недоступен, используем демо-режим');
         // В демо-режиме используем тестовый кризис
         setCurrentCrisis({
           title: "Технологический кризис",
@@ -82,7 +79,7 @@ const FirstMonthPage: React.FC = () => {
 
   const handleDealEnd = () => {
     setIsDealInProgress(false);
-    if (hasCrisisThisMonth && Math.random() < 0.1) {
+    if (hasCrisisThisMonth) {
       checkForCrisis();
     }
   };
@@ -253,8 +250,8 @@ const FirstMonthPage: React.FC = () => {
   // При переходе к новому месяцу определяем, будет ли кризис
   useEffect(() => {
     if (location.state?.monthChanged) {
-      // 40% шанс, что в этом месяце будет кризис
-      setHasCrisisThisMonth(Math.random() < 0.4);
+      // Всегда устанавливаем кризис в новом месяце
+      setHasCrisisThisMonth(true);
     }
   }, [location.state?.monthChanged]);
 
@@ -320,9 +317,7 @@ const FirstMonthPage: React.FC = () => {
   };
 
   const handleEndTurn = () => {
-    if (window.confirm('Ходы закончились. Завершить ход?')) {
-      setIsEndTurnDialogOpen(true);
-    }
+    setIsEndTurnDialogOpen(true);
   };
 
   const handleCrisisSolution = async (solutionId: string) => {
@@ -431,6 +426,10 @@ const FirstMonthPage: React.FC = () => {
               },
               gap: { xs: '2vh', sm: '2vh', md: '2.4vh' },
               padding: { xs: '1vh', sm: '0' }
+            }}
+            onClick={(e) => {
+              console.log('Клик по Box с купленными стартапами');
+              e.stopPropagation();
             }}
           >
             {boughtCards}

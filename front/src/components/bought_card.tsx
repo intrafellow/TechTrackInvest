@@ -85,15 +85,38 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
   }, []);
 
   const handleClick = async () => {
+    console.log('Клик по карточке:', { title, resourceId });
     try {
       setLoading(true);
       setError(null);
       
       // Пробуем получить данные из API
       try {
+        console.log('Запрос статистики для стартапа:', resourceId);
         const response = await startupsAPI.getStatistics(resourceId);
-        setStatistics(response.current);
-        setPreviousStatistics(response.previous);
+        console.log('Получена статистика:', response);
+        
+        // Обновляем состояние в правильном порядке
+        const newStatistics = {
+          salePrice: response.salePrice,
+          lastMonthRevenue: response.lastMonthRevenue,
+          expenses: response.expenses,
+          team: response.team,
+          budget: response.budget,
+          progress: response.progress,
+          reputation: response.reputation,
+          stage: response.stage
+        };
+        
+        console.log('Устанавливаем новую статистику:', newStatistics);
+        setStatistics(newStatistics);
+        setPreviousStatistics(null);
+        
+        // Ждем обновления состояния
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        console.log('Открываем диалог статистики');
+        setIsStatisticsDialogOpen(true);
       } catch (apiError) {
         // Если API недоступен, используем демо-данные
         console.log('API недоступен, используем демо-режим');
@@ -119,18 +142,32 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
           reputation: 85
         };
 
+        console.log('Устанавливаем демо-статистику:', demoStatistics);
         setStatistics(demoStatistics);
         setPreviousStatistics(demoPreviousStatistics);
+        
+        // Ждем обновления состояния
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        console.log('Открываем диалог статистики (демо)');
+        setIsStatisticsDialogOpen(true);
       }
-      
-      setIsStatisticsDialogOpen(true);
     } catch (err) {
+      console.error('Ошибка при загрузке статистики:', err);
       setError('Ошибка при загрузке статистики');
-      console.error('Error loading statistics:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  // Добавляем useEffect для отслеживания изменений состояния
+  useEffect(() => {
+    console.log('Состояние изменилось:', {
+      statistics,
+      isStatisticsDialogOpen,
+      hasStatistics: !!statistics
+    });
+  }, [statistics, isStatisticsDialogOpen]);
 
   const handleSell = async () => {
     try {
@@ -240,7 +277,11 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={handleClick}
+        onClick={(e) => {
+          console.log('Клик по карточке:', { title, resourceId });
+          e.stopPropagation();
+          handleClick();
+        }}
       >
         <div
           style={{
@@ -295,24 +336,34 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
         />
       </Card>
 
-      {statistics && statistics.salePrice && (
-        <>
-          <StartupStatisticsDialog
-            open={isStatisticsDialogOpen}
-            onClose={() => setIsStatisticsDialogOpen(false)}
-            onSell={handleSell}
-            startupName={title}
-            statistics={statistics}
-            previousStatistics={previousStatistics}
-          />
-          <SellStartupDialog
-            open={isSellDialogOpen}
-            onClose={() => setIsSellDialogOpen(false)}
-            onSell={handleConfirmSell}
-            startupName={title}
-            salePrice={statistics.salePrice}
-          />
-        </>
+      {console.log('Рендеринг диалогов:', {
+        hasStatistics: !!statistics,
+        isStatisticsDialogOpen,
+        statistics
+      })}
+
+      {statistics && (
+        <StartupStatisticsDialog
+          open={isStatisticsDialogOpen}
+          onClose={() => {
+            console.log('Закрытие диалога статистики');
+            setIsStatisticsDialogOpen(false);
+          }}
+          onSell={handleSell}
+          startupName={title}
+          statistics={statistics}
+          previousStatistics={previousStatistics}
+        />
+      )}
+
+      {isSellDialogOpen && statistics && (
+        <SellStartupDialog
+          open={isSellDialogOpen}
+          onClose={() => setIsSellDialogOpen(false)}
+          onSell={handleConfirmSell}
+          startupName={title}
+          salePrice={statistics.salePrice}
+        />
       )}
     </>
   );

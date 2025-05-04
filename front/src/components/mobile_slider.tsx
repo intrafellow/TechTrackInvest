@@ -26,7 +26,13 @@ const MobileSlider: React.FC<MobileSliderProps> = ({ children, title }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', position: 'relative' }}>
+    <Box 
+      sx={{ width: '100%', position: 'relative' }}
+      onClick={(e) => {
+        console.log('Клик по MobileSlider');
+        e.stopPropagation();
+      }}
+    >
       <Typography 
         variant="h6" 
         sx={{ 
@@ -43,7 +49,13 @@ const MobileSlider: React.FC<MobileSliderProps> = ({ children, title }) => {
         marginBottom: { xs: '4vh', sm: '2vh' }
       }} />
       
-      <Box sx={{ position: 'relative' }}>
+      <Box 
+        sx={{ position: 'relative' }}
+        onClick={(e) => {
+          console.log('Клик по Box');
+          e.stopPropagation();
+        }}
+      >
         <SwipeableViews
           axis="x"
           index={activeStep}
@@ -56,12 +68,28 @@ const MobileSlider: React.FC<MobileSliderProps> = ({ children, title }) => {
           slideStyle={{
             overflow: 'visible'
           }}
+          onClick={(e) => {
+            console.log('Клик по SwipeableViews');
+            e.stopPropagation();
+          }}
+          onTouchStart={(e) => {
+            console.log('TouchStart по SwipeableViews');
+            e.stopPropagation();
+          }}
+          onTouchEnd={(e) => {
+            console.log('TouchEnd по SwipeableViews');
+            e.stopPropagation();
+          }}
         >
           {children}
         </SwipeableViews>
 
         <IconButton
-          onClick={handleBack}
+          onClick={(e) => {
+            console.log('Клик по IconButton (назад)');
+            e.stopPropagation();
+            handleBack();
+          }}
           sx={{
             position: 'absolute',
             left: 0,
@@ -79,7 +107,11 @@ const MobileSlider: React.FC<MobileSliderProps> = ({ children, title }) => {
         </IconButton>
 
         <IconButton
-          onClick={handleNext}
+          onClick={(e) => {
+            console.log('Клик по IconButton (вперед)');
+            e.stopPropagation();
+            handleNext();
+          }}
           sx={{
             position: 'absolute',
             right: 0,

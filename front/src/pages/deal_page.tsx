@@ -17,6 +17,7 @@ interface ContractData {
   maxPrice: number;
   startupName: string;
   startupId: string;
+  contractId: string;
 }
 
 const DealPage: React.FC = () => {
@@ -40,17 +41,21 @@ const DealPage: React.FC = () => {
       try {
         setLoading(true);
         const data = await contractAPI.getContract(startupId);
+        console.log('Contract data received:', data);
         setContractData({
           ...data,
-          startupId
+          startupId,
+          contractId: data.contractId || `contract-${startupId}`
         });
       } catch (err) {
+        console.error('Error fetching contract data:', err);
         // Fallback: рандомные значения если нет БД
         setContractData({
           startupId,
           minPrice: 100000 + Math.floor(Math.random() * 100000),
           maxPrice: 300000 + Math.floor(Math.random() * 200000),
-          startupName: 'Demo Startup'
+          startupName: 'Demo Startup',
+          contractId: `demo-contract-${startupId}`
         });
       } finally {
         setLoading(false);
@@ -64,38 +69,92 @@ const DealPage: React.FC = () => {
     try {
       setLoading(true);
       setIsRolling(true);
-      const condition = await contractAPI.getFinalCondition(
-        contractData.startupId,
+      console.log('Submitting final condition with:', {
+        contractId: contractData.contractId,
+        minPrice: contractData.minPrice,
+        maxPrice: contractData.maxPrice,
+        userOfferedPrice: Number(desiredPrice)
+      });
+      const response = await contractAPI.getFinalCondition(
+        contractData.contractId,
         contractData.minPrice,
-        contractData.maxPrice
+        contractData.maxPrice,
+        Number(desiredPrice)
       );
-      // Для двух кубиков
-      setDiceValue1(condition.rollResult);
-      setDiceValue2(Math.floor(Math.random() * 6) + 1); // второй кубик — рандом
-      setFinalCondition(condition);
-      // Дилей 1.5 сек после анимации
+      
+      console.log('Raw final condition response:', response);
+      
+      if (!response.success) {
+        throw new Error(response.errorMessage || 'Ошибка при получении условий сделки');
+      }
+
+      const finalCondition = response.content;
+      console.log('Final condition content:', finalCondition);
+      
+      // Проверяем наличие всех необходимых полей
+      if (!finalCondition || typeof finalCondition !== 'object') {
+        throw new Error('Некорректный формат ответа');
+      }
+
+      const requiredFields = ['finalPrice', 'teamEffect', 'reputationEffect', 'rollResult'];
+      const missingFields = requiredFields.filter(field => !(field in finalCondition));
+      
+      if (missingFields.length > 0) {
+        throw new Error(`Отсутствуют обязательные поля: ${missingFields.join(', ')}`);
+      }
+      
+      // Анимация броска кубика
+      setDiceValue1(0); // Сбрасываем значение для анимации
+      
+      // Кубик
+      setTimeout(() => {
+        setDiceValue1(finalCondition.rollResult);
+      }, 1000);
+      
+      const conditionData = {
+        finalPrice: finalCondition.finalPrice,
+        teamEffect: finalCondition.teamEffect,
+        reputationEffect: finalCondition.reputationEffect,
+        rollResult: finalCondition.rollResult
+      };
+      
+      console.log('Setting final condition:', conditionData);
+      setFinalCondition(conditionData);
+      
+      // Ждем завершения анимации перед показом диалога
       setTimeout(() => {
         setIsRolling(false);
         setDialogOpen(true);
-      }, 1500);
-    } catch (err) {
+      }, 2500);
+    } catch (error) {
+      console.error('Error getting final condition:', error);
       // Fallback: рандомные значения если нет БД
       const randomPrice = contractData.minPrice + Math.floor(Math.random() * (contractData.maxPrice - contractData.minPrice));
-      const randomRoll1 = 1 + Math.floor(Math.random() * 6);
-      const randomRoll2 = 1 + Math.floor(Math.random() * 6);
-      setDiceValue1(randomRoll1);
-      setDiceValue2(randomRoll2);
-      setFinalCondition({
+      const randomRoll = 1 + Math.floor(Math.random() * 20);
+      
+      // Анимация броска кубика для демо-режима
+      setDiceValue1(0);
+      
+      setTimeout(() => {
+        setDiceValue1(randomRoll);
+      }, 1000);
+      
+      const fallbackCondition = {
         finalPrice: randomPrice,
         teamEffect: Math.floor(Math.random() * 21) - 10,
         reputationEffect: Math.floor(Math.random() * 21) - 10,
-        rollResult: randomRoll1
-      });
-      setIsRolling(true);
+        rollResult: randomRoll
+      };
+      
+      console.log('Using fallback condition:', fallbackCondition);
+      setFinalCondition(fallbackCondition);
+      
       setTimeout(() => {
         setIsRolling(false);
         setDialogOpen(true);
-      }, 1500);
+      }, 2500);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,14 +166,34 @@ const DealPage: React.FC = () => {
     if (!finalCondition || !contractData) return;
     try {
       setLoading(true);
+      const buyData = {
+        resourceId: contractData.startupId,
+        finalPrice: finalCondition.finalPrice,
+        teamEffect: finalCondition.teamEffect,
+        reputationEffect: finalCondition.reputationEffect
+      };
+      console.log('Attempting to buy startup with data:', buyData);
+      
+      // Проверяем, что все значения являются числами
+      if (typeof buyData.finalPrice !== 'number' || 
+          typeof buyData.teamEffect !== 'number' || 
+          typeof buyData.reputationEffect !== 'number') {
+        throw new Error('Некорректные числовые значения в данных покупки');
+      }
+      
       await startupsAPI.buy(
-        contractData.startupId,
-        finalCondition.finalPrice,
-        finalCondition.teamEffect,
-        finalCondition.reputationEffect
+        buyData.resourceId,
+        buyData.finalPrice,
+        buyData.teamEffect,
+        buyData.reputationEffect
       );
       navigate('/first-month', { state: { justBought: contractData } });
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Error buying startup:', {
+        error: err,
+        response: err.response?.data,
+        status: err.response?.status
+      });
       // fallback: демо-режим
       // Обновляем баланс в демо-режиме
       const currentBalance = JSON.parse(localStorage.getItem('balance') || '{"cash": 100000, "total": 150000, "investment": 50000}');
@@ -271,7 +350,6 @@ const DealPage: React.FC = () => {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '2vh' }}>
               <DiceRoll value={diceValue1} isRolling={isRolling} />
-              <DiceRoll value={diceValue2} isRolling={isRolling} />
             </Box>
           </Box>
           <DealDialog

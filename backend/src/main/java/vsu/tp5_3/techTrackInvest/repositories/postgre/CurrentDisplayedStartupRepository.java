@@ -10,4 +10,6 @@ public interface CurrentDisplayedStartupRepository extends JpaRepository<Current
     List<CurrentDisplayedStartup> findAllByNicheId(String nicheId);
     Optional<CurrentDisplayedStartup> findByResourceId(String resourceId);
     boolean deleteByResourceId(String resourceId);
+
+    List<CurrentDisplayedStartup> findAllByResourceId(String resourceId);
 }

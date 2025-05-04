@@ -129,6 +129,12 @@ public class ConferenceService {
     }
 
     public List<ConferenceReadDto> findAllByNiche(String nicheId) {
-        return null;
+        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast();
+        return session.getCurrentDisplayedConferences()
+                .stream()
+                .filter(c -> c.getNicheName().equals(nicheId))
+                .map(conferenceReadPostgresMapper::map)
+                .toList();
     }
 }

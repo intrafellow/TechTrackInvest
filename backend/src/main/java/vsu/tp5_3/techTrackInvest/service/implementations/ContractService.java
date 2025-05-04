@@ -11,6 +11,7 @@ import vsu.tp5_3.techTrackInvest.dto.ContractDealDTO;
 import vsu.tp5_3.techTrackInvest.dto.ContractReadDTO;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.Contract;
+import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
 import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
@@ -30,6 +31,7 @@ public class ContractService {
     private final ContractReadMapper contractReadMapper;
     private final CurrentDisplayedStartupRepository currentDisplayedStartupRepository;
     private final StepService stepService;
+    private final UserRepository userRepository;
 
     public ContractReadDTO getContractByStartupId(String startupId) {
         var contract = contractMongoRepository.findByStartupId(startupId).orElseThrow(
@@ -61,7 +63,9 @@ public class ContractService {
         Contract contract = contractMongoRepository.findById(contractId).orElseThrow(
                 () -> new EntityNotFoundException("Contract not found after trying to buy"));
         String startupResourceId = contract.getStartupId();
-        CurrentDisplayedStartup startup = currentDisplayedStartupRepository.findByResourceId(startupResourceId).orElseThrow();
+        AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        CurrentDisplayedStartup startup = user.getSessions().getLast().getCurrentDisplayedStartups().stream().filter(c -> c.getResourceId().equals(startupResourceId)).findFirst().get();
         Pair<Integer, Integer> contractEffects = getEffectsFromContract(rollResult, contract);
 
         String messageDescription;

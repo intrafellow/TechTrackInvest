@@ -8,10 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
 import vsu.tp5_3.techTrackInvest.dto.MonthEndDto;
 import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
-import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedConference;
-import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
+import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.StartupReadMapper;
@@ -49,6 +46,9 @@ public class MonthServiceImpl implements MonthService {
         newStep.setCash(step.getCash());
         newStep.setReputation(step.getReputation());
         newStep.setExpertiseList(new ArrayList<>(step.getExpertiseList()));
+        for (Expertise e : newStep.getExpertiseList()) {
+            e.setStep(newStep);
+        }
         newStep.setSequenceNumber(step.getSequenceNumber() + 1);
         newStep.setSession(session);
         session.getSteps().add(newStep);
@@ -78,9 +78,9 @@ public class MonthServiceImpl implements MonthService {
                 .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();*/
         //session.getCurrentDisplayedStartups().addAll(startups);
         startupService.updateDisplayedStartups(4, "niche-1");
-        /*startupService.updateDisplayedStartups(4, "niche-2");
+        startupService.updateDisplayedStartups(4, "niche-2");
         startupService.updateDisplayedStartups(4, "niche-3");
-        startupService.updateDisplayedStartups(4, "niche-4");*/
+        startupService.updateDisplayedStartups(4, "niche-4");
         List<CurrentDisplayedStartup> startups = session.getCurrentDisplayedStartups();
         List<StartupReadDto> startupReadDtos = startups.stream().map(displayedStartupReadMapper::map).toList();
 

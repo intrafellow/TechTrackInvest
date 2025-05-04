@@ -9,10 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
-import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
+import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.*;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
@@ -171,8 +168,30 @@ public class StartupService {
         startup.setTeam(startup.getTeam() + startupBuyDTO.getTeamEffect());
         startup.setSession(session);
         startupRepository.save(startup);
-        CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.
-                findByResourceId(startupBuyDTO.getResourceId()).orElseThrow();
+
+        /*AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        CurrentDisplayedStartup boughtStartup1 = session.getCurrentDisplayedStartups().stream().filter(c -> c.getResourceId().equals(startupBuyDTO.getResourceId())).findFirst().get();
+       *//* CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.
+                findByResourceId(startupBuyDTO.getResourceId()).orElseThrow();*//*
+        System.out.println(boughtStartup1.getId());
+        CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.findById(boughtStartup1.getId()).orElseThrow();
+        System.out.println(boughtStartup.getId());*/
+
+        List<CurrentDisplayedStartup> startups = currentDisplayedStartupRepository
+                .findAllByResourceId(startupBuyDTO.getResourceId());
+
+        if (startups.isEmpty()) {
+            throw new EntityNotFoundException("Startup not found");
+        }
+
+
+        CurrentDisplayedStartup boughtStartup = startups.stream()
+                .filter(s -> s.getSession().getId().equals(session.getId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Startup not found for current session"));
+
+
         currentDisplayedStartupRepository.delete(boughtStartup);
 
 

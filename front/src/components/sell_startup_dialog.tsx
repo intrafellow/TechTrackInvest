@@ -25,7 +25,14 @@ const SellStartupDialog: React.FC<SellStartupDialogProps> = ({
   salePrice
 }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog 
+      open={open} 
+      onClose={onClose}
+      onClick={(e) => {
+        console.log('Клик по SellStartupDialog');
+        e.stopPropagation();
+      }}
+    >
       <DialogTitle>
         <Typography
           sx={{

@@ -24,7 +24,7 @@ public class SessionController {
     )
     @GetMapping("/start")
     public ResponseEntity<SessionReadDto> createSession() {
-        sessionService.finishSession();
+        //sessionService.finishSession();
         return sessionService.creteSession()
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(

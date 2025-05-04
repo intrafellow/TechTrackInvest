@@ -1,59 +1,74 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 interface DiceRollProps {
   value: number;
-  isRolling?: boolean;
-  onRollEnd?: () => void;
+  isRolling: boolean;
 }
 
-const DiceRoll: React.FC<DiceRollProps> = ({ value, isRolling = false, onRollEnd }) => {
-  const [displayValue, setDisplayValue] = useState(value);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (isRolling) {
-      let ticks = 0;
-      intervalRef.current = setInterval(() => {
-        setDisplayValue(Math.floor(Math.random() * 6) + 1);
-        ticks++;
-        if (ticks > 15) { // 15 тиков = ~1 сек
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          setDisplayValue(value);
-          if (onRollEnd) setTimeout(onRollEnd, 100);
-        }
-      }, 60);
-    } else {
-      setDisplayValue(value);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRolling, value, onRollEnd]);
-
+const DiceRoll: React.FC<DiceRollProps> = ({ value, isRolling }) => {
   return (
     <Box
       sx={{
-        width: '10vh',
-        height: '10vh',
-        backgroundColor: '#E8DEF8',
-        borderRadius: '2vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-        margin: '0 1vh'
+        gap: 1
       }}
     >
-      <Typography
+      <Box
         sx={{
-          fontFamily: 'Lettersano Full, sans-serif',
-          fontSize: '6vh',
-          color: '#F6F7FF',
-          fontWeight: 700
+          width: '80px',
+          height: '80px',
+          background: 'linear-gradient(135deg, #E8DEF8 0%, #F3E5F5 100%)',
+          borderRadius: '12px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+          position: 'relative',
+          transform: isRolling ? 'rotate(360deg)' : 'rotate(0deg)',
+          transition: 'transform 1s ease-in-out',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.3) 50%, transparent 55%)',
+            borderRadius: '12px',
+          }
         }}
       >
-        {displayValue}
+        <Typography
+          sx={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#413545',
+            fontFamily: 'Raleway, sans-serif',
+            zIndex: 1
+          }}
+        >
+          {value}
+        </Typography>
+      </Box>
+      <Typography
+        sx={{
+          fontSize: '18px',
+          color: '#E3E6FF',
+          fontFamily: 'Raleway, sans-serif',
+          textAlign: 'center',
+          fontWeight: 600,
+          letterSpacing: '1px',
+          textTransform: 'uppercase',
+          background: 'linear-gradient(135deg, #E8DEF8 0%, #F3E5F5 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          padding: '4px 12px',
+          borderRadius: '8px',
+          border: '1px solid rgba(232, 222, 248, 0.3)'
+        }}
+      >
+        d20
       </Typography>
     </Box>
   );

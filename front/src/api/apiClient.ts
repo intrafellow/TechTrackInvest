@@ -109,13 +109,48 @@ export const startupsAPI = {
   },
 
   buy: async (resourceId: string, finalPrice: number, teamEffect: number, reputationEffect: number) => {
-    const response = await apiClient.post('/api/v1/startups/buy', {
-      resourceId,
-      finalPrice,
-      teamEffect,
-      reputationEffect
-    });
-    return response.data;
+    const requestData = {
+      resourceId: resourceId,
+      finalPrice: finalPrice,
+      teamEffect: teamEffect,
+      reputationEffect: reputationEffect
+    };
+
+    console.log('Sending buy request with data:', JSON.stringify(requestData, null, 2));
+    
+    try {
+      const response = await apiClient.post('/api/v1/startups/buy', requestData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      console.log('Buy response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data,
+        headers: response.headers
+      });
+      
+      return response.data;
+    } catch (error: any) {
+      console.error('Buy request failed:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        message: error.message,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          data: error.config?.data,
+          headers: error.config?.headers
+        },
+        stack: error.stack
+      });
+      throw error;
+    }
   },
 
   sell: async (startupResourceId: string) => {
@@ -157,13 +192,18 @@ export const contractAPI = {
     return response.data;
   },
 
-  getFinalCondition: async (startupId: string, minPrice: number, maxPrice: number) => {
-    const response = await apiClient.get('/api/v1/contract/finalCondition', {
-      params: {
-        startupId,
-        minPrice,
-        maxPrice
-      }
+  getFinalCondition: async (contractId: string, minPrice: number, maxPrice: number, userOfferedPrice: number): Promise<any> => {
+    console.log('Making final condition request with params:', {
+      contractId,
+      minPrice,
+      maxPrice,
+      userOfferedPrice
+    });
+    const response = await apiClient.post('/api/v1/contract/finalCondition', {
+      contractId,
+      minPrice,
+      maxPrice,
+      userOfferedPrice
     });
     return response.data;
   }

@@ -95,8 +95,12 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
     <Card
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={(e) => {
+        console.log('Клик по VerticalCard:', { title, resourceId });
+        e.stopPropagation();
+      }}
       sx={{
-        width: { xs: 'calc(100% - 4vh)', sm: '35vh' },
+        width: { xs: 'calc(100% - 2vh)', sm: '37.6vh' },
         height: '63.5vh',
         borderRadius: '1.29vh',
         background: isHighlighted
