@@ -26,3 +26,8 @@ spring:
 jwt:
   secret: apppapdfsdlflksajgllhfjghdklfjhdfshhfghdjghfdjgfcdfdtrfdshfgshgsdgfdhsfdsredsretfdcxgfhdsfhgsdh
   lifetime: 180m
+
+# CORS Configuration
+cors:
+  allowed:
+    origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}

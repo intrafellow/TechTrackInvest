@@ -1,6 +1,15 @@
-db = connect("mongodb://localhost:27017/techTrackInvestMongo");
+// Подключаемся к MongoDB с аутентификацией
+db = connect("mongodb://root:example@localhost:27017/techTrackInvestMongo?authSource=admin");
 
+// Проверяем подключение
+if (!db) {
+    print("Ошибка подключения к MongoDB");
+    quit(1);
+}
 
+print("Успешное подключение к MongoDB");
+
+// Очищаем существующие коллекции
 db.articles.drop();
 db.niches.drop();
 db.conferences.drop();

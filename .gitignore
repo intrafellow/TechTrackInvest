@@ -6,6 +6,8 @@
 
 /backend/.env
 
+key/
+
 ### STS ###
 /backend/.apt_generated
 /backend/.classpath
