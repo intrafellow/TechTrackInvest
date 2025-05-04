@@ -14,9 +14,10 @@ import { sessionAPI } from '../api/apiClient';
 interface EndTurnDialogProps {
   open: boolean;
   onClose: () => void;
+  currentMonth: number;
 }
 
-const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
+const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose, currentMonth }) => {
   const [progress1, setProgress1] = useState(0);
   const [progress2, setProgress2] = useState(0);
   const navigate = useNavigate();
@@ -67,7 +68,8 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose }) => {
         state: { 
           monthChanged: true,
           justBought: location.state?.justBought, // Сохраняем информацию о купленном стартапе
-          monthData: response // Передаем данные о новом месяце
+          monthData: response, // Передаем данные о новом месяце
+          currentMonth: currentMonth + 1 // Обновляем текущий месяц
         } 
       });
     } catch (error) {

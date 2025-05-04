@@ -6,8 +6,8 @@ import VerticalCard from '../components/available_card';
 import BoughtCard from '../components/bought_card';
 import MobileSlider from '../components/mobile_slider';
 import EventsList from '../components/event';
-import { startupsAPI, conferenceAPI, crisisAPI } from '../api/apiClient';
-import { useLocation } from 'react-router-dom';
+import { startupsAPI, conferenceAPI, crisisAPI, userAPI } from '../api/apiClient';
+import { useLocation, useNavigate } from 'react-router-dom';
 import EndTurnDialog from '../components/end_turn_dialog';
 import CrisisDialog from '../components/crisis_dialog';
 import StatsDialog from '../components/stats_dialog';
@@ -42,39 +42,46 @@ interface UserStats {
   reputation: number;
 }
 
+interface CrisisEffect {
+  priceDelta: number;
+  expensesDelta: number;
+  teamDelta: number;
+  productDelta: number;
+  reputationDelta: number;
+}
+
+interface CrisisSolution {
+  id: string;
+  title: string;
+  description: string;
+  effect: CrisisEffect;
+}
+
+interface Crisis {
+  id: string;
+  name: string;
+  description: string;
+  nichesId: string[];
+  possibleSolutions: CrisisSolution[];
+}
+
+interface Stats {
+  price: number;
+  expenses: number;
+  team: number;
+  product: number;
+  reputation: number;
+}
+
+interface Session {
+  stats: Stats;
+  // ... другие поля сессии
+}
+
 const FirstMonthPage: React.FC = () => {
   // Обработчики сделок
   const handleDealStart = () => {
     setIsDealInProgress(true);
-  };
-
-  // Функция для проверки появления кризиса
-  const checkForCrisis = async () => {
-    // Кризис не может появиться во время сделки
-    if (!isDealInProgress && hasCrisisThisMonth) {
-      try {
-        const crisisData = await crisisAPI.getCrisis();
-        setCurrentCrisis(crisisData);
-        setCrisisDialogOpen(true);
-        // После появления кризиса в этом месяце больше кризисов не будет
-        setHasCrisisThisMonth(false);
-      } catch (error) {
-        console.log('API недоступен, используем демо-режим');
-        // В демо-режиме используем тестовый кризис
-        setCurrentCrisis({
-          title: "Технологический кризис",
-          description: "В ответ на растущую волну протестов против технологических гигантов, правительство начинает вводить строгие новые регуляции в отношении инновационных стартапов. Новые законы касаются защиты данных пользователей, прозрачности алгоритмов и ограничения искусственного интеллекта в чувствительных отраслях, таких как здравоохранение и финансы.",
-          solutions: [
-            { id: "1", text: "Адаптироваться к новым требованиям и инвестировать в соответствие" },
-            { id: "2", text: "Лоббировать интересы через отраслевые ассоциации" },
-            { id: "3", text: "Искать лазейки в законодательстве и продолжать работу как прежде" }
-          ]
-        });
-        setCrisisDialogOpen(true);
-        // После появления кризиса в этом месяце больше кризисов не будет
-        setHasCrisisThisMonth(false);
-      }
-    }
   };
 
   const handleDealEnd = () => {
@@ -84,8 +91,81 @@ const FirstMonthPage: React.FC = () => {
     }
   };
 
+  // Функция для проверки появления кризиса
+  const checkForCrisis = async () => {
+    console.log('Проверка кризиса:', { isDealInProgress, hasCrisisThisMonth, currentCrisis });
+    // Кризис не может появиться во время сделки и если он уже есть
+    if (!isDealInProgress && hasCrisisThisMonth && !currentCrisis) {
+      // 50% шанс появления кризиса
+      const willHaveCrisis = Math.random() < 0.5;
+      console.log('Шанс кризиса:', willHaveCrisis);
+      
+      if (willHaveCrisis) {
+        try {
+          console.log('Запрос кризиса у API');
+          const crisisData = await crisisAPI.getCrisis();
+          console.log('Получен кризис:', crisisData);
+          setCurrentCrisis(crisisData);
+          setCrisisDialogOpen(true);
+        } catch (error) {
+          console.log('API недоступен, используем демо-режим');
+          // В демо-режиме используем тестовый кризис
+          setCurrentCrisis({
+            id: "crisis-1",
+            name: "Solar Panel Shortage",
+            description: "Shortage in raw materials impacts solar panel production.",
+            nichesId: ["niche-1"],
+            possibleSolutions: [
+              {
+                id: "solution-1",
+                title: "Government Grant",
+                description: "Get support from the government to mitigate crisis impact.",
+                effect: {
+                  priceDelta: -500,
+                  expensesDelta: -200,
+                  teamDelta: -1,
+                  productDelta: 3,
+                  reputationDelta: 10
+                }
+              },
+              {
+                id: "solution-2",
+                title: "Alternative Materials",
+                description: "Switch to alternative materials for production.",
+                effect: {
+                  priceDelta: -300,
+                  expensesDelta: -100,
+                  teamDelta: 0,
+                  productDelta: 2,
+                  reputationDelta: 5
+                }
+              },
+              {
+                id: "solution-3",
+                title: "Price Increase",
+                description: "Increase prices to cover additional costs.",
+                effect: {
+                  priceDelta: 200,
+                  expensesDelta: 0,
+                  teamDelta: 0,
+                  productDelta: 0,
+                  reputationDelta: -5
+                }
+              }
+            ]
+          });
+          setCrisisDialogOpen(true);
+        }
+      } else {
+        // Если кризиса нет, сбрасываем флаг
+        setHasCrisisThisMonth(false);
+      }
+    }
+  };
+
   // Состояния
   const location = useLocation();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState('');
   const [isBlurred, setIsBlurred] = useState(false);
   const [boughtStartups, setBoughtStartups] = useState<Startup[]>([]);
@@ -99,9 +179,15 @@ const FirstMonthPage: React.FC = () => {
   const isMobileOrTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [isEndTurnDialogOpen, setIsEndTurnDialogOpen] = useState(false);
   const [crisisDialogOpen, setCrisisDialogOpen] = useState(false);
-  const [currentCrisis, setCurrentCrisis] = useState<any>(null);
+  const [currentCrisis, setCurrentCrisis] = useState<Crisis | null>(() => {
+    const saved = localStorage.getItem('currentCrisis');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [isDealInProgress, setIsDealInProgress] = useState(false);
-  const [hasCrisisThisMonth, setHasCrisisThisMonth] = useState(false);
+  const [hasCrisisThisMonth, setHasCrisisThisMonth] = useState(() => {
+    const saved = localStorage.getItem('hasCrisisThisMonth');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [visitedEvents, setVisitedEvents] = useState<number[]>(() => {
     const saved = localStorage.getItem('visitedEvents');
     return saved ? JSON.parse(saved) : [];
@@ -167,10 +253,17 @@ const FirstMonthPage: React.FC = () => {
       if (location.state?.isDemo) {
         setCurrentMonth(location.state.currentMonth ?? 1);
       } else {
-        setCurrentMonth(prev => prev + 1);
+        setCurrentMonth(location.state.currentMonth ?? (currentMonth + 1));
       }
+      // Очищаем состояние после обработки
+      navigate(location.pathname, { replace: true, state: { ...location.state, monthChanged: false } });
     }
   }, [location.state]);
+
+  // Сохраняем текущий месяц в localStorage
+  useEffect(() => {
+    localStorage.setItem('currentMonth', JSON.stringify(currentMonth));
+  }, [currentMonth]);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -216,6 +309,13 @@ const FirstMonthPage: React.FC = () => {
             ];
           }
         }
+
+        // Обновляем месяц из API, если он есть в ответе
+        if (data.currentMonth !== undefined) {
+          setCurrentMonth(data.currentMonth);
+          localStorage.setItem('currentMonth', JSON.stringify(data.currentMonth));
+        }
+
         setBoughtStartups(bought);
         setAvailableStartups(available);
         const eventsData = await conferenceAPI.getAll();
@@ -250,17 +350,32 @@ const FirstMonthPage: React.FC = () => {
   // При переходе к новому месяцу определяем, будет ли кризис
   useEffect(() => {
     if (location.state?.monthChanged) {
+      console.log('Переход к новому месяцу');
+      // Сбрасываем текущий кризис
+      setCurrentCrisis(null);
       // Всегда устанавливаем кризис в новом месяце
       setHasCrisisThisMonth(true);
+      // Проверяем кризис сразу
+      checkForCrisis();
+      
+      // Очищаем состояние после обработки
+      navigate(location.pathname, { replace: true, state: { ...location.state, monthChanged: false } });
     }
   }, [location.state?.monthChanged]);
 
-  // Проверяем кризис при каждом действии, но не во время сделки
+  // Проверяем кризис при загрузке страницы, если он должен быть
   useEffect(() => {
-    if (!isDealInProgress) {
+    if (hasCrisisThisMonth && !currentCrisis && !location.state?.monthChanged) {
       checkForCrisis();
     }
-  }, [contentType, selected]);
+  }, []);
+
+  // Проверяем кризис при каждом действии, но не во время сделки
+  useEffect(() => {
+    if (!isDealInProgress && hasCrisisThisMonth) {
+      checkForCrisis();
+    }
+  }, [contentType, selected, hasCrisisThisMonth]);
 
   // Фильтрация по selected
   const filteredBought = boughtStartups.filter(s => selected === '' || s.categoryName === selected);
@@ -320,48 +435,71 @@ const FirstMonthPage: React.FC = () => {
     setIsEndTurnDialogOpen(true);
   };
 
-  const handleCrisisSolution = async (solutionId: string) => {
+  const handleCrisisSolution = async (solutionId: string): Promise<void> => {
     try {
-      await crisisAPI.submitSolution(solutionId);
-    } catch (error) {
-      console.log('API недоступен, используем демо-режим');
+      const response = await crisisAPI.submitSolution(solutionId);
+      if (response.success) {
+        // Обновляем статистику на основе эффектов выбранного решения
+        const selectedSolution = currentCrisis?.possibleSolutions.find((s: CrisisSolution) => s.id === solutionId);
+        if (selectedSolution) {
+          const { effect } = selectedSolution;
+          
+          // Обновляем текущие значения
+          setUserStats((prev: UserStats) => ({
+            ...prev,
+            money: {
+              ...prev.money,
+              cash: Math.max(0, prev.money.cash + effect.priceDelta),
+              total: Math.max(0, prev.money.total + effect.priceDelta)
+            },
+            reputation: Math.max(0, prev.reputation + effect.reputationDelta)
+          }));
+        }
+      }
+    } catch (error: unknown) {
+      console.error('Ошибка при отправке решения:', error);
     } finally {
-      setCrisisDialogOpen(false);
       setCurrentCrisis(null);
+      setCrisisDialogOpen(false);
+      setHasCrisisThisMonth(false);
     }
   };
 
-  const handleVisitEvent = (eventId: number) => {
+  const handleVisitEvent = async (eventId: number) => {
     const event = (events.length > 0 ? events : demoEvents).find((e: Event) => e.id === eventId);
     if (!event) return;
     
-    setPrevStats({ ...userStats });
-    
-    const expertiseBuff = { '3': 5 };
-    const reputationBuff = 10;
-    const moneyBuff = event.price;
-    
-    setUserStats((prev: any) => {
-      const newExpertise = { ...prev.expertise, '3': (prev.expertise['3'] || 0) + 5 };
-      const newReputation = prev.reputation + reputationBuff;
-      const newMoney = {
-        ...prev.money,
-        cash: prev.money.cash - moneyBuff,
-        total: prev.money.total - moneyBuff
-      };
-      const updated = { ...prev, expertise: newExpertise, reputation: newReputation, money: newMoney };
-      localStorage.setItem('userStats', JSON.stringify(updated));
-      return updated;
-    });
-    
-    setVisitedEvents((prev: number[]) => {
-      const updated = [...prev, eventId];
-      localStorage.setItem('visitedEvents', JSON.stringify(updated));
-      return updated;
-    });
-    
-    setStatsTab('expertise');
-    setPendingStatsDialog(true);
+    try {
+      // Получаем текущие данные экспертизы из API
+      const expertiseData = await userAPI.getExpertise();
+      
+      // Сохраняем текущие значения как предыдущие
+      setPrevStats({
+        ...userStats,
+        expertise: expertiseData.map || {}
+      });
+      
+      // Обновляем статистику с правильными названиями ниш
+      setUserStats((prev: any) => {
+        const updated = {
+          ...prev,
+          expertise: expertiseData.map || {}
+        };
+        localStorage.setItem('userStats', JSON.stringify(updated));
+        return updated;
+      });
+      
+      setVisitedEvents((prev: number[]) => {
+        const updated = [...prev, eventId];
+        localStorage.setItem('visitedEvents', JSON.stringify(updated));
+        return updated;
+      });
+      
+      setStatsTab('expertise');
+      setPendingStatsDialog(true);
+    } catch (error) {
+      console.error('Ошибка при получении данных экспертизы:', error);
+    }
   };
 
   useEffect(() => {
@@ -370,6 +508,15 @@ const FirstMonthPage: React.FC = () => {
       setPendingStatsDialog(false);
     }
   }, [userStats, pendingStatsDialog]);
+
+  // Сохраняем состояние кризиса в localStorage
+  useEffect(() => {
+    localStorage.setItem('hasCrisisThisMonth', JSON.stringify(hasCrisisThisMonth));
+  }, [hasCrisisThisMonth]);
+
+  useEffect(() => {
+    localStorage.setItem('currentCrisis', JSON.stringify(currentCrisis));
+  }, [currentCrisis]);
 
   const Field = ({ type, showDividers }: { type: 'startups' | 'events'; showDividers: boolean }) => {
     if (type === 'startups') {
@@ -641,19 +788,6 @@ const FirstMonthPage: React.FC = () => {
 
           <Field type={contentType} showDividers={contentType === 'startups'} />
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{ color: '#65558F', borderColor: '#65558F', fontFamily: 'Raleway', mr: 2 }}
-              onClick={() => {
-                setVisitedEvents([]);
-                localStorage.removeItem('visitedEvents');
-              }}
-            >
-              Сбросить посещённые мероприятия
-            </Button>
-          </Box>
         </Box>
       </Box>
 
@@ -661,14 +795,15 @@ const FirstMonthPage: React.FC = () => {
         open={crisisDialogOpen}
         onClose={() => setCrisisDialogOpen(false)}
         onSolutionSelect={handleCrisisSolution}
-        title={currentCrisis?.title || ''}
+        title={currentCrisis?.name || ''}
         description={currentCrisis?.description || ''}
-        solutions={currentCrisis?.solutions || []}
+        solutions={currentCrisis?.possibleSolutions || []}
       />
 
       <EndTurnDialog
         open={isEndTurnDialogOpen}
         onClose={() => setIsEndTurnDialogOpen(false)}
+        currentMonth={currentMonth}
       />
 
       {/* Диалог статистики после посещения мероприятия */}

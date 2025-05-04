@@ -40,17 +40,6 @@ const EventDialog: React.FC<{
   success: boolean;
   visited: boolean;
 }> = ({ open, onClose, event, onAttend, loading, success, visited }) => {
-  // Функция для получения названия ниши по ID
-  const getNicheName = (nicheId: string): string => {
-    const nicheMap: { [key: string]: string } = {
-      'niche-1': 'GreenTech',
-      'niche-2': 'MedTech',
-      'niche-3': 'SpaceTech',
-      'niche-4': 'IT'
-    };
-    return nicheMap[nicheId] || nicheId;
-  };
-
   return (
     <Dialog
       open={open}
@@ -81,105 +70,61 @@ const EventDialog: React.FC<{
         >
           {event.name}
         </Typography>
-        <Divider sx={{ marginTop: '1vh', backgroundColor: '#CAC4D0' }} />
       </DialogTitle>
       <DialogContent>
-        <Typography
-          sx={{
-            fontFamily: 'Raleway, sans-serif',
-            fontWeight: 300,
-            color: '#49454F',
-            fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
-            marginBottom: '2vh'
-          }}
-        >
-          {event.description}
-        </Typography>
-        {success && (
-          <Box sx={{ 
-            backgroundColor: '#E8F5E9', 
-            padding: '1vh', 
-            borderRadius: '8px',
-            marginBottom: '2vh'
-          }}>
+        {success ? (
+          <Box sx={{ textAlign: 'center', padding: '2vh' }}>
             <Typography
               sx={{
                 fontFamily: 'Raleway, sans-serif',
                 fontWeight: 500,
                 color: '#2E7D32',
-                fontSize: { xs: '1.4vh', sm: '1.6vh', md: '1.8vh' }
+                fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }
               }}
             >
-              Конференция успешно посещена!
+              Конференция успешно посещена, ваши характеристики изменились!
             </Typography>
+          </Box>
+        ) : (
+          <>
             <Typography
               sx={{
                 fontFamily: 'Raleway, sans-serif',
-                fontWeight: 400,
-                color: '#1B5E20',
-                fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' },
-                marginTop: '1vh'
+                fontWeight: 300,
+                color: '#49454F',
+                fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
+                marginBottom: '2vh'
               }}
             >
-              Получено:
+              {event.description}
             </Typography>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              gap: '0.5vh',
-              marginTop: '0.5vh'
-            }}>
-              <Typography
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '2vh' }}>
+              <Button
+                onClick={onAttend}
+                disabled={loading || success || visited}
                 sx={{
+                  backgroundColor: visited || success ? '#E6E0E9' : '#E8DEF8',
+                  color: '#4A4459',
                   fontFamily: 'Raleway, sans-serif',
-                  fontWeight: 400,
-                  color: '#1B5E20',
-                  fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' }
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: visited || success ? '#E6E0E9' : '#D0BCFF'
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: '#E6E0E9',
+                    color: '#49454F'
+                  }
                 }}
               >
-                +{event.gainedReputation} к репутации
-              </Typography>
-              {event.expertiseChanges?.map((change, index) => (
-                <Typography
-                  key={index}
-                  sx={{
-                    fontFamily: 'Raleway, sans-serif',
-                    fontWeight: 400,
-                    color: '#1B5E20',
-                    fontSize: { xs: '1.2vh', sm: '1.4vh', md: '1.6vh' }
-                  }}
-                >
-                  +{change.change} к экспертизе в {getNicheName(change.nicheId)}
-                </Typography>
-              ))}
+                {visited || success ? 'Посещено' : loading ? (
+                  <CircularProgress size={24} sx={{ color: '#4A4459' }} />
+                ) : (
+                  `Посетить за ${event.price} ₽`
+                )}
+              </Button>
             </Box>
-          </Box>
+          </>
         )}
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '2vh' }}>
-          <Button
-            onClick={onAttend}
-            disabled={loading || success || visited}
-            sx={{
-              backgroundColor: visited || success ? '#E6E0E9' : '#E8DEF8',
-              color: '#4A4459',
-              fontFamily: 'Raleway, sans-serif',
-              fontWeight: 600,
-              '&:hover': {
-                backgroundColor: visited || success ? '#E6E0E9' : '#D0BCFF'
-              },
-              '&.Mui-disabled': {
-                backgroundColor: '#E6E0E9',
-                color: '#49454F'
-              }
-            }}
-          >
-            {visited || success ? 'Посещено' : loading ? (
-              <CircularProgress size={24} sx={{ color: '#4A4459' }} />
-            ) : (
-              `Посетить за ${event.price} ₽`
-            )}
-          </Button>
-        </Box>
       </DialogContent>
     </Dialog>
   );

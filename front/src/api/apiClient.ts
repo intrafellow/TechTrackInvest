@@ -212,18 +212,8 @@ export const contractAPI = {
 export const crisisAPI = {
   getCrisis: async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/v1/crisis`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get crisis');
-      }
-
-      return await response.json();
+      const response = await apiClient.get('/api/v1/crisis');
+      return response.data;
     } catch (error) {
       console.error('Error getting crisis:', error);
       throw error;
@@ -232,18 +222,8 @@ export const crisisAPI = {
 
   submitSolution: async (solutionId: string) => {
     try {
-      const response = await fetch(`${BASE_URL}/api/v1/crisis/solution/${solutionId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit solution');
-      }
-
-      return await response.json();
+      const response = await apiClient.post(`/api/v1/crisis/solution/${solutionId}`);
+      return response.data;
     } catch (error) {
       console.error('Error submitting solution:', error);
       throw error;

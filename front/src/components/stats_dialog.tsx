@@ -42,7 +42,7 @@ interface StatsDialogProps {
 
 const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, previousData, loading, sessionData }) => {
   const getTrendIcon = (current: number, previous: number | undefined) => {
-    if (previous === undefined || previous === 0) return null;
+    if (previous === undefined) return null;
     const diff = current - previous;
     if (diff > 0) return <TrendingUpIcon sx={{ color: '#4CAF50' }} />;
     if (diff < 0) return <TrendingDownIcon sx={{ color: '#F44336' }} />;
@@ -50,7 +50,7 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
   };
 
   const getTooltipText = (current: number, previous: number | undefined) => {
-    if (previous === undefined || previous === 0) return null;
+    if (previous === undefined) return null;
     const diff = current - previous;
     if (previous === 0) return `Изменение: ${diff > 0 ? '+' : ''}${diff}`;
     const percentage = ((diff / previous) * 100).toFixed(1);
