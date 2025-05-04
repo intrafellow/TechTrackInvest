@@ -10,8 +10,9 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-appdb}
       DB_USERNAME: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-secret}
-      MONGO_URI: mongodb://appuser:apppassword@mongo:27017/techTrackInvestMongo?authSource=admin
+      MONGO_URI: mongodb://root:example@mongo:27017/techTrackInvestMongo?authSource=admin&retryWrites=true&w=majority
       EMAIL_PASS: begy rvvu yxei myxw
+      CORS_ALLOWED_ORIGINS: http://localhost
     ports:
       - "8080:8080"
     networks:
@@ -23,6 +24,23 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  frontend:
+    build:
+      context: ./front/
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:8080
+    container_name: tecktrack-frontend
+    environment:
+      REACT_APP_API_URL: http://localhost:8080
+    ports:
+      - "80:80"
+    networks:
+      - db-network
+    depends_on:
+      app:
+        condition: service_started
+
   postgres:
     image: postgres:17-alpine
     container_name: postgres_db
@@ -32,8 +50,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-appdb}
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     networks:
       - db-network
     healthcheck:
@@ -47,9 +63,12 @@ services:
     container_name: mongo_db
     environment:
       MONGO_INITDB_DATABASE: techTrackInvestMongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    command: mongod --bind_ip_all --wiredTigerCacheSizeGB 1.5
     volumes:
       - mongo_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./backend/scripts/initMongo.js:/docker-entrypoint-initdb.d/initMongo.js:ro
     ports:
       - "27017:27017"
     networks:
@@ -59,11 +78,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-volumes:
-  postgres_data:
-  mongo_data:
+    restart: unless-stopped
 
 networks:
   db-network:
     driver: bridge
+
+volumes:
+  mongo_data:
