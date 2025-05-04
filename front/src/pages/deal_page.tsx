@@ -34,6 +34,10 @@ const DealPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [finalCondition, setFinalCondition] = useState<any>(null);
   const [justBought, setJustBought] = useState<any>(null);
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const saved = localStorage.getItem('currentMonth');
+    return saved ? JSON.parse(saved) : 0;
+  });
 
   useEffect(() => {
     const fetchContractData = async () => {
@@ -47,6 +51,11 @@ const DealPage: React.FC = () => {
           startupId,
           contractId: data.contractId || `contract-${startupId}`
         });
+        // Обновляем месяц из API, если он есть в ответе
+        if (data.currentMonth !== undefined) {
+          setCurrentMonth(data.currentMonth);
+          localStorage.setItem('currentMonth', JSON.stringify(data.currentMonth));
+        }
       } catch (err) {
         console.error('Error fetching contract data:', err);
         // Fallback: рандомные значения если нет БД
@@ -235,7 +244,7 @@ const DealPage: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', backgroundColor: '#444A6B', overflow: 'hidden' }}>
-      <Header />
+      <Header currentMonth={currentMonth} />
       <Box sx={{ display: 'flex', flex: 1, height: 'calc(100vh - 8vh)' }}>
         <LeftMenu onTypeChange={() => {}} disabled={true} />
         <Box

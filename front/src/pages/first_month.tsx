@@ -253,10 +253,17 @@ const FirstMonthPage: React.FC = () => {
       if (location.state?.isDemo) {
         setCurrentMonth(location.state.currentMonth ?? 1);
       } else {
-        setCurrentMonth(prev => prev + 1);
+        setCurrentMonth(location.state.currentMonth ?? (currentMonth + 1));
       }
+      // Очищаем состояние после обработки
+      navigate(location.pathname, { replace: true, state: { ...location.state, monthChanged: false } });
     }
   }, [location.state]);
+
+  // Сохраняем текущий месяц в localStorage
+  useEffect(() => {
+    localStorage.setItem('currentMonth', JSON.stringify(currentMonth));
+  }, [currentMonth]);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -302,6 +309,13 @@ const FirstMonthPage: React.FC = () => {
             ];
           }
         }
+
+        // Обновляем месяц из API, если он есть в ответе
+        if (data.currentMonth !== undefined) {
+          setCurrentMonth(data.currentMonth);
+          localStorage.setItem('currentMonth', JSON.stringify(data.currentMonth));
+        }
+
         setBoughtStartups(bought);
         setAvailableStartups(available);
         const eventsData = await conferenceAPI.getAll();
@@ -789,6 +803,7 @@ const FirstMonthPage: React.FC = () => {
       <EndTurnDialog
         open={isEndTurnDialogOpen}
         onClose={() => setIsEndTurnDialogOpen(false)}
+        currentMonth={currentMonth}
       />
 
       {/* Диалог статистики после посещения мероприятия */}
