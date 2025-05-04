@@ -12,6 +12,7 @@ import FirstMonthPage from './pages/first_month';
 import ChangeEmailPage from './pages/change_email';
 import ChangeUsernamePage from './pages/change_username';
 import DealPage from './pages/deal_page';
+import { DevTestComponent } from './components/DevTestComponent';
 import theme from './theme';
 
 const NotFoundPage: React.FC = () => (
@@ -45,6 +46,7 @@ const App: React.FC = () => {
           <Route path="/change_email" element={<ChangeEmailPage />} />
           <Route path="/change_username" element={<ChangeUsernamePage />} />
           <Route path="/deal/:startupId" element={<DealPage />} />
+          <Route path="/dev-test" element={<DevTestComponent />} />
           <Route path="*" element={<NotFoundPage />} /> {/* 404 */}
         </Routes>
       </Router>
