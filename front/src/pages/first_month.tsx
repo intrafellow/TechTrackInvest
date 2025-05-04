@@ -774,19 +774,6 @@ const FirstMonthPage: React.FC = () => {
 
           <Field type={contentType} showDividers={contentType === 'startups'} />
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{ color: '#65558F', borderColor: '#65558F', fontFamily: 'Raleway', mr: 2 }}
-              onClick={() => {
-                setVisitedEvents([]);
-                localStorage.removeItem('visitedEvents');
-              }}
-            >
-              Сбросить посещённые мероприятия
-            </Button>
-          </Box>
         </Box>
       </Box>
 
