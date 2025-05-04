@@ -185,18 +185,26 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
   useEffect(() => {
     const loadSessionData = async () => {
       try {
-        // Загружаем реальные данные из API
+        setLoading(true);
+        // Сохраняем текущие значения как предыдущие
+        setPreviousStatsData(statsData);
+        
+        // Загружаем новые данные
         const [reputationData, moneyData, expertiseData] = await Promise.all([
           userAPI.getReputation(),
           userAPI.getMoney(),
           userAPI.getExpertise()
         ]);
 
+        console.log('Reputation data from server:', reputationData);
+        console.log('Current stats data:', statsData);
+        console.log('Previous stats data:', previousStatsData);
+
         // Обновляем текущие данные
         setStatsData({
           expertise: expertiseData.map || {},
           money: moneyData || { cash: 0, investment: 0, total: 0 },
-          reputation: reputationData.reputation || 0
+          reputation: reputationData.reputation
         });
 
         // Обновляем данные сессии
@@ -211,23 +219,11 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
           monthId: currentMonth,
           stepsLeft: 5,
           money: moneyData.total || 0,
-          reputation: reputationData.reputation || 0,
+          reputation: reputationData.reputation,
           expertise: totalExpertise
-        });
-
-        console.log('Загруженные данные:', {
-          reputation: reputationData,
-          money: moneyData,
-          expertise: expertiseData
         });
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
-        // В случае ошибки используем демо-данные как запасной вариант
-        setStatsData({
-          expertise: demoData[currentMonth]?.expertise || {},
-          money: demoData[currentMonth]?.money || { cash: 0, investment: 0, total: 0 },
-          reputation: demoData[currentMonth]?.reputation || 0
-        });
       } finally {
         setLoading(false);
       }
@@ -238,8 +234,12 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
   // Добавляем обработчик события для обновления баланса
   useEffect(() => {
     const handleBalanceUpdate = (event: CustomEvent) => {
-      const { cash, investment, total } = event.detail;
-      setStatsData((prev) => ({
+      const { cash, total, investment } = event.detail;
+      // Сохраняем текущие значения как предыдущие
+      setPreviousStatsData(statsData);
+      
+      // Обновляем текущие данные
+      setStatsData(prev => ({
         ...prev,
         money: {
           cash,
@@ -251,9 +251,15 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
 
     const handleStatsUpdate = (event: CustomEvent) => {
       const { reputation, expertise, stepsLeft } = event.detail;
+      console.log('Stats update event:', { reputation, expertise, stepsLeft });
+      console.log('Current stats data:', statsData);
+      console.log('Previous stats data:', previousStatsData);
+      
+      // Создаем копию текущих данных для предыдущих значений
+      const currentStatsCopy = { ...statsData };
       
       // Обновляем данные статистики
-      setStatsData((prev) => {
+      setStatsData(prev => {
         // Создаем новый объект экспертизы, сохраняя предыдущие значения
         const newExpertise = { ...prev.expertise };
         
@@ -268,24 +274,23 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
 
         return {
           ...prev,
-          reputation,
+          // Используем новое значение репутации только если оно больше текущего
+          reputation: reputation > prev.reputation ? reputation : prev.reputation,
           expertise: newExpertise
         };
       });
+
+      // После обновления текущих данных, сохраняем предыдущие
+      setPreviousStatsData(currentStatsCopy);
 
       // Обновляем данные сессии
       setSessionData(prev => ({
         ...prev,
         stepsLeft,
-        reputation,
+        // Используем новое значение репутации только если оно больше текущего
+        reputation: reputation > prev.reputation ? reputation : prev.reputation,
         expertise: Object.values(expertise as { [key: string]: number }).reduce((sum: number, value: number) => sum + value, 0)
       }));
-
-      console.log('Обновление статистики:', {
-        reputation,
-        expertise,
-        stepsLeft
-      });
     };
 
     // Функция для получения названия ниши по ID
@@ -305,7 +310,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
       window.removeEventListener('balanceUpdate', handleBalanceUpdate as EventListener);
       window.removeEventListener('statsUpdate', handleStatsUpdate as EventListener);
     };
-  }, []);
+  }, [statsData]); // Добавляем statsData в зависимости для доступа к актуальным значениям
 
   const handleStatClick = (type: string) => {
     setDialogOpen(prev => ({ ...prev, [type]: true }));
