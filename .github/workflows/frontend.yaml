@@ -15,12 +15,18 @@ on:
 jobs:
   frontend-checks:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     defaults:
       run:
         working-directory: ./front
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -33,13 +39,51 @@ jobs:
       run: yarn install --frozen-lockfile
 
     - name: Check types
+      id: type-check
+      continue-on-error: true
       run: yarn tsc --noEmit
 
     - name: Lint
-      run: yarn lint || true
+      id: lint
+      continue-on-error: true
+      run: yarn lint
 
     - name: Run tests
+      id: tests
+      continue-on-error: true
       run: yarn test --passWithNoTests
 
     - name: Build
-      run: DISABLE_ESLINT_PLUGIN=true yarn build --verbose 
+      id: build
+      continue-on-error: true
+      run: DISABLE_ESLINT_PLUGIN=true yarn build --verbose
+
+    - name: Check for failures and revert if needed
+      if: always()
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ "${{ steps.type-check.outcome }}" == "failure" || "${{ steps.lint.outcome }}" == "failure" || "${{ steps.tests.outcome }}" == "failure" || "${{ steps.build.outcome }}" == "failure" ]]; then
+          echo "Errors found in the code. Reverting changes..."
+          
+          # Get the current commit SHA
+          CURRENT_SHA=$(git rev-parse HEAD)
+          
+          # Get the previous commit SHA
+          PREVIOUS_SHA=$(git rev-parse HEAD~1)
+          
+          # Configure git
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Create a new commit that reverts the changes
+          git revert --no-edit $CURRENT_SHA
+          
+          # Push the revert commit
+          git push origin dev
+          
+          # Mark the check as failed
+          exit 1
+        else
+          echo "All checks passed successfully"
+        fi 
