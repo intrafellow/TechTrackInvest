@@ -25,7 +25,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '23.11.0'
         cache: 'yarn'
         cache-dependency-path: './front/yarn.lock'
 
@@ -42,4 +42,4 @@ jobs:
       run: yarn test --passWithNoTests
 
     - name: Build
-      run: yarn build 
+      run: yarn build --verbose 
