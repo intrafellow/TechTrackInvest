@@ -23,7 +23,7 @@ jobs:
             cd ${{ secrets.VPS_PROJECT_PATH }}
             git pull origin release
 
-            echo "CORS_ALLOWED_ORIGINS=http://176.98.178.227" > .env
-            echo "REACT_APP_API_URL=http://176.98.178.227:8080" >> .env
+            echo "secrets.CORS_ALLOWED_ORIGINS" > .env
+            echo "secrets.REACT_APP_API_URL" >> .env
             docker compose down
             docker compose up -d --build
