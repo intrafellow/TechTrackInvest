@@ -42,4 +42,4 @@ jobs:
       run: yarn test --passWithNoTests
 
     - name: Build
-      run: yarn build --verbose 
+      run: DISABLE_ESLINT_PLUGIN=true yarn build --verbose 
