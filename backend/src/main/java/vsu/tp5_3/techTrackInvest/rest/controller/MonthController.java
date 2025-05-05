@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
-import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
-import vsu.tp5_3.techTrackInvest.dto.MonthEndDto;
+import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
 
 import java.util.Optional;
@@ -32,5 +30,15 @@ public class MonthController {
     @GetMapping("/finish")
     public ResponseEntity<MonthEndDto> endMonth() {
         return ResponseEntity.ok(monthService.endMonth().get());
+    }
+
+    @GetMapping("/stepCount")
+    public ResponseEntity<StepCountDto> getStepCount() {
+        return ResponseEntity.ok(monthService.getStepCount());
+    }
+
+    @GetMapping("/monthCount")
+    public ResponseEntity<MonthCountDto> getMonthCount() {
+        return ResponseEntity.ok(monthService.getMonthCount());
     }
 }

@@ -69,8 +69,8 @@ public class ContractService {
         Pair<Integer, Integer> contractEffects = getEffectsFromContract(rollResult, contract);
 
         String messageDescription;
-        if (rollResult < 10) {
-            messageDescription = "Вам повезло, Вы смогли продавить свои условия сделки";
+        if (rollResult < 14 && rollResult > 9) {
+            messageDescription = "Вы смогли продавить свои условия сделки";
         } else {
             messageDescription = "К сожалению, Вы не смогли продавить свои условия сделки";
         }
@@ -90,7 +90,7 @@ public class ContractService {
         int teamEffect = contract.getTeamEffect();
         int reputationEffect = contract.getReputationEffect();
 
-        int factor = (rollResult < 11) ? -1 : 1;
+        int factor = (rollResult < 14 && rollResult > 9) ? -1 : 1;
         teamEffect *= ((rollResult - 1) /19) * factor;
         reputationEffect *= ((rollResult - 1) /19) * factor;
 

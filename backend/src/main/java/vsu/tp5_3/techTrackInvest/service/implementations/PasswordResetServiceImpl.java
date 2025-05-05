@@ -72,7 +72,7 @@ public class PasswordResetServiceImpl {
             message.setFrom("TechTrackInvest <techtrackinvest@gmail.com>");
             message.setTo(email);
             message.setSubject("Password Reset Request");
-            message.setText("Ваш токен для восстановления пароля: " + token);
+            message.setText("Ваш токен: " + token);
 
             mailSender.send(message);
             System.out.println("Email отправлен успешно на " + email);

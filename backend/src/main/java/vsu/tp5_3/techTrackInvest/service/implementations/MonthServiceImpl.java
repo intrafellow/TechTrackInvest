@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
-import vsu.tp5_3.techTrackInvest.dto.MonthEndDto;
-import vsu.tp5_3.techTrackInvest.dto.StartupReadDto;
+import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
@@ -85,5 +83,17 @@ public class MonthServiceImpl implements MonthService {
         List<StartupReadDto> startupReadDtos = startups.stream().map(displayedStartupReadMapper::map).toList();
 
         return Optional.of(new MonthEndDto(session.getMonthCount() + 1, session.getStepCount(), conferenceReadDtos, startupReadDtos));
+    }
+
+    @Override
+    public StepCountDto getStepCount() {
+        return new StepCountDto(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast().getStepCount());
+    }
+
+    @Override
+    public MonthCountDto getMonthCount() {
+        return new MonthCountDto(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .get().getSessions().getLast().getMonthCount());
     }
 }
