@@ -16,6 +16,9 @@
 * Решать разнообразные кризисные ситуации
 * Заполнить и отправить форму на почту технической поддержки компании   
 
+# Ссылка на игру
+* [TechTrackInvest](http://176.98.178.227/login)
+
 # Документация ко второй аттестации
 * [Swagger](https://app.swaggerhub.com/apis/LeonidChelyapin/tech-track-invest_game/0.0.1#/)
 * [Отчёт о тестировании](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Отчёт%20о%20тестировании.pdf)
