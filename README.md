@@ -16,6 +16,10 @@
 * Решать разнообразные кризисные ситуации
 * Заполнить и отправить форму на почту технической поддержки компании   
 
+# Документация ко второй аттестации
+* [Swagger](https://app.swaggerhub.com/apis/LeonidChelyapin/tech-track-invest_game/0.0.1#/)
+* [Отчёт о тестировании](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Отчёт%20о%20тестировании.pdf)
+
 # Сопутствующая проекту документация:  
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
 * [Miro](https://miro.com/app/board/uXjVIaJdqw0=/?share_link_id=799797734687)  
@@ -32,7 +36,7 @@
 * [Правила коммитов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/commit%20rules.pdf)
 * [Ссылка на исследование EdTech рынка](https://rb.ru/opinion/edtech-russia-world-2023/)
 
-# Чеклист
+# Чеклист 1 аттестация
 [Наш чеклист](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Чеклист.pdf)
 
 # Кто нас проверял
