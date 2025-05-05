@@ -13,7 +13,7 @@ public class StartupReadMapper implements Mapper<Startup, StartupReadDto> {
     @Override
     public StartupReadDto map(Startup object) {
         return new StartupReadDto(
-                object.getId(),
+                object.getResId(),
                 nicheService.getNicheName(object.getNicheId()),
                 object.getName(),
                 object.getDescription()

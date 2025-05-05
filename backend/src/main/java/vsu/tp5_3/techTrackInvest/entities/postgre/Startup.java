@@ -13,8 +13,11 @@ import vsu.tp5_3.techTrackInvest.entities.enums.Stage;
 @NoArgsConstructor
 public class Startup {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "startup_resource_id")
-    private String id;
+    private String resId;
     //эти поля дублируются, но добавлены для удобства, чтобы не лезть в монго каждый раз
     private String nicheId;
 

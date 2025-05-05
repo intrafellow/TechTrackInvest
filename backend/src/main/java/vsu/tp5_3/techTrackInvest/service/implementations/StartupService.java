@@ -84,7 +84,7 @@ public class StartupService {
                     .get().getSessions().getLast();
 
             session.getCurrentDisplayedStartups().forEach(startup -> usedStartupIds.add(startup.getResourceId()));
-            session.getStartups().forEach(startup -> usedStartupIds.add(startup.getId()));
+            session.getStartups().forEach(startup -> usedStartupIds.add(startup.getResId()));
 
             List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
 

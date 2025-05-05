@@ -13,7 +13,7 @@ public class StartupMongoToBoughtStartupMapper implements Mapper<StartupMongo, S
     @Override
     public Startup map(StartupMongo object) {
         Startup startup = new Startup();
-        startup.setId(object.getId());
+        startup.setResId(object.getId());
         startup.setNicheId(object.getNiche());
         startup.setName(object.getName());
         startup.setDescription(object.getDescription());
