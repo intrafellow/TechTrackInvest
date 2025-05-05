@@ -1,7 +1,5 @@
-// Подключаемся к MongoDB с аутентификацией
 db = connect("mongodb://root:example@localhost:27017/techTrackInvestMongo?authSource=admin");
 
-// Проверяем подключение
 if (!db) {
     print("Ошибка подключения к MongoDB");
     quit(1);
@@ -9,7 +7,6 @@ if (!db) {
 
 print("Успешное подключение к MongoDB");
 
-// Очищаем существующие коллекции
 db.articles.drop();
 db.niches.drop();
 db.conferences.drop();
@@ -344,160 +341,160 @@ db.conferences.insertMany([
 
 db.solutions.insertMany([
   {
-      "_id": "solution-1",
-      "title": "Государственная субсидия",
-      "description": "Получить поддержку от государства для смягчения последствий кризиса.",
-      "effect": {
-        "price": -500,
-        "expenses": -200,
-        "team": -1,
-        "product": 3,
-        "reputation": 10
-      }
-  },
-  {
-    "_id": "solution-2",
-    "title": "Поиск альтернативных поставщиков",
-    "description": "Найти новых поставщиков компонентов в других регионах.",
-    "effect": {
-      "price": 300,
-      "expenses": 150,
-      "team": 0,
-      "product": 2,
-      "reputation": 5
+    _id: "solution-1",
+    title: "Государственная субсидия",
+    description: "Получить поддержку от государства для смягчения последствий кризиса.",
+    effect: {
+      price: -500,
+      expenses: -200,
+      team: -1,
+      product: 3,
+      reputation: 10
     }
   },
   {
-    "_id": "solution-3",
-    "title": "Перепроектирование продукции",
-    "description": "Адаптировать продукты под доступные компоненты.",
-    "effect": {
-      "price": -200,
-      "expenses": 100,
-      "team": 2,
-      "product": -1,
-      "reputation": -3
+    _id: "solution-2",
+    title: "Поиск альтернативных поставщиков",
+    description: "Найти новых поставщиков компонентов в других регионах.",
+    effect: {
+      price: 300,
+      expenses: 150,
+      team: 0,
+      product: 2,
+      reputation: 5
     }
   },
   {
-    "_id": "solution-4",
-    "title": "Создание стратегического запаса",
-    "description": "Закупить компоненты впрок по повышенным ценам.",
-    "effect": {
-      "price": 500,
-      "expenses": 400,
-      "team": -1,
-      "product": 0,
-      "reputation": 2
+    _id: "solution-3",
+    title: "Перепроектирование продукции",
+    description: "Адаптировать продукты под доступные компоненты.",
+    effect: {
+      price: -200,
+      expenses: 100,
+      team: 2,
+      product: -1,
+      reputation: -3
     }
   },
   {
-    "_id": "solution-5",
-    "title": "Усиление защиты",
-    "description": "Инвестировать в современные системы кибербезопасности.",
-    "effect": {
-      "price": 0,
-      "expenses": 250,
-      "team": 1,
-      "product": 1,
-      "reputation": 8
+    _id: "solution-4",
+    title: "Создание стратегического запаса",
+    description: "Закупить компоненты впрок по повышенным ценам.",
+    effect: {
+      price: 500,
+      expenses: 400,
+      team: -1,
+      product: 0,
+      reputation: 2
     }
   },
   {
-    "_id": "solution-6",
-    "title": "Компенсация клиентам",
-    "description": "Предложить пострадавшим клиентам возмещение ущерба.",
-    "effect": {
-      "price": -400,
-      "expenses": -300,
-      "team": 0,
-      "product": 0,
-      "reputation": 5
+    _id: "solution-5",
+    title: "Усиление защиты",
+    description: "Инвестировать в современные системы кибербезопасности.",
+    effect: {
+      price: 0,
+      expenses: 250,
+      team: 1,
+      product: 1,
+      reputation: 8
     }
   },
   {
-    "_id": "solution-7",
-    "title": "Смена ИТ-провайдера",
-    "description": "Перейти на более надежного хостинг-провайдера.",
-    "effect": {
-      "price": 100,
-      "expenses": 180,
-      "team": -2,
-      "product": -1,
-      "reputation": 3
+    _id: "solution-6",
+    title: "Компенсация клиентам",
+    description: "Предложить пострадавшим клиентам возмещение ущерба.",
+    effect: {
+      price: -400,
+      expenses: -300,
+      team: 0,
+      product: 0,
+      reputation: 5
     }
   },
   {
-    "_id": "solution-8",
-    "title": "Экологические инициативы",
-    "description": "Запустить программу по восстановлению экологии.",
-    "effect": {
-      "price": -100,
-      "expenses": -150,
-      "team": 1,
-      "product": 0,
-      "reputation": 12
+    _id: "solution-7",
+    title: "Смена ИТ-провайдера",
+    description: "Перейти на более надежного хостинг-провайдера.",
+    effect: {
+      price: 100,
+      expenses: 180,
+      team: -2,
+      product: -1,
+      reputation: 3
     }
   },
   {
-    "_id": "solution-9",
-    "title": "Отрицание ответственности",
-    "description": "Оспорить обвинения через суд.",
-    "effect": {
-      "price": 200,
-      "expenses": 100,
-      "team": -1,
-      "product": -2,
-      "reputation": -5
+    _id: "solution-8",
+    title: "Экологические инициативы",
+    description: "Запустить программу по восстановлению экологии.",
+    effect: {
+      price: -100,
+      expenses: -150,
+      team: 1,
+      product: 0,
+      reputation: 12
     }
   },
   {
-    "_id": "solution-10",
-    "title": "Переход на зеленые технологии",
-    "description": "Модернизировать производство с учетом экологических стандартов.",
-    "effect": {
-      "price": 300,
-      "expenses": 400,
-      "team": 0,
-      "product": 1,
-      "reputation": 15
+    _id: "solution-9",
+    title: "Отрицание ответственности",
+    description: "Оспорить обвинения через суд.",
+    effect: {
+      price: 200,
+      expenses: 100,
+      team: -1,
+      product: -2,
+      reputation: -5
+    }
+  },
+  {
+    _id: "solution-10",
+    title: "Переход на зеленые технологии",
+    description: "Модернизировать производство с учетом экологических стандартов.",
+    effect: {
+      price: 300,
+      expenses: 400,
+      team: 0,
+      product: 1,
+      reputation: 15
     }
   }
 ]);
-db.solutions.insertOne(solution);
-// Добавление кризисов
+
+
 db.crises.insertMany([
   {
-      "_id": "crisis-1",
-      "name": "Дефицит солнечных панелей",
-      "description": "Нехватка сырья влияет на производство солнечных панелей.",
-      "danger": 3,
-      "niches": ["niche-1"],
-      "possibleSolutions": ["solution-1"]
+    _id: "crisis-1",
+    name: "Дефицит солнечных панелей",
+    description: "Нехватка сырья влияет на производство солнечных панелей.",
+    danger: 3,
+    niches: ["niche-1"],
+    possibleSolutions: ["solution-1"]
   },
   {
-    "_id": "crisis-2",
-    "name": "Дефицит микрочипов",
-    "description": "Глобальная нехватка полупроводниковых компонентов нарушает производственные цепочки.",
-    "danger": 4,
-    "niches": ["niche-2", "niche-3"],
-    "possibleSolutions": ["solution-2", "solution-3", "solution-4"]
+    _id: "crisis-2",
+    name: "Дефицит микрочипов",
+    description: "Глобальная нехватка полупроводниковых компонентов нарушает производственные цепочки.",
+    danger: 4,
+    niches: ["niche-2", "niche-3"],
+    possibleSolutions: ["solution-2", "solution-3", "solution-4"]
   },
   {
-    "_id": "crisis-3",
-    "name": "Утечка данных клиентов",
-    "description": "Хакерская атака привела к компрометации персональных данных пользователей.",
-    "danger": 5,
-    "niches": ["niche-4"],
-    "possibleSolutions": ["solution-5", "solution-6", "solution-7"]
+    _id: "crisis-3",
+    name: "Утечка данных клиентов",
+    description: "Хакерская атака привела к компрометации персональных данных пользователей.",
+    danger: 5,
+    niches: ["niche-4"],
+    possibleSolutions: ["solution-5", "solution-6", "solution-7"]
   },
   {
-    "_id": "crisis-4",
-    "name": "Экологический скандал",
-    "description": "Компанию обвиняют в нанесении вреда местной экосистеме.",
-    "danger": 3,
-    "niches": ["niche-1", "niche-5"],
-    "possibleSolutions": ["solution-8", "solution-9", "solution-10"]
+    _id: "crisis-4",
+    name: "Экологический скандал",
+    description: "Компанию обвиняют в нанесении вреда местной экосистеме.",
+    danger: 3,
+    niches: ["niche-1", "niche-4"],
+    possibleSolutions: ["solution-8", "solution-9", "solution-10"]
   }
 ]);
 
