@@ -13,7 +13,10 @@ import lombok.Setter;
 public class CurrentCrisis {
 
     @Id
-    @Column(name = "crisis_resource_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "crisis_resource_id", nullable = false)
     private String crisisId;
 
     @OneToOne(optional = false)

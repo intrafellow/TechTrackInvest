@@ -79,7 +79,15 @@ public class CrisisServiceImpl implements CrisisService {
                 }
             }
         }
+        //я не вижу здесь обнуления текущего кризиса. Оно было в методе получения, но там оставлять это как то странно
+        //поэтому допишу здесь
+        session.setCurrentCrisis(null);
+        //так же его нужно записать в историю кризисов, чтобы он больше не появлялся
+        CrisisHistory crisisHistory = new CrisisHistory();
+        crisisHistory.setSession(session);
+        crisisHistory.setCrisisHistoryId(crisisMongo.getId());
+        session.getCrisisHistory().add(crisisHistory);
 
-        return new StepActionDto<CrisisReadDto>(true, crisisReadMapper.map(crisisMongo), null, validationResult.getSteps() - 1);
+        return new StepActionDto<>(true, crisisReadMapper.map(crisisMongo), null, validationResult.getSteps() - 1);
     }
 }

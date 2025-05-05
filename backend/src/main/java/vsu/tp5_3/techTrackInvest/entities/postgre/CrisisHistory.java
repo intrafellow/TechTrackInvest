@@ -12,7 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CrisisHistory {
     @Id
-    @Column(name = "crysis_resource_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "crysis_resource_id", nullable = false)
     private String crisisHistoryId;
 
     @ManyToOne(optional = false)
