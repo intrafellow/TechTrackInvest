@@ -15,7 +15,7 @@ public class CrisisHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "crysis_resource_id", nullable = false)
+    @Column(name = "crysis_resource_id", nullable = false, unique = false)
     private String crisisHistoryId;
 
     @ManyToOne(optional = false)
