@@ -43,6 +43,26 @@
 * [Правила коммитов](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/commit%20rules.pdf)
 * [Ссылка на исследование EdTech рынка](https://rb.ru/opinion/edtech-russia-world-2023/)
 
+# Чеклист 2 аттестация
+[Наш чеклист](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Чеклист%202%20аттестация.pdf)
+
+# Кто нас проверял
+* Команда 9.2
+[Git](https://github.com/LatinMapsLives/GigaGuide) 
+[Чеклист](https://github.com/LatinMapsLives/GigaGuide/blob/main/documentation/Чеклист%209.2%202%20аттестация.pdf) 
+* Команда 4.2
+[Git](https://github.com/I-want-pizza/QWality) 
+[Чеклист](https://github.com/I-want-pizza/QWality/blob/88be92d58178c8b91e3ab7b066cc00c24d141450/docs/teams_score/Чеклист%202%20этап.pdf) 
+* Команда 9.4
+[Git](https://github.com/MaksimStrelnikov/tp-9.4) 
+[Чеклист](https://docs.google.com/spreadsheets/d/1K2BeqbMLcOmt9NTP8_UyuGs4v2tWcAuFWn2uSE9HBYA/edit?gid=0#gid=0) 
+* Команда 10.1
+[Git](https://github.com/Storix2025/Storix?tab=readme-ov-file) 
+[Чеклист](https://github.com/Storix2025/Storix/blob/main/Documentation/чек-лист/ТП.%20Чеклист%202%20этап.pdf) 
+* Команда 8.3
+[Git](https://gitlab.com/rlwd/main/-/tree/main) 
+[Чеклист](https://gitlab.com/rlwd/main/-/tree/main) 
+
 # Чеклист 1 аттестация
 [Наш чеклист](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Чеклист.pdf)
 
