@@ -22,7 +22,7 @@
 # Документация ко второй аттестации
 * [Swagger](https://app.swaggerhub.com/apis/LeonidChelyapin/tech-track-invest_game/0.0.1#/)
 * [Отчёт о тестировании](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Отчёт%20о%20тестировании.pdf)
-* [Отчет ПМ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/PM%20%D0%BE%D1%82%D1%87%D0%B5%D1%82.docx)
+* [Отчет ПМ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/PM%20%D0%BE%D1%82%D1%87%D0%B5%D1%82.pdf)
 
 # Сопутствующая проекту документация:  
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
