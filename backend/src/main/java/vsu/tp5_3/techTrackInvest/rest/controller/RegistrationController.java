@@ -23,7 +23,7 @@ import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
 @Tag(name = "Регистрация", description = "регистрация нового пользователя с уникальной почтой и ником")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user/registr")
+@RequestMapping("/api/v1/user/registration")
 public class RegistrationController {
     private final UserServiceImpl userService;
     private final JwtTokenUtils jwtTokenUtils;
