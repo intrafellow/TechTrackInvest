@@ -15,7 +15,7 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   // Временные данные пользователя
   const userData = {
-    email: 'test@example.com',
+    email: 'ya@ya.ru',
     username: 'testuser'
   };
 
