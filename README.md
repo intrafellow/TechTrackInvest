@@ -17,7 +17,7 @@
 * Заполнить и отправить форму на почту технической поддержки компании   
 
 # Ссылка на игру
-* [TechTrackInvest](http://176.98.178.227/login)
+* [TechTrackInvest](http://176.98.178.227)
 
 # Видео презентация
 * [Видео](https://drive.google.com/file/d/1j18EQnYdJQl70bYAm3WuAyqAfRiZdmFc/view?usp=sharing)
