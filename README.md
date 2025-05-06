@@ -20,8 +20,7 @@
 * [TechTrackInvest](http://176.98.178.227/login)
 
 # Видео презентация
-* [Видео](Revenko Oleg, [06.05.2025 12:02]
-https://drive.google.com/file/d/1j18EQnYdJQl70bYAm3WuAyqAfRiZdmFc/view?usp=sharing)
+* [Видео](https://drive.google.com/file/d/1j18EQnYdJQl70bYAm3WuAyqAfRiZdmFc/view?usp=sharing)
 
 # Документация ко второй аттестации
 * [Swagger](https://app.swaggerhub.com/apis/LeonidChelyapin/tech-track-invest_game/0.0.1#/)
