@@ -19,6 +19,10 @@
 # Ссылка на игру
 * [TechTrackInvest](http://176.98.178.227)
 
+#Тестовые данные для входа
+Почта - ya@ya.ru
+Пароль - Passw123
+
 # Видео презентация
 * [Видео](https://drive.google.com/file/d/1j18EQnYdJQl70bYAm3WuAyqAfRiZdmFc/view?usp=sharing)
 
