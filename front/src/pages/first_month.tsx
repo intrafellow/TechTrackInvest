@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import EndTurnDialog from '../components/end_turn_dialog';
 import CrisisDialog from '../components/crisis_dialog';
 import StatsDialog from '../components/stats_dialog';
+import TutorialDialog from '../components/TutorialDialog';
 
 const NICHE_MAP: { [key: string]: { id: string; name: string } } = {
   'IT': { id: 'IT', name: 'IT' },
@@ -209,6 +210,7 @@ const FirstMonthPage: React.FC = () => {
     reputation: 0
   });
   const [pendingStatsDialog, setPendingStatsDialog] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   // Тестовые данные для демо-режима
   const demoEvents: Event[] = [
@@ -515,6 +517,13 @@ const FirstMonthPage: React.FC = () => {
     localStorage.setItem('currentCrisis', JSON.stringify(currentCrisis));
   }, [currentCrisis]);
 
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+    }
+  }, []);
+
   const Field = ({ type, showDividers }: { type: 'startups' | 'events'; showDividers: boolean }) => {
     if (type === 'startups') {
       if (isMobileOrTablet) {
@@ -820,6 +829,10 @@ const FirstMonthPage: React.FC = () => {
           expertise: Object.values((userStats as UserStats).expertise || {}).reduce((sum: number, value: number) => sum + value, 0)
         }}
       />
+
+      {showTutorial && (
+        <TutorialDialog onClose={() => setShowTutorial(false)} />
+      )}
     </Box>
   );
 };

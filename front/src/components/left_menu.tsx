@@ -54,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onTypeChange, onEndTurn, disabled = f
         opacity: disabled ? 0.5 : 1,
         pointerEvents: disabled ? 'none' : 'auto',
       }}
+      id="left-menu"
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: '1vh', sm: '1.5vh', md: '2vh' } }}>
         {navItems.map(({ label, icon }) => {
@@ -125,6 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onTypeChange, onEndTurn, disabled = f
             cursor: disabled ? 'not-allowed' : 'pointer',
             opacity: disabled ? 0.5 : 1
           }}
+          id="end-turn"
         >
           <Box
             sx={{

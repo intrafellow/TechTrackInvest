@@ -388,6 +388,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
               width: { xs: '8vh', sm: '10vh', md: '12vh' },
               justifyContent: 'center',
             }}
+            id="action-points"
           >
             <Box
               sx={{
@@ -428,7 +429,8 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
           gap: { xs: '0.5vh', sm: '1vh', md: '1.5vh' }, 
           alignItems: 'center',
           justifyContent: 'center',
-          flex: { xs: '0 1 auto', md: '1' }
+          flex: { xs: '0 1 auto', md: '1' },
+          id: 'main-stats'
         }}>
           {navItems.map(({ label, icon, type }) => (
             <Box key={label} sx={{ 
@@ -483,6 +485,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
               borderRadius: '0.3vh',
               width: { xs: '10vh', sm: '12vh', md: '14vh' },
             }}
+            id="calendar"
           >
             <Box
               sx={{
@@ -535,6 +538,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
                 transform: 'scale(1.05)',
               },
             }}
+            id="profile"
           />
         </Box>
 
