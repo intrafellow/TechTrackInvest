@@ -1,7 +1,6 @@
 services:
   backend:
     image: ghcr.io/patersss/tecktrackinvestbackend:${GIT_COMMIT_HASH:-latest}
-    container_name: tecktrack-backend
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-appdb}
       DB_USERNAME: ${POSTGRES_USER:-admin}
@@ -28,7 +27,6 @@ services:
 
   frontend:
     image: ghcr.io/patersss/tecktrackinvestfrontend:${GIT_COMMIT_HASH:-latest}
-    container_name: tecktrack-frontend
     ports:
       - target: 80
         published: 80
@@ -48,7 +46,6 @@ services:
 
   postgres:
     image: postgres:17-alpine
-    container_name: postgres_db
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
@@ -73,7 +70,6 @@ services:
 
   mongo:
     image: mongo:latest
-    container_name: mongo_db
     environment:
       MONGO_INITDB_DATABASE: techTrackInvestMongo
       MONGO_INITDB_ROOT_USERNAME: root
