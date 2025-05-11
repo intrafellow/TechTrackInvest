@@ -1,11 +1,7 @@
-version: '3.8'
-
 services:
-  app:
-    build: 
-      context: ./backend/
-      dockerfile: Dockerfile
-    container_name: tecktrack-app
+  backend:
+    image: ghcr.io/patersss/tecktrackinvestbackend:latest
+    container_name: tecktrack-backend
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-appdb}
       DB_USERNAME: ${POSTGRES_USER:-admin}
@@ -25,20 +21,14 @@ services:
     restart: on-failure
 
   frontend:
-    build:
-      context: ./front/
-      dockerfile: Dockerfile
-      args:
-        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8080}
+    image: ghcr.io/patersss/tecktrackinvestfrontend:latest
     container_name: tecktrack-frontend
-    environment:
-      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:8080}
     ports:
       - "80:80"
     networks:
       - db-network
     depends_on:
-      app:
+      backend:
         condition: service_started
 
   postgres:

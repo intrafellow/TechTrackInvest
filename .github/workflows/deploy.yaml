@@ -5,25 +5,58 @@ on:
     branches:
       - release
 
+permissions:
+  packages: write
+
 jobs:
-  deploy:
+  build_and_push_back:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Log in to registry
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.VPS_PROJECT_PATH }}
-            git pull origin release
+          registry: https://ghcr.io
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.GH_TOKEN }}
+      - name: Check gh hash before pushing to registry
+        run: |
+          echo ${{ github.sha }}
 
-            echo "CORS_ALLOWED_ORIGINS=http://176.98.178.227" > .env
-            echo "REACT_APP_API_URL=http://176.98.178.227:8080" >> .env
-            docker compose down
-            docker compose up -d --build
+      - name: Build and push Docker backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend/
+          push: true
+          tags: |
+            ghcr.io/patersss/tecktrackinvestbackend:latest
+            ghcr.io/patersss/tecktrackinvestbackend:${{ github.sha }}
+  
+  build_and_push_frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Log in to registry
+        uses: docker/login-action@v3
+        with:
+          registry: https://ghcr.io
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.GH_TOKEN }}
+      - name: Check gh hash before pushing to registry
+        run: |
+          echo ${{ github.sha }}
+      
+      - name: Build and push Docker frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend/
+          push: true
+          build-args: |
+            REACT_APP_API_URL=http://176.98.178.227:8080
+          tags: |
+            ghcr.io/patersss/tecktrackinvestfrontend:latest
+            ghcr.io/patersss/tecktrackinvestfrontend:${{ github.sha }}
