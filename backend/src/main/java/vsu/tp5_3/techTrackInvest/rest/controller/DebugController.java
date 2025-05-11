@@ -60,4 +60,8 @@ public class DebugController {
     public ResponseEntity<String> getCD() {
         return ResponseEntity.ok("CD is working");
     }
+    @GetMapping("/testCDsure")
+    public ResponseEntity<String> getSure() {
+        return ResponseEntity.ok("CD is sure working");
+    }
 }
