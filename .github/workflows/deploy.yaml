@@ -92,5 +92,8 @@ jobs:
         user: ${{ secrets.VPS_USER }}
         ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
         env_file: ./envfile
-       
+        registry_auth: true
+        registry_host: "ghcr.io"
+        registry_user: ${{ secrets.DEPLOY_USER }}
+        registry_pass: ${{ secrets.GH_TOKEN }}
     

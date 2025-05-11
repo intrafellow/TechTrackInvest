@@ -24,6 +24,9 @@ services:
         delay: 5s
         max_attempts: 10
         window: 30s
+    depends_on:
+      - postgres
+      - mongo
 
   frontend:
     image: ghcr.io/patersss/tecktrackinvestfrontend:${GIT_COMMIT_HASH:-latest}
@@ -43,6 +46,8 @@ services:
         delay: 5s
         max_attempts: 10
         window: 30s
+    depends_on:
+      - backend
 
   postgres:
     image: postgres:17-alpine
