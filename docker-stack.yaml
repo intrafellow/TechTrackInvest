@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/patersss/tecktrackinvestbackend:latest
+    image: ghcr.io/patersss/tecktrackinvestbackend:${GIT_COMMIT_HASH:-latest}
     container_name: tecktrack-backend
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-appdb}
@@ -27,7 +27,7 @@ services:
         window: 30s
 
   frontend:
-    image: ghcr.io/patersss/tecktrackinvestfrontend:latest
+    image: ghcr.io/patersss/tecktrackinvestfrontend:${GIT_COMMIT_HASH:-latest}
     container_name: tecktrack-frontend
     ports:
       - target: 80
@@ -99,7 +99,7 @@ services:
 
 networks:
   db-network:
-    driver: bridge
+    driver: overlay
 
 volumes:
   mongo_data:
