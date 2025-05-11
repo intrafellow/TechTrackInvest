@@ -51,4 +51,8 @@ public class DebugController {
         return ResponseEntity.ok(startupService.getCurrentDisplayedStartupsInNiche(nicheId));
     }
 
+    @GetMapping("/testStatus")
+    public ResponseEntity<String> getStatus() {
+        return ResponseEntity.ok("it is working");
+    }
 }

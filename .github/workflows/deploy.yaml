@@ -62,11 +62,11 @@ jobs:
             ghcr.io/patersss/tecktrackinvestfrontend:${{ github.sha }}
 
   deploy_game:
-  runs-on: ubuntu-latest
-  needs:
-    - build_and_push_backend
-    - build_and_push_frontend
-  steps:
+    runs-on: ubuntu-latest
+    needs:
+      - build_and_push_backend
+      - build_and_push_frontend
+    steps:
     - name: Checkout repo
       uses: actions/checkout@v4
     
