@@ -10,26 +10,41 @@ services:
       EMAIL_PASS: begy rvvu yxei myxw
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
     ports:
-      - "8080:8080"
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
     networks:
       - db-network
-    depends_on:
-      postgres:
-        condition: service_healthy
-      mongo:
-        condition: service_healthy
-    restart: on-failure
+    deploy:
+      update_config:
+        order: start-first
+
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 10
+        window: 30s
 
   frontend:
     image: ghcr.io/patersss/tecktrackinvestfrontend:latest
     container_name: tecktrack-frontend
     ports:
-      - "80:80"
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
     networks:
       - db-network
-    depends_on:
-      backend:
-        condition: service_started
+    deploy:
+      update_config:
+        order: start-first
+
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 10
+        window: 30s
 
   postgres:
     image: postgres:17-alpine
@@ -39,7 +54,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
       POSTGRES_DB: ${POSTGRES_DB:-appdb}
     ports:
-      - "5432:5432"
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: host
     networks:
       - db-network
     volumes:
@@ -49,6 +67,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   mongo:
     image: mongo:latest
@@ -60,9 +81,11 @@ services:
     command: mongod --bind_ip_all --wiredTigerCacheSizeGB 1.5
     volumes:
       - mongo_data:/data/db
-      - ./backend/scripts/initMongo.js:/docker-entrypoint-initdb.d/initMongo.js:ro
     ports:
-      - "27017:27017"
+      - target: 27017
+        published: 27017
+        protocol: tcp
+        mode: host
     networks:
       - db-network
     healthcheck:
@@ -70,7 +93,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
 
 networks:
   db-network:
