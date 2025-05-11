@@ -4,6 +4,10 @@ spring:
     url: ${DB_URL}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 120000
+      initialization-fail-timeout: 180000
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: update
