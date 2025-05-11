@@ -53,7 +53,7 @@ jobs:
       - name: Build and push Docker frontend image
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend/
+          context: ./front/
           push: true
           build-args: |
             REACT_APP_API_URL=http://176.98.178.227:8080
