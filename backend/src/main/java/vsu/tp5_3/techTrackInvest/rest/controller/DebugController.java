@@ -55,4 +55,9 @@ public class DebugController {
     public ResponseEntity<String> getStatus() {
         return ResponseEntity.ok("it is working");
     }
+
+    @GetMapping("/testCD")
+    public ResponseEntity<String> getCD() {
+        return ResponseEntity.ok("CD is working");
+    }
 }
