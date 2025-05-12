@@ -58,11 +58,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
       POSTGRES_DB: ${POSTGRES_DB:-appdb}
-    ports:
-      - target: 5432
-        published: 5432
-        protocol: tcp
-    networks:
+      networks:
       - db-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -84,10 +80,6 @@ services:
     command: mongod --bind_ip_all --wiredTigerCacheSizeGB 1.5
     volumes:
       - mongo_data:/data/db
-    ports:
-      - target: 27017
-        published: 27017
-        protocol: tcp
     networks:
       - db-network
     healthcheck:
