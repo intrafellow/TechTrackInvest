@@ -31,6 +31,13 @@ interface EventsListProps {
   visitedEvents?: number[];
 }
 
+const NICHE_MAP: { [key: string]: { id: string; name: string } } = {
+  'IT': { id: 'IT', name: 'IT' },
+  'GreenTech': { id: 'GreenTech', name: 'GreenTech' },
+  'MedTech': { id: 'MedTech', name: 'MedTech' },
+  'SpaceTech': { id: 'SpaceTech', name: 'SpaceTech' }
+};
+
 const EventDialog: React.FC<{ 
   open: boolean; 
   onClose: () => void; 
@@ -209,6 +216,16 @@ const EventCard: React.FC<{ event: Event; onVisit?: (eventId: number) => void; v
             }}
           >
             {currentEvent.name}
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontFamily: 'Raleway',
+              color: '#C1CBFF',
+              marginBottom: 1
+            }}
+          >
+            {NICHE_MAP[currentEvent.nicheId]?.name || currentEvent.nicheId}
           </Typography>
           <Typography
             variant="body1"
