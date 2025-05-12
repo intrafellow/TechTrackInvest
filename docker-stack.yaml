@@ -58,7 +58,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
       POSTGRES_DB: ${POSTGRES_DB:-appdb}
-      networks:
+    networks:
       - db-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
