@@ -333,7 +333,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
       } catch (e) {
         // Можно обработать ошибку, если нужно
       }
-    }, 3000); // каждые 3 секунды
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
