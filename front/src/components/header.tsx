@@ -322,6 +322,22 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const stepCountData = await monthAPI.getStepCount();
+        setSessionData(prev => ({
+          ...prev,
+          stepsLeft: stepCountData.stepCount
+        }));
+      } catch (e) {
+        // Можно обработать ошибку, если нужно
+      }
+    }, 3000); // каждые 3 секунды
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleStatClick = (type: string) => {
     setDialogOpen(prev => ({ ...prev, [type]: true }));
   };
