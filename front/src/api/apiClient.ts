@@ -175,6 +175,11 @@ export const conferenceAPI = {
     return response.data;
   },
 
+  getByNiche: async (nicheId: string) => {
+    const response = await apiClient.get(`/api/v1/conference/niche/${nicheId}`);
+    return response.data;
+  },
+
   getConferences: async () => {
     const response = await apiClient.get('/api/v1/conference');
     return response.data;

@@ -326,7 +326,11 @@ const FirstMonthPage: React.FC = () => {
 
         setBoughtStartups(bought);
         setAvailableStartups(available);
-        const eventsData = await conferenceAPI.getAll();
+        const eventsDataRaw = await conferenceAPI.getAll();
+        const eventsData = eventsDataRaw.map((e: any) => ({
+          ...e,
+          nicheId: e.nicheId || e.categoryName || e.category || '',
+        }));
         setEvents(eventsData);
       } catch (error: any) {
         // Если API не работает, показываем только демо-стартап
@@ -531,6 +535,37 @@ const FirstMonthPage: React.FC = () => {
       setShowTutorial(true);
     }
   }, []);
+
+  // Добавляю функцию для загрузки мероприятий по selected
+  const loadEvents = async () => {
+    setLoading(true);
+    try {
+      let eventsDataRaw;
+      if (selected === '') {
+        eventsDataRaw = await conferenceAPI.getAll();
+      } else {
+        eventsDataRaw = await conferenceAPI.getByNiche(selected);
+      }
+      const eventsData = eventsDataRaw.map((e: any) => ({
+        ...e,
+        nicheId: e.nicheId || e.categoryName || e.category || '',
+      }));
+      setEvents(eventsData);
+    } catch (error) {
+      setEvents([]);
+      setError('Ошибка при загрузке мероприятий');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect для загрузки мероприятий при изменении selected и contentType
+  useEffect(() => {
+    if (contentType === 'events') {
+      loadEvents();
+    }
+    // ... возможно, другие зависимости
+  }, [selected, contentType]);
 
   const Field = ({ type, showDividers }: { type: 'startups' | 'events'; showDividers: boolean }) => {
     if (type === 'startups') {
