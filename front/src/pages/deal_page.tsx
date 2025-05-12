@@ -169,6 +169,7 @@ const DealPage: React.FC = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+	navigate('/first-month');
   };
 
   const handleDialogAccept = async () => {
