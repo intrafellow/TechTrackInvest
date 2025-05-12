@@ -35,6 +35,16 @@ interface FieldProps {
   showDividers?: boolean;
 }
 
+const ALL_STARTUPS_OPTION = { id: '', name: 'Все стартапы' };
+const ALL_EVENTS_OPTION = { id: '', name: 'Все мероприятия' };
+
+const NICHE_MAP: { [key: string]: { id: string; name: string } } = {
+  'IT': { id: 'IT', name: 'IT' },
+  'GreenTech': { id: 'GreenTech', name: 'GreenTech' },
+  'MedTech': { id: 'MedTech', name: 'MedTech' },
+  'SpaceTech': { id: 'SpaceTech', name: 'SpaceTech' }
+};
+
 const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
   const [selected, setSelected] = useState<string>('');
   const [startups, setStartups] = useState<Startup[]>([]);
@@ -48,7 +58,17 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
     setError(null);
     try {
       const data = await startupsAPI.getAll();
-      const filteredStartups = selected ? data.availableStartups.filter((startup: Startup) => startup.nicheId === selected) : data.availableStartups;
+      let filteredStartups = data.availableStartups;
+      if (selected) {
+        filteredStartups = filteredStartups.filter((startup: Startup) => startup.nicheId === selected);
+      } else {
+        // Группируем по категориям и берём по одному на каждую
+        const byCategory: { [key: string]: Startup } = {};
+        for (const s of filteredStartups) {
+          if (!byCategory[s.nicheId]) byCategory[s.nicheId] = s;
+        }
+        filteredStartups = Object.values(byCategory);
+      }
       setStartups(filteredStartups);
       setBoughtStartups(data.purchasedStartups);
     } catch (error: any) {
@@ -63,7 +83,17 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
     setError(null);
     try {
       const data = await conferenceAPI.getAll();
-      const filteredEvents = selected ? data.filter((event: Event) => event.nicheId === selected) : data;
+      let filteredEvents = data;
+      if (selected) {
+        filteredEvents = filteredEvents.filter((event: Event) => event.nicheId === selected);
+      } else {
+        // Группируем по категориям и берём по одному на каждую
+        const byCategory: { [key: string]: Event } = {};
+        for (const e of filteredEvents) {
+          if (!byCategory[e.nicheId]) byCategory[e.nicheId] = e;
+        }
+        filteredEvents = Object.values(byCategory);
+      }
       setEvents(filteredEvents);
     } catch (error: any) {
       setError(error.response?.data?.message || 'Произошла ошибка при загрузке мероприятий');
@@ -91,6 +121,9 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
           value={selected}
           onChange={handleChange}
           displayEmpty
+          renderValue={(value) =>
+            value === '' ? (type === 'startups' ? 'Все стартапы' : 'Все мероприятия') : NICHE_MAP[value]?.name
+          }
           sx={{
             backgroundColor: '#FFFFFF',
             borderRadius: '12px',
@@ -100,13 +133,10 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
             }
           }}
         >
-          <MenuItem value="">
-            <em>Все отрасли</em>
-          </MenuItem>
-          <MenuItem value="it">IT</MenuItem>
-          <MenuItem value="medtech">MedTech</MenuItem>
-          <MenuItem value="greentech">GreenTech</MenuItem>
-          <MenuItem value="spacetech">SpaceTech</MenuItem>
+          <MenuItem value="">{type === 'startups' ? 'Все стартапы' : 'Все мероприятия'}</MenuItem>
+          {Object.values(NICHE_MAP).map((niche: { id: string; name: string }) => (
+            <MenuItem key={niche.id} value={niche.id}>{niche.name}</MenuItem>
+          ))}
         </Select>
       </FormControl>
 

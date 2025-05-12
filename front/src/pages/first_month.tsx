@@ -167,7 +167,7 @@ const FirstMonthPage: React.FC = () => {
   // Состояния
   const location = useLocation();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState<string>('');
   const [isBlurred, setIsBlurred] = useState(false);
   const [boughtStartups, setBoughtStartups] = useState<Startup[]>([]);
   const [availableStartups, setAvailableStartups] = useState<Startup[]>([]);
@@ -362,6 +362,7 @@ const FirstMonthPage: React.FC = () => {
       
       // Очищаем состояние после обработки
       navigate(location.pathname, { replace: true, state: { ...location.state, monthChanged: false } });
+      setSelected(''); // Сбросить фильтр на 'Все стартапы/мероприятия'
     }
   }, [location.state?.monthChanged]);
 
@@ -780,11 +781,16 @@ const FirstMonthPage: React.FC = () => {
                 disabled={loading}
                 renderValue={(value) => {
                   if (!value) {
-                    return <Typography style={{ display: "flex", justifyContent: "center" }} sx={{ color: '#413545' }}>Выберите отрасль</Typography>;
+                    return (
+                      <Typography style={{ display: "flex", justifyContent: "center" }} sx={{ color: '#413545' }}>
+                        {contentType === 'events' ? 'Все мероприятия' : 'Все стартапы'}
+                      </Typography>
+                    );
                   }
                   return NICHE_MAP[value]?.name || '';
                 }}
               >
+                <MenuItem value="">{contentType === 'events' ? 'Все мероприятия' : 'Все стартапы'}</MenuItem>
                 {Object.entries(NICHE_MAP).map(([id, { name }]) => (
                   <MenuItem key={id} value={id}>{name}</MenuItem>
                 ))}
