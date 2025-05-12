@@ -29,8 +29,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Копирование собранного приложения из этапа сборки
 COPY --from=builder /app/build /usr/share/nginx/html
 
-# Открытие порта
-EXPOSE 80
+# Открытие портов
+EXPOSE 80 443
 
 # Запуск nginx
 CMD ["nginx", "-g", "daemon off;"] 
