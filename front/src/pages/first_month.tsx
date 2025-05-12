@@ -486,6 +486,29 @@ const FirstMonthPage: React.FC = () => {
 
           // Обновляем очки действий из ответа API
           setStepCount(response.steps);
+          
+          // Отправляем события для обновления хедера
+          window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
+            detail: { stepsLeft: response.steps } 
+          }));
+          
+          // Обновляем репутацию в хедере
+          window.dispatchEvent(new CustomEvent('statsUpdate', { 
+            detail: { 
+              reputation: Math.max(0, userStats.reputation + effect.reputationDelta),
+              expertise: {},
+              stepsLeft: response.steps
+            } 
+          }));
+          
+          // Обновляем деньги в хедере
+          window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+            detail: { 
+              cash: Math.max(0, userStats.money.cash + effect.priceDelta),
+              investment: userStats.money.investment,
+              total: Math.max(0, userStats.money.total + effect.priceDelta)
+            } 
+          }));
         }
       }
     } catch (error: unknown) {
