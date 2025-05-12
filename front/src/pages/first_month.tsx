@@ -6,7 +6,7 @@ import VerticalCard from '../components/available_card';
 import BoughtCard from '../components/bought_card';
 import MobileSlider from '../components/mobile_slider';
 import EventsList from '../components/event';
-import { startupsAPI, conferenceAPI, crisisAPI, userAPI } from '../api/apiClient';
+import { startupsAPI, conferenceAPI, crisisAPI, userAPI, sessionAPI } from '../api/apiClient';
 import { useLocation, useNavigate } from 'react-router-dom';
 import EndTurnDialog from '../components/end_turn_dialog';
 import CrisisDialog from '../components/crisis_dialog';
@@ -212,6 +212,21 @@ const FirstMonthPage: React.FC = () => {
   });
   const [pendingStatsDialog, setPendingStatsDialog] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [stepCount, setStepCount] = useState(0);
+
+  // Загружаем данные сессии при монтировании компонента
+  useEffect(() => {
+    const loadSessionData = async () => {
+      try {
+        const sessionData = await sessionAPI.getCurrentSession();
+        setCurrentMonth(sessionData.monthCount);
+        setStepCount(sessionData.stepCount);
+      } catch (error) {
+        console.error('Ошибка при загрузке данных сессии:', error);
+      }
+    };
+    loadSessionData();
+  }, []);
 
   // Тестовые данные для демо-режима
   const demoEvents: Event[] = [
@@ -468,6 +483,9 @@ const FirstMonthPage: React.FC = () => {
             },
             reputation: Math.max(0, prev.reputation + effect.reputationDelta)
           }));
+
+          // Обновляем очки действий из ответа API
+          setStepCount(response.steps);
         }
       }
     } catch (error: unknown) {
@@ -871,7 +889,7 @@ const FirstMonthPage: React.FC = () => {
         previousData={prevStats}
         loading={false}
         sessionData={{
-          stepCount: 0,
+          stepCount: stepCount,
           monthId: 0,
           stepsLeft: 5,
           money: (userStats as UserStats).money?.total || 0,

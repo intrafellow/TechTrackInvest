@@ -58,39 +58,17 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose, currentMon
     }
   }, [open]);
 
-  const handleNextMonth = async () => {
+  const handleEndTurn = async () => {
     try {
-      // Вызов API для перехода к следующему месяцу и сброса очков действий
-      const response = await monthAPI.endMonth();
-      // Обновляем очки действий и месяц в хедере
-      if (response && typeof response.stepCount === 'number') {
-        window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: response.stepCount } }));
+      const response = await sessionAPI.endTurn();
+      if (response.success) {
+        setCurrentMonth(response.monthCount);
+        setStepCount(response.stepCount);
+        onClose();
+        navigate(location.pathname, { state: { monthChanged: true } });
       }
-      if (response && typeof response.monthId === 'number') {
-        window.dispatchEvent(new CustomEvent('monthIdUpdate', { detail: { monthId: response.monthId } }));
-      }
-      // После успешного перехода, закрываем диалог и обновляем страницу
-      onClose();
-      navigate('/first-month', { 
-        state: { 
-          monthChanged: true,
-          justBought: location.state?.justBought, // Сохраняем информацию о купленном стартапе
-          monthData: response, // Передаем данные о новом месяце
-          currentMonth: currentMonth + 1 // Обновляем текущий месяц
-        } 
-      });
     } catch (error) {
-      // В случае ошибки API, используем демо-режим
-      console.log('API недоступен, используем демо-режим');
-      onClose();
-      navigate('/first-month', { 
-        state: { 
-          monthChanged: true, 
-          isDemo: true, 
-          currentMonth: 1,
-          justBought: location.state?.justBought // Сохраняем информацию о купленном стартапе
-        } 
-      });
+      console.error('Ошибка при завершении хода:', error);
     }
   };
 
@@ -175,7 +153,7 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose, currentMon
 
         <Button
           variant="contained"
-          onClick={handleNextMonth}
+          onClick={handleEndTurn}
           sx={{
             width: '100%',
             backgroundColor: '#444A6B',

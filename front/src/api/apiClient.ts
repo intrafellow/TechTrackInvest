@@ -253,8 +253,13 @@ export const sessionAPI = {
   },
 
   getCurrentSession: async () => {
-    const response = await apiClient.get('/api/v1/session/current');
-    return response.data;
+    try {
+      const response = await apiClient.get('/api/v1/session/current');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting current session:', error);
+      throw error;
+    }
   }
 };
 
