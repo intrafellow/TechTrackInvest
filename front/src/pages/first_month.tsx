@@ -26,6 +26,7 @@ interface Startup {
   description: string;
   price: number;
   categoryName: string;
+  nicheId: string;
   purchased: boolean;
 }
 
@@ -237,6 +238,7 @@ const FirstMonthPage: React.FC = () => {
       description: 'Искусственный интеллект для автоматизации бизнес-процессов',
       price: 1000000,
       categoryName: 'IT',
+      nicheId: 'IT',
       purchased: false
     },
     {
@@ -245,6 +247,7 @@ const FirstMonthPage: React.FC = () => {
       description: 'Инновационные решения для возобновляемой энергетики',
       price: 1500000,
       categoryName: 'GreenTech',
+      nicheId: 'GreenTech',
       purchased: false
     }
   ];
@@ -282,6 +285,7 @@ const FirstMonthPage: React.FC = () => {
           description: s.description,
           price: 1000000, // Установим стандартную цену
           categoryName: s.categoryName,
+          nicheId: s.nicheId || s.categoryName,
           purchased: true
         }));
 
@@ -291,6 +295,7 @@ const FirstMonthPage: React.FC = () => {
           description: s.description,
           price: 1000000, // Установим стандартную цену
           categoryName: s.categoryName,
+          nicheId: s.nicheId || s.categoryName,
           purchased: false
         }));
 
@@ -306,6 +311,7 @@ const FirstMonthPage: React.FC = () => {
                 description: demo.description || 'Описание демо-стартапа',
                 price: demo.minPrice || 100000,
                 categoryName: demo.categoryName || 'IT',
+                nicheId: demo.nicheId || demo.categoryName,
                 purchased: true
               }
             ];
@@ -333,6 +339,7 @@ const FirstMonthPage: React.FC = () => {
               description: demo.description || 'Описание демо-стартапа',
               price: demo.minPrice || 100000,
               categoryName: demo.categoryName || 'IT',
+              nicheId: demo.nicheId || demo.categoryName,
               purchased: true
             }
           ]);
@@ -381,8 +388,8 @@ const FirstMonthPage: React.FC = () => {
   }, [contentType, selected, hasCrisisThisMonth]);
 
   // Фильтрация по selected
-  const filteredBought = boughtStartups.filter(s => selected === '' || s.categoryName === selected);
-  const filteredAvailable = availableStartups.filter(s => selected === '' || s.categoryName === selected);
+  const filteredBought = boughtStartups.filter(s => selected === '' || s.nicheId === selected);
+  const filteredAvailable = availableStartups.filter(s => selected === '' || s.nicheId === selected);
 
   const handleSellStartup = async (startupId: string) => {
     try {
@@ -633,7 +640,9 @@ const FirstMonthPage: React.FC = () => {
         </>
       );
     } else {
-      const filteredEvents = (events.length > 0 ? events : demoEvents).filter(e => !visitedEvents.includes(e.id));
+      const filteredEvents = (events.length > 0 ? events : demoEvents)
+        .filter(e => !visitedEvents.includes(e.id))
+        .filter(e => selected === '' || e.nicheId === selected);
 
       if (isMobileOrTablet) {
         return (
