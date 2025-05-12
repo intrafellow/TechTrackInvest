@@ -9,7 +9,7 @@ import {
   Box
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { sessionAPI } from '../api/apiClient';
+import { sessionAPI, monthAPI } from '../api/apiClient';
 
 interface EndTurnDialogProps {
   open: boolean;
@@ -60,8 +60,15 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose, currentMon
 
   const handleNextMonth = async () => {
     try {
-      // Вызов API для перехода к следующему месяцу
-      const response = await sessionAPI.endMonth();
+      // Вызов API для перехода к следующему месяцу и сброса очков действий
+      const response = await monthAPI.endMonth();
+      // Обновляем очки действий и месяц в хедере
+      if (response && typeof response.stepCount === 'number') {
+        window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: response.stepCount } }));
+      }
+      if (response && typeof response.monthId === 'number') {
+        window.dispatchEvent(new CustomEvent('monthIdUpdate', { detail: { monthId: response.monthId } }));
+      }
       // После успешного перехода, закрываем диалог и обновляем страницу
       onClose();
       navigate('/first-month', { 

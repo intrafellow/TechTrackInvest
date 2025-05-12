@@ -297,5 +297,9 @@ export const monthAPI = {
   getMonthCount: async () => {
     const response = await apiClient.get('/api/v1/month/monthCount');
     return response.data;
+  },
+  endMonth: async () => {
+    const response = await apiClient.get('/api/v1/month/finish');
+    return response.data;
   }
 }; 

@@ -308,9 +308,17 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
         stepsLeft: event.detail.stepsLeft
       }));
     };
+    const handleMonthIdUpdate = (event: CustomEvent) => {
+      setSessionData(prev => ({
+        ...prev,
+        monthId: event.detail.monthId
+      }));
+    };
     window.addEventListener('stepCountUpdate', handleStepCountUpdate as EventListener);
+    window.addEventListener('monthIdUpdate', handleMonthIdUpdate as EventListener);
     return () => {
       window.removeEventListener('stepCountUpdate', handleStepCountUpdate as EventListener);
+      window.removeEventListener('monthIdUpdate', handleMonthIdUpdate as EventListener);
     };
   }, []);
 
