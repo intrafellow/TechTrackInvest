@@ -92,24 +92,6 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
                   <Typography variant="body2" sx={{ mb: 1 }}>
                     {solution.description}
                   </Typography>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
-                    Влияние:
-                  </Typography>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
-                    Цена: {solution.effect.priceDelta > 0 ? '+' : ''}{solution.effect.priceDelta}%
-                  </Typography>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
-                    Расходы: {solution.effect.expensesDelta > 0 ? '+' : ''}{solution.effect.expensesDelta}%
-                  </Typography>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
-                    Команда: {solution.effect.teamDelta > 0 ? '+' : ''}{solution.effect.teamDelta}%
-                  </Typography>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
-                    Продукт: {solution.effect.productDelta > 0 ? '+' : ''}{solution.effect.productDelta}%
-                  </Typography>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
-                    Репутация: {solution.effect.reputationDelta > 0 ? '+' : ''}{solution.effect.reputationDelta}%
-                  </Typography>
                 </Box>
               }
               placement="right"
