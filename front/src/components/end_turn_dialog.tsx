@@ -9,15 +9,23 @@ import {
   Box
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { sessionAPI, monthAPI } from '../api/apiClient';
+import { sessionAPI } from '../api/apiClient';
 
 interface EndTurnDialogProps {
   open: boolean;
   onClose: () => void;
   currentMonth: number;
+  onMonthChange: (month: number) => void;
+  onStepCountChange: (steps: number) => void;
 }
 
-const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose, currentMonth }) => {
+const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ 
+  open, 
+  onClose, 
+  currentMonth,
+  onMonthChange,
+  onStepCountChange 
+}) => {
   const [progress1, setProgress1] = useState(0);
   const [progress2, setProgress2] = useState(0);
   const navigate = useNavigate();
@@ -60,10 +68,10 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ open, onClose, currentMon
 
   const handleEndTurn = async () => {
     try {
-      const response = await sessionAPI.endTurn();
+      const response = await sessionAPI.endMonth();
       if (response.success) {
-        setCurrentMonth(response.monthCount);
-        setStepCount(response.stepCount);
+        onMonthChange(response.monthCount);
+        onStepCountChange(response.stepCount);
         onClose();
         navigate(location.pathname, { state: { monthChanged: true } });
       }

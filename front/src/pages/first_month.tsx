@@ -878,6 +878,8 @@ const FirstMonthPage: React.FC = () => {
         open={isEndTurnDialogOpen}
         onClose={() => setIsEndTurnDialogOpen(false)}
         currentMonth={currentMonth}
+        onMonthChange={setCurrentMonth}
+        onStepCountChange={setStepCount}
       />
 
       {/* Диалог статистики после посещения мероприятия */}
