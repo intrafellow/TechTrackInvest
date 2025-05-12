@@ -10,7 +10,7 @@ import chat from '../icons/chat.png';
 import logo from '../icons/logo.png';
 import tea from '../icons/tea.png';
 import calender from '../icons/calender.png';
-import { sessionAPI, userAPI } from '../api/apiClient';
+import { sessionAPI, userAPI, monthAPI } from '../api/apiClient';
 import StatsDialog from './stats_dialog';
 
 const navItems = [
@@ -186,41 +186,30 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     const loadSessionData = async () => {
       try {
         setLoading(true);
-        // Сохраняем текущие значения как предыдущие
         setPreviousStatsData(statsData);
-        
-        // Загружаем новые данные
-        const [reputationData, moneyData, expertiseData] = await Promise.all([
+
+        // Получаем месяц и очки действий из API
+        const [stepCountData, monthCountData, reputationData, moneyData, expertiseData] = await Promise.all([
+          monthAPI.getStepCount(),
+          monthAPI.getMonthCount(),
           userAPI.getReputation(),
           userAPI.getMoney(),
           userAPI.getExpertise()
         ]);
 
-        console.log('Reputation data from server:', reputationData);
-        console.log('Current stats data:', statsData);
-        console.log('Previous stats data:', previousStatsData);
+        setSessionData(prev => ({
+          ...prev,
+          stepsLeft: stepCountData.stepCount, // предполагается, что API возвращает { stepCount }
+          monthId: monthCountData.monthCount, // предполагается, что API возвращает { monthCount }
+          money: moneyData.total || 0,
+          reputation: reputationData.reputation,
+          expertise: Object.values(expertiseData.map || {}).reduce((sum: number, value: any) => sum + (typeof value === 'number' ? value : 0), 0)
+        }));
 
-        // Обновляем текущие данные
         setStatsData({
           expertise: expertiseData.map || {},
           money: moneyData || { cash: 0, investment: 0, total: 0 },
           reputation: reputationData.reputation
-        });
-
-        // Обновляем данные сессии
-        const expertiseValues = expertiseData.map ? Object.values(expertiseData.map) : [];
-        const totalExpertise = expertiseValues.reduce<number>((sum: number, value: unknown) => {
-          const numValue = typeof value === 'number' ? value : 0;
-          return sum + numValue;
-        }, 0);
-
-        setSessionData({
-          stepCount: 0,
-          monthId: currentMonth,
-          stepsLeft: 5,
-          money: moneyData.total || 0,
-          reputation: reputationData.reputation,
-          expertise: totalExpertise
         });
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
@@ -229,7 +218,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
       }
     };
     loadSessionData();
-  }, [currentMonth]);
+  }, []);
 
   // Добавляем обработчик события для обновления баланса
   useEffect(() => {
@@ -311,6 +300,19 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
       window.removeEventListener('statsUpdate', handleStatsUpdate as EventListener);
     };
   }, [statsData]); // Добавляем statsData в зависимости для доступа к актуальным значениям
+
+  useEffect(() => {
+    const handleStepCountUpdate = (event: CustomEvent) => {
+      setSessionData(prev => ({
+        ...prev,
+        stepsLeft: event.detail.stepsLeft
+      }));
+    };
+    window.addEventListener('stepCountUpdate', handleStepCountUpdate as EventListener);
+    return () => {
+      window.removeEventListener('stepCountUpdate', handleStepCountUpdate as EventListener);
+    };
+  }, []);
 
   const handleStatClick = (type: string) => {
     setDialogOpen(prev => ({ ...prev, [type]: true }));

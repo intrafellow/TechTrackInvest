@@ -287,4 +287,15 @@ export const gameAPI = {
       throw error;
     }
   },
+};
+
+export const monthAPI = {
+  getStepCount: async () => {
+    const response = await apiClient.get('/api/v1/month/stepCount');
+    return response.data;
+  },
+  getMonthCount: async () => {
+    const response = await apiClient.get('/api/v1/month/monthCount');
+    return response.data;
+  }
 }; 

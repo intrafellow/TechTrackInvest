@@ -4,7 +4,7 @@ import it from '../icons/IT.png';
 import med from '../icons/Med.png';
 import green from '../icons/Green.png';
 import space from '../icons/Space.png';
-import { startupsAPI, contractAPI } from '../api/apiClient';
+import { startupsAPI, contractAPI, monthAPI } from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
 
 const NICHE_MAP: { [key: string]: { id: string; name: string; icon: string } } = {
@@ -54,7 +54,11 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
       setLoading(true);
       const expertiseData = await startupsAPI.getExpertise(resourceId, price);
       setExpertiseDone(true);
-      // Здесь можно обновить данные карточки на основе полученной экспертизы
+      // Обновляем очки действий после заказа экспертизы
+      try {
+        const stepCountData = await monthAPI.getStepCount();
+        window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: stepCountData.stepCount } }));
+      } catch (e) { /* ignore */ }
     } catch (error: any) {
       setError(error.response?.data?.message || 'Ошибка при получении экспертизы');
     } finally {
@@ -68,6 +72,11 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
       onDealStart();
       try {
         const contractData = await contractAPI.getContract(resourceId);
+        // Обновляем очки действий после начала сделки
+        try {
+          const stepCountData = await monthAPI.getStepCount();
+          window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: stepCountData.stepCount } }));
+        } catch (e) { /* ignore */ }
         navigate(`/deal/${startupId}`);
       } catch (apiError) {
         // Если API недоступен, используем демо-режим

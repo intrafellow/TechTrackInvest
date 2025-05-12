@@ -5,7 +5,7 @@ import {
   TextField,
   Button
 } from '@mui/material';
-import { contractAPI, startupsAPI } from '../api/apiClient';
+import { contractAPI, startupsAPI, monthAPI } from '../api/apiClient';
 import DealDialog from '../components/deal_dialog';
 import DiceRoll from '../components/dice_roll';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -197,6 +197,11 @@ const DealPage: React.FC = () => {
         buyData.teamEffect,
         buyData.reputationEffect
       );
+      // Обновляем очки действий в хедере
+      try {
+        const stepCountData = await monthAPI.getStepCount();
+        window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: stepCountData.stepCount } }));
+      } catch (e) { /* ignore */ }
       navigate('/first-month', { state: { justBought: contractData } });
     } catch (err: any) {
       console.error('Error buying startup:', {
