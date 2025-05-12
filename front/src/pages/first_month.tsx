@@ -6,7 +6,7 @@ import VerticalCard from '../components/available_card';
 import BoughtCard from '../components/bought_card';
 import MobileSlider from '../components/mobile_slider';
 import EventsList from '../components/event';
-import { startupsAPI, conferenceAPI, crisisAPI, userAPI, sessionAPI } from '../api/apiClient';
+import { startupsAPI, conferenceAPI, crisisAPI, userAPI, sessionAPI, monthAPI } from '../api/apiClient';
 import { useLocation, useNavigate } from 'react-router-dom';
 import EndTurnDialog from '../components/end_turn_dialog';
 import CrisisDialog from '../components/crisis_dialog';
@@ -177,6 +177,7 @@ const FirstMonthPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [contentType, setContentType] = useState<'startups' | 'events'>('startups');
   const [currentMonth, setCurrentMonth] = useState(0);
+  const [stepCount, setStepCount] = useState(0);
   const theme = useTheme();
   const isMobileOrTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [isEndTurnDialogOpen, setIsEndTurnDialogOpen] = useState(false);
@@ -212,20 +213,20 @@ const FirstMonthPage: React.FC = () => {
   });
   const [pendingStatsDialog, setPendingStatsDialog] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [stepCount, setStepCount] = useState(0);
 
-  // Загружаем данные сессии при монтировании компонента
+  // Загружаем месяц и stepCount при монтировании
   useEffect(() => {
-    const loadSessionData = async () => {
+    const loadMonthAndSteps = async () => {
       try {
-        const sessionData = await sessionAPI.getCurrentSession();
-        setCurrentMonth(sessionData.monthCount);
-        setStepCount(sessionData.stepCount);
+        const monthData = await monthAPI.getMonthCount();
+        setCurrentMonth(monthData.monthCount);
+        const stepsData = await monthAPI.getStepCount();
+        setStepCount(stepsData.stepCount);
       } catch (error) {
-        console.error('Ошибка при загрузке данных сессии:', error);
+        console.error('Ошибка при загрузке месяца или stepCount:', error);
       }
     };
-    loadSessionData();
+    loadMonthAndSteps();
   }, []);
 
   // Тестовые данные для демо-режима
@@ -273,16 +274,18 @@ const FirstMonthPage: React.FC = () => {
       if (location.state?.isDemo) {
         setCurrentMonth(location.state.currentMonth ?? 1);
       } else {
-        // Загружаем актуальный месяц из API
-        const loadMonth = async () => {
+        // Загружаем актуальный месяц и stepCount из API
+        const loadMonthAndSteps = async () => {
           try {
-            const sessionData = await sessionAPI.getCurrentSession();
-            setCurrentMonth(sessionData.monthCount);
+            const monthData = await monthAPI.getMonthCount();
+            setCurrentMonth(monthData.monthCount);
+            const stepsData = await monthAPI.getStepCount();
+            setStepCount(stepsData.stepCount);
           } catch (error) {
-            console.error('Ошибка при загрузке месяца:', error);
+            console.error('Ошибка при загрузке месяца или stepCount:', error);
           }
         };
-        loadMonth();
+        loadMonthAndSteps();
       }
       // Очищаем состояние после обработки
       navigate(location.pathname, { replace: true, state: { ...location.state, monthChanged: false } });
