@@ -273,17 +273,21 @@ const FirstMonthPage: React.FC = () => {
       if (location.state?.isDemo) {
         setCurrentMonth(location.state.currentMonth ?? 1);
       } else {
-        setCurrentMonth(location.state.currentMonth ?? (currentMonth + 1));
+        // Загружаем актуальный месяц из API
+        const loadMonth = async () => {
+          try {
+            const sessionData = await sessionAPI.getCurrentSession();
+            setCurrentMonth(sessionData.monthCount);
+          } catch (error) {
+            console.error('Ошибка при загрузке месяца:', error);
+          }
+        };
+        loadMonth();
       }
       // Очищаем состояние после обработки
       navigate(location.pathname, { replace: true, state: { ...location.state, monthChanged: false } });
     }
   }, [location.state]);
-
-  // Сохраняем текущий месяц в localStorage
-  useEffect(() => {
-    localStorage.setItem('currentMonth', JSON.stringify(currentMonth));
-  }, [currentMonth]);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -336,7 +340,6 @@ const FirstMonthPage: React.FC = () => {
         // Обновляем месяц из API, если он есть в ответе
         if (data.currentMonth !== undefined) {
           setCurrentMonth(data.currentMonth);
-          localStorage.setItem('currentMonth', JSON.stringify(data.currentMonth));
         }
 
         setBoughtStartups(bought);

@@ -79,8 +79,7 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({
         state: { 
           monthChanged: true,
           justBought: location.state?.justBought, // Сохраняем информацию о купленном стартапе
-          monthData: response, // Передаем данные о новом месяце
-          currentMonth: currentMonth + 1 // Обновляем текущий месяц
+          monthData: response // Передаем данные о новом месяце
         } 
       });
     } catch (error) {
@@ -92,8 +91,7 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({
       navigate('/first-month', { 
         state: { 
           monthChanged: true, 
-          isDemo: true, 
-          currentMonth: currentMonth + 1,
+          isDemo: true,
           justBought: location.state?.justBought // Сохраняем информацию о купленном стартапе
         } 
       });
