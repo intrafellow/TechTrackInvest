@@ -73,6 +73,19 @@ const DealPage: React.FC = () => {
     fetchContractData();
   }, [startupId]);
 
+  useEffect(() => {
+    const fetchMonth = async () => {
+      try {
+        const data = await monthAPI.getMonthCount();
+        setCurrentMonth(data.monthCount);
+        localStorage.setItem('currentMonth', JSON.stringify(data.monthCount));
+      } catch (e) {
+        // fallback: оставляем старое значение
+      }
+    };
+    fetchMonth();
+  }, []);
+
   const handleSubmit = async () => {
     if (!contractData) return;
     try {
