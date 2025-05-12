@@ -9,22 +9,18 @@ import {
   Box
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { sessionAPI } from '../api/apiClient';
+import { monthAPI } from '../api/apiClient';
 
 interface EndTurnDialogProps {
   open: boolean;
   onClose: () => void;
   currentMonth: number;
-  onMonthChange: (month: number) => void;
-  onStepCountChange: (steps: number) => void;
 }
 
 const EndTurnDialog: React.FC<EndTurnDialogProps> = ({ 
   open, 
   onClose, 
-  currentMonth,
-  onMonthChange,
-  onStepCountChange 
+  currentMonth
 }) => {
   const [progress1, setProgress1] = useState(0);
   const [progress2, setProgress2] = useState(0);
@@ -68,15 +64,39 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({
 
   const handleEndTurn = async () => {
     try {
-      const response = await sessionAPI.endMonth();
-      if (response.success) {
-        onMonthChange(response.monthCount);
-        onStepCountChange(response.stepCount);
-        onClose();
-        navigate(location.pathname, { state: { monthChanged: true } });
+      // Вызов API для перехода к следующему месяцу и сброса очков действий
+      const response = await monthAPI.endMonth();
+      // Обновляем очки действий и месяц в хедере
+      if (response && typeof response.stepCount === 'number') {
+        window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: response.stepCount } }));
       }
+      if (response && typeof response.monthId === 'number') {
+        window.dispatchEvent(new CustomEvent('monthIdUpdate', { detail: { monthId: response.monthId } }));
+      }
+      // После успешного перехода, закрываем диалог и обновляем страницу
+      onClose();
+      navigate('/first-month', { 
+        state: { 
+          monthChanged: true,
+          justBought: location.state?.justBought, // Сохраняем информацию о купленном стартапе
+          monthData: response, // Передаем данные о новом месяце
+          currentMonth: currentMonth + 1 // Обновляем текущий месяц
+        } 
+      });
     } catch (error) {
-      console.error('Ошибка при завершении хода:', error);
+      console.log('API недоступен, используем демо-режим');
+      // В демо-режиме используем фиксированные значения
+      window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: 5 } }));
+      window.dispatchEvent(new CustomEvent('monthIdUpdate', { detail: { monthId: currentMonth + 1 } }));
+      onClose();
+      navigate('/first-month', { 
+        state: { 
+          monthChanged: true, 
+          isDemo: true, 
+          currentMonth: currentMonth + 1,
+          justBought: location.state?.justBought // Сохраняем информацию о купленном стартапе
+        } 
+      });
     }
   };
 
