@@ -8,15 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationResponse;
 import vsu.tp5_3.techTrackInvest.dto.UserReadDto;
+import vsu.tp5_3.techTrackInvest.service.implementations.EmailMailingService;
 import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
 
@@ -28,6 +26,7 @@ public class RegistrationController {
     private final UserServiceImpl userService;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
+    private final EmailMailingService emailMailingService;
 
     @Operation(
             summary = "Регистрация",
@@ -42,19 +41,11 @@ public class RegistrationController {
                             "Пользователь с таким email уже существует"
                     );
                 });
-        // Сохраняем пользователя (userService.create() уже хеширует пароль)
         UserReadDto userReadDto = userService.create(registrationDto);
         System.out.println("gdfgdfg");
-
-        /*authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                registrationDto.getEmail(),
-                registrationDto.getPassword()));*/
-        System.out.println("kkkkk");
-        // Аутентификация через UserDetails (без вызова authenticationManager)
         UserDetails userDetails = userService.loadUserByUsername(userReadDto.getEmail());
         System.out.println(userDetails.getUsername());
 
-        // Генерация токена
         String token = jwtTokenUtils.generateToken(userDetails);
 
         System.out.println("Token: " + token);
@@ -68,5 +59,25 @@ public class RegistrationController {
                 userReadDto.getBalance(),
                 token
         ));
+    }
+
+    @PostMapping("/token")
+    public ResponseEntity<?> getToken(@RequestParam String email) {
+        emailMailingService.getRegistrationToken(email);
+        return ResponseEntity.ok("Токен отправлен на электронную почту");
+    }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(
+            @RequestParam String email,
+            @RequestParam String token) {
+
+        boolean isValid = emailMailingService.validateToken(email, token);
+
+        if (isValid) {
+            return ResponseEntity.ok("Токен валиден");
+        } else {
+            return ResponseEntity.badRequest().body("Токен не валиден");
+        }
     }
 }

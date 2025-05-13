@@ -45,4 +45,15 @@ public class SessionController {
                         "Невозможно удалить сессию"
                 ));
     }
+
+    @GetMapping("/load")
+    public ResponseEntity<SessionReadDto> loadSession() {
+        //sessionService.finishSession();
+        return sessionService.loadSession()
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Невозможно создать сессию"
+                ));
+    }
 }

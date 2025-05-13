@@ -5,9 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
@@ -54,6 +52,46 @@ public class UserController {
     @GetMapping("/expertise")
     public ResponseEntity<ExpertiseDto> getExpertise() {
         return userService.getExpertise()
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Пользователь не найден"
+                ));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDto> getProfile() {
+        return userService.getProfile()
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Пользователь не найден"
+                ));
+    }
+
+    @PostMapping("/change-email")
+    public ResponseEntity<UserProfileDto> changeEmail(@RequestParam String email) {
+        return userService.changeEmail(email)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Пользователь не найден"
+                ));
+    }
+
+    @PostMapping("/change-username")
+    public ResponseEntity<UserProfileDto> changeUsername(@RequestParam String username) {
+        return userService.changeUsername(username)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Пользователь не найден"
+                ));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<UserProfileDto> changePassword(@RequestParam String password) {
+        return userService.changePassword(password)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,

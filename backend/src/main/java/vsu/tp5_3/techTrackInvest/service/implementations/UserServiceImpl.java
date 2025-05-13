@@ -2,6 +2,7 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,12 +11,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.UserCreateEditMapper;
+import vsu.tp5_3.techTrackInvest.mapper.UserProfileMapper;
 import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final PasswordEncoder passwordEncoder;
     private final NicheMongoRepository nicheMongoRepository;
     private final NicheService nicheService;
+    private final UserProfileMapper userProfileMapper;
     private final JwtTokenUtils jwtTokenUtils;
     private final EntityManager entityManager;
 
@@ -139,5 +143,71 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private Session getCurrentDBSession() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
+    }
+
+    public Optional<UserProfileDto> getProfile() {
+        AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+        return Optional.ofNullable(userProfileMapper.map(user));
+    }
+
+    /** Нормально вернуть ошибку что он занят */
+    @Transactional
+    public Optional<UserProfileDto> changeEmail(String email) {
+        AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден"));
+
+        if (user.getEmail().equalsIgnoreCase(email)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Новый email должен отличаться от текущего"
+            );
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Этот email уже используется другим пользователем"
+            );
+        }
+
+        user.setEmail(email);
+        userRepository.save(user);
+
+        return Optional.ofNullable(userProfileMapper.map(user));
+    }
+
+    @Transactional
+    @Override
+    public Optional<UserProfileDto> changeUsername(String username) {
+        AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден"));
+
+        if (user.getUsername().equals(username)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Новый username должен отличаться от текущего"
+            );
+        }
+
+        if (userRepository.existsByUsername(username)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Этот username уже занят"
+            );
+        }
+
+        user.setUsername(username);
+        userRepository.save(user);
+        return Optional.ofNullable(userProfileMapper.map(user));
+    }
+
+    @Transactional
+    @Override
+    public Optional<UserProfileDto> changePassword(String password) {
+        String hashedPassword = passwordEncoder.encode(password);
+        AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+        user.setPasswordHash(hashedPassword);
+        userRepository.save(user);
+        return Optional.ofNullable(userProfileMapper.map(user));
     }
 }

@@ -1,31 +1,32 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.entities.postgre.PasswordResetToken;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.PasswordResetTokenRepository;
+import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
-
+/** какая-то защита от использованных токенов */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class PasswordResetServiceImpl {
+public class EmailMailingService {
+    /** Тот же репозиторий, что и для восстановления пароля в целом используется как хранилище токенов */
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final JavaMailSender mailSender;
+    private final UserRepository userRepository;
 
     private static final int TOKEN_LENGTH = 6;
     private static final int TOKEN_EXPIRY_HOURS = 1;
-
     @Transactional
-    public void sendPasswordResetToken(String email) {
+    public void getRegistrationToken(String email) {
         passwordResetTokenRepository.deleteByEmail(email);
         passwordResetTokenRepository.flush();
         String token = generateToken();
@@ -71,16 +72,12 @@ public class PasswordResetServiceImpl {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("TechTrackInvest <techtrackinvest@gmail.com>");
             message.setTo(email);
-            message.setSubject("Password Reset Request");
-            message.setText("Ваш токен для восстановления пароля: " + token);
+            message.setSubject("Email Validate Request");
+            message.setText("Ваш токен для подтверждения почты: " + token);
 
             mailSender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void deleteToken(String email) {
-        passwordResetTokenRepository.deleteByEmail(email);
     }
 }

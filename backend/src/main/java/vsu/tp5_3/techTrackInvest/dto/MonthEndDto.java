@@ -11,8 +11,10 @@ import java.util.List;
 public class MonthEndDto {
     Integer monthCount;
     Integer stepCount;
-
-
     List<ConferenceReadDto> currentDisplayedConferences;
     List<StartupReadDto> currentDisplayedStartups;
+    Boolean isGameOver;
+    Boolean isVictory;
+    String gameResultMessage;
+    Integer totalEarnings;
 }

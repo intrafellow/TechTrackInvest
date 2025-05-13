@@ -79,19 +79,7 @@ public class SessionServiceImpl implements SessionService {
         step.setSession(session);
         session.getSteps().add(step);
 
-        // стартуем с первой ниши? и где рандом?
 
-        /*List<CurrentDisplayedConference> currentDisplayedConferences = getRandomConferencesIntoNiche(1, "niche-1", session)
-                .stream().map(c -> convertToDisplayedConference(c, session)).toList();
-        session.setCurrentDisplayedConferences(currentDisplayedConferences);*/
-        /** Учитывать уже посещенные конференции и не отображать их, но будет ли такое количество конференций? */
-        /*List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, "niche-1", session);
-        if (session.getCurrentDisplayedConferences() != null) {
-            session.getCurrentDisplayedConferences().clear();
-            session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
-        } else {
-            session.setCurrentDisplayedConferences(newCurrentDisplayedConferences);
-        }*/
         List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>();
         List<CurrentDisplayedConference> niche1C = conferenceService.getRandomConferencesByNiche(2, "niche-1", session);
         List<CurrentDisplayedConference> niche2C = conferenceService.getRandomConferencesByNiche(2, "niche-2", session);
@@ -103,14 +91,7 @@ public class SessionServiceImpl implements SessionService {
         currentDisplayedConferences.addAll(niche4C);
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
-        /*List<CurrentDisplayedStartup> startups = getRandomStartupsIntoNiche(1, "niche-1", session)
-                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
-        if (session.getCurrentDisplayedStartups() != null) {
-            session.getCurrentDisplayedStartups().clear();
-            session.getCurrentDisplayedStartups().addAll(startups);
-        } else {
-            session.setCurrentDisplayedStartups(startups);
-        }*/
+
         List<CurrentDisplayedStartup> currentDisplayedStartups = new ArrayList<>();
         List<CurrentDisplayedStartup> niche1S = getRandomStartupsIntoNiche(2, "niche-1", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
@@ -206,5 +187,18 @@ public class SessionServiceImpl implements SessionService {
     public Session getCurrentSession() {
         return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow().getSessions().getLast();
+    }
+
+    @Override
+    @Transactional
+    public Optional<SessionReadDto> loadSession() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Юзер не найден по этой почте: " + email));
+
+        Session session = sessionRepository.findTopByAppUserOrderByStartDateDesc(user)
+                .orElseThrow(() -> new EntityNotFoundException("Сессия для этого пользователя не создана: " + email));
+
+        return Optional.ofNullable(sessionReadMapper.map(session));
     }
 }

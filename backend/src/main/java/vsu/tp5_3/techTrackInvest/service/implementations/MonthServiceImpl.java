@@ -1,6 +1,7 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,8 @@ import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
 import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,57 +32,117 @@ public class MonthServiceImpl implements MonthService {
     private final EntityManager entityManager;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
+
+    private final Integer DEFAULT_ACTION_POINTS_PER_STEP = 5;
     @Override
     @Transactional
     public Optional<MonthEndDto> endMonth() {
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
-        Step step = session.getSteps().getLast();
-        // Метод обработки обновления стартапов
-        session.setStepCount(5);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+        Session session = sessionRepository.findTopByAppUserOrderByStartDateDesc(user)
+                .orElseThrow(() -> new EntityNotFoundException("Сессия не найдена"));
+
+        Step currentStep = session.getSteps().getLast();
+
+
+        boolean isGameOver = false;
+        String gameResultMessage = null;
+        Integer totalEarnings = null;
+
+        if (currentStep.getCash() < 0) {
+            isGameOver = true;
+            gameResultMessage = "Игра окончена, у вас закончились деньги";
+        } else if (currentStep.getReputation() < 0) {
+            isGameOver = true;
+            gameResultMessage = "Игра окончена, ваша репутация упала ниже нуля";
+        } else if (currentStep.getExpertiseList().stream().anyMatch(e -> e.getValue() < 0)) {
+            isGameOver = true;
+            gameResultMessage = "Игра окончена, один из показателей вашей экспертности упал ниже нуля";
+        }
+
+
+        boolean isVictory = false;
+        if (!isGameOver && session.getMonthCount() >= 6) {
+            isVictory = true;
+            totalEarnings = calculateTotalEarnings(session);
+            gameResultMessage = String.format("Победа! Вы прошли 6 месяцев и ваша общая прибыль: %d", totalEarnings);
+        }
+
+
+        if (isGameOver || isVictory) {
+            return Optional.of(new MonthEndDto(
+                    session.getMonthCount(),
+                    session.getStepCount(),
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    isGameOver,
+                    isVictory,
+                    gameResultMessage,
+                    totalEarnings
+            ));
+        }
+
         Step newStep = new Step();
-        newStep.setCash(step.getCash());
-        newStep.setReputation(step.getReputation());
-        newStep.setExpertiseList(new ArrayList<>(step.getExpertiseList()));
+        newStep.setCash(currentStep.getCash());
+        newStep.setReputation(currentStep.getReputation());
+        newStep.setExpertiseList(new ArrayList<>(currentStep.getExpertiseList()));
         for (Expertise e : newStep.getExpertiseList()) {
             e.setStep(newStep);
         }
-        newStep.setSequenceNumber(step.getSequenceNumber() + 1);
+        newStep.setSequenceNumber(currentStep.getSequenceNumber() + 1);
         newStep.setSession(session);
         session.getSteps().add(newStep);
 
+        session.setStepCount(DEFAULT_ACTION_POINTS_PER_STEP);
+
         session.getCurrentDisplayedConferences().clear();
         session.getCurrentDisplayedStartups().clear();
-        entityManager.flush();
 
-        //List<CurrentDisplayedConference> newCurrentDisplayedConferences = conferenceService.getRandomConferencesByNiche(5, "niche-1", session);
-        List<CurrentDisplayedConference> newCurrentDisplayedConferences = new ArrayList<>();
-        List<CurrentDisplayedConference> niche1C = conferenceService.getRandomConferencesByNiche(4, "niche-1", session);
-        List<CurrentDisplayedConference> niche2C = conferenceService.getRandomConferencesByNiche(4, "niche-2", session);
-        List<CurrentDisplayedConference> niche3C = conferenceService.getRandomConferencesByNiche(4, "niche-3", session);
-        List<CurrentDisplayedConference> niche4C = conferenceService.getRandomConferencesByNiche(4, "niche-4", session);
-        newCurrentDisplayedConferences.addAll(niche1C);
-        newCurrentDisplayedConferences.addAll(niche2C);
-        newCurrentDisplayedConferences.addAll(niche3C);
-        newCurrentDisplayedConferences.addAll(niche4C);
-        session.getCurrentDisplayedConferences().addAll(newCurrentDisplayedConferences);
+        List<CurrentDisplayedConference> newConferences = new ArrayList<>();
+        for (String nicheId : List.of("niche-1", "niche-2", "niche-3", "niche-4")) {
+            newConferences.addAll(conferenceService.getRandomConferencesByNiche(4, nicheId, session));
+        }
+        session.getCurrentDisplayedConferences().addAll(newConferences);
+
+        for (String nicheId : List.of("niche-1", "niche-2", "niche-3", "niche-4")) {
+            startupService.updateDisplayedStartups(4, nicheId);
+        }
+
         session.setMonthCount(session.getMonthCount() + 1);
-        entityManager.flush();
-        List<ConferenceReadDto> conferenceReadDtos = session.getCurrentDisplayedConferences().stream().map(conferenceReadPostgresMapper::map).toList();
+        session = sessionRepository.save(session);
 
+        List<ConferenceReadDto> conferenceDtos = session.getCurrentDisplayedConferences().stream()
+                .map(conferenceReadPostgresMapper::map)
+                .toList();
 
+        List<StartupReadDto> startupDtos = session.getCurrentDisplayedStartups().stream()
+                .map(displayedStartupReadMapper::map)
+                .toList();
 
-        /*List<CurrentDisplayedStartup> startups = sessionService.getRandomStartupsIntoNiche(1, "niche-1")
-                .stream().map(startupMongo -> sessionService.convertToDisplayedStartup(startupMongo, session)).toList();*/
-        //session.getCurrentDisplayedStartups().addAll(startups);
-        startupService.updateDisplayedStartups(4, "niche-1");
-        startupService.updateDisplayedStartups(4, "niche-2");
-        startupService.updateDisplayedStartups(4, "niche-3");
-        startupService.updateDisplayedStartups(4, "niche-4");
-        List<CurrentDisplayedStartup> startups = session.getCurrentDisplayedStartups();
-        List<StartupReadDto> startupReadDtos = startups.stream().map(displayedStartupReadMapper::map).toList();
+        return Optional.of(new MonthEndDto(
+                session.getMonthCount(),
+                session.getStepCount(),
+                conferenceDtos,
+                startupDtos,
+                false,
+                false,
+                null,
+                null
+        ));
+    }
 
-        return Optional.of(new MonthEndDto(session.getMonthCount() + 1, session.getStepCount(), conferenceReadDtos, startupReadDtos));
+    private int calculateTotalEarnings(Session session) {
+
+        //суммарная стоимость стартапов
+        double totalStartupsCost = session.getStartups().stream().mapToDouble(Startup::getSalePrice).sum();
+
+        //получаем сколько у игрока денег нужно скопировать как я понял, на всякий случай
+        List<Step> steps = new ArrayList<>(session.getSteps());
+        steps.sort(Comparator.comparing(Step::getSequenceNumber));
+        int playerCash = steps.getLast().getCash();
+        // Логика расчета общего заработка
+        return (int) (totalStartupsCost + playerCash);
     }
 
     @Override

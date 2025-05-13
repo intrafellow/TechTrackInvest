@@ -5,7 +5,11 @@ import org.springframework.stereotype.Repository;
 import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 
+import java.util.Optional;
+
 @Repository
 public interface SessionRepository extends JpaRepository<Session, Long> {
     void deleteByAppUser(AppUser user);
+
+    Optional<Session> findTopByAppUserOrderByStartDateDesc(AppUser user);
 }
