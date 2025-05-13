@@ -40,40 +40,48 @@ const ChangeEmailPage: React.FC = () => {
     setSuccess(false);
   };
 
-  const handleSubmit = async () => {
-    setErrors({});
+  const handleSendToken = async () => {
+    if (!email) {
+      setErrors({ email: 'Введите email.' });
+      return;
+    }
+    if (!isEmailValid(email)) {
+      setErrors({ email: 'Неверный формат email.' });
+      return;
+    }
     setLoading(true);
-
     try {
-      if (!isVerificationStage) {
-        if (!email) throw new Error('Введите email.');
-        if (!isEmailValid(email)) throw new Error('Неверный формат email.');
-        
-        // Проверяем существование email в базе
-        try {
-          await authAPI.getRegistrationToken(email);
-          setIsVerificationStage(true);
-        } catch (error: any) {
-          if (error.response?.status === 409) {
-            setErrors({ email: 'Пользователь с таким email уже существует' });
-            setIsVerificationStage(false);
-            return;
-          }
-          throw error;
-        }
-      } else {
-        if (!verificationCode) throw new Error('Введите код подтверждения.');
-        await userAPI.validateEmailToken(email, verificationCode);
-        await userAPI.updateEmail(email);
-        setSuccess(true);
-        setTimeout(() => navigate('/login'), 2000);
-      }
+      await authAPI.getRegistrationToken(email);
+      setErrors({});
+      setIsVerificationStage(true);
     } catch (error: any) {
-      if (error.response?.data?.message) {
-        setErrors({ [isVerificationStage ? 'verificationCode' : 'email']: error.response.data.message });
+      if (error.response?.status === 409) {
+        setErrors({ email: 'Пользователь с таким email уже существует' });
+      } else if (error.response?.status === 500) {
+        setErrors({ email: 'Ошибка сервера. Попробуйте позже.' });
+      } else if (error.response?.data?.message) {
+        setErrors({ email: error.response.data.message });
       } else {
-        setErrors({ [isVerificationStage ? 'verificationCode' : 'email']: error.message });
+        setErrors({ email: 'Произошла ошибка при отправке кода' });
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verificationCode) {
+      setErrors({ verificationCode: 'Введите код подтверждения.' });
+      return;
+    }
+    setLoading(true);
+    try {
+      await authAPI.validateRegistrationToken(email, verificationCode);
+      await userAPI.updateEmail(email);
+      setSuccess(true);
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (error: any) {
+      setErrors({ verificationCode: 'Неверный код подтверждения' });
     } finally {
       setLoading(false);
     }
@@ -189,16 +197,36 @@ const ChangeEmailPage: React.FC = () => {
           }}
         >
           {!isVerificationStage ? (
-            <FormControl variant="outlined" fullWidth error={!!errors.email}>
-              <FormLabel sx={commonLabelStyle}>Новый email</FormLabel>
-              <OutlinedInput
-                type="email"
-                value={email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                sx={commonInputStyle}
-              />
-              {errors.email && <FormHelperText sx={errorTextStyle}>{errors.email}</FormHelperText>}
-            </FormControl>
+            <>
+              <FormControl variant="outlined" fullWidth error={!!errors.email}>
+                <FormLabel sx={commonLabelStyle}>Новый email</FormLabel>
+                <OutlinedInput
+                  type="email"
+                  value={email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  sx={commonInputStyle}
+                />
+                {errors.email && <FormHelperText sx={errorTextStyle}>{errors.email}</FormHelperText>}
+              </FormControl>
+              <Button
+                onClick={handleSendToken}
+                variant="contained"
+                disabled={loading || !email}
+                sx={{
+                  backgroundColor: '#737EB5',
+                  color: '#F6F7FF',
+                  fontFamily: 'Raleway',
+                  fontWeight: 600,
+                  fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
+                  height: '6.5vh',
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: '#5f6999' },
+                  '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' }
+                }}
+              >
+                {loading ? <CircularProgress size={24} sx={{ color: '#F6F7FF' }} /> : 'Получить код'}
+              </Button>
+            </>
           ) : (
             <>
               <Typography sx={{ textAlign: 'center', mb: 2 }}>
@@ -214,36 +242,26 @@ const ChangeEmailPage: React.FC = () => {
                 />
                 {errors.verificationCode && <FormHelperText sx={errorTextStyle}>{errors.verificationCode}</FormHelperText>}
               </FormControl>
+              <Button
+                onClick={handleVerifyCode}
+                variant="contained"
+                disabled={loading || !verificationCode}
+                sx={{
+                  backgroundColor: '#737EB5',
+                  color: '#F6F7FF',
+                  fontFamily: 'Raleway',
+                  fontWeight: 600,
+                  fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
+                  height: '6.5vh',
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: '#5f6999' },
+                  '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' }
+                }}
+              >
+                {loading ? <CircularProgress size={24} sx={{ color: '#F6F7FF' }} /> : 'Подтвердить'}
+              </Button>
             </>
           )}
-
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={loading || (!isVerificationStage ? !email : !verificationCode)}
-            startIcon={success ? <CheckCircleOutline /> : undefined}
-            sx={{
-              backgroundColor: success ? '#4caf50' : '#737EB5',
-              color: '#F6F7FF',
-              fontFamily: 'Raleway',
-              fontWeight: 600,
-              fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
-              height: '6.5vh',
-              textTransform: 'none',
-              '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' },
-              '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' }
-            }}
-          >
-            {loading ? (
-              <CircularProgress size={24} sx={{ color: '#F6F7FF' }} />
-            ) : success ? (
-              'Успешно!'
-            ) : isVerificationStage ? (
-              'Подтвердить'
-            ) : (
-              'Сменить email'
-            )}
-          </Button>
         </Box>
       </Box>
 

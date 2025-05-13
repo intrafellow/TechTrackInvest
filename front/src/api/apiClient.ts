@@ -86,17 +86,6 @@ export const userAPI = {
     return response.data;
   },
 
-  getEmailToken: async (email: string) => {
-    try {
-      const response = await apiClient.post('/api/v1/user/registration/token', null, { params: { email } });
-      return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 409) {
-        throw error;
-      }
-      throw error;
-    }
-  },
 
   validateEmailToken: async (email: string, token: string) => {
     const response = await apiClient.post('/api/v1/user/registration/validate-token', null, { params: { email, token } });
