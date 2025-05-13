@@ -14,7 +14,7 @@ import { sessionAPI, userAPI } from '../api/apiClient';
 
 interface UserProfile {
   email: string;
-  username: string;
+  login: string;
 }
 
 const ProfilePage: React.FC = () => {
@@ -183,7 +183,7 @@ const ProfilePage: React.FC = () => {
               marginBottom: 1
             }}
           >
-            {userData.username}
+            {userData.login}
           </Typography>
           <Link
             component="button"
