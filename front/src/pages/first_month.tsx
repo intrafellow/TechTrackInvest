@@ -182,6 +182,7 @@ const FirstMonthPage: React.FC = () => {
   const isMobileOrTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [isEndTurnDialogOpen, setIsEndTurnDialogOpen] = useState(false);
   const [crisisDialogOpen, setCrisisDialogOpen] = useState(false);
+  const [selectedStartups, setSelectedStartups] = useState<Startup[]>([]);
   const [currentCrisis, setCurrentCrisis] = useState<Crisis | null>(() => {
     const saved = localStorage.getItem('currentCrisis');
     return saved ? JSON.parse(saved) : null;
@@ -339,14 +340,25 @@ const FirstMonthPage: React.FC = () => {
             ];
           }
         }
-
-        // Обновляем месяц из API, если он есть в ответе
-        if (data.currentMonth !== undefined) {
-          setCurrentMonth(data.currentMonth);
-        }
-
-        setBoughtStartups(bought);
-        setAvailableStartups(available);
+		const allStartups = [...bought, ...available];
+		const uniqueByCategory: { [category: string]: any } = {};
+		
+		for (const startup of allStartups) {
+		  if (!uniqueByCategory[startup.categoryName]) {
+			uniqueByCategory[startup.categoryName] = startup;
+		  }
+		}
+		
+		const selectedStartups = Object.values(uniqueByCategory).slice(0, 4);
+		setSelectedStartups(selectedStartups); // ❗Нужен соответствующий useState
+		
+		// Обновляем месяц из API, если он есть в ответе
+		if (data.currentMonth !== undefined) {
+		  setCurrentMonth(data.currentMonth);
+		}
+		
+		setBoughtStartups(bought);
+		setAvailableStartups(available);
         const eventsDataRaw = await conferenceAPI.getAll();
         const eventsData = eventsDataRaw.map((e: any) => ({
           ...e,
