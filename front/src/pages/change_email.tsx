@@ -15,6 +15,7 @@ import {
 import { CheckCircleOutline } from '@mui/icons-material';
 import logo from '../icons/logo.png';
 import { userAPI } from '../api/apiClient';
+import { authAPI } from '../api/apiClient';
 
 const ChangeEmailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -50,11 +51,13 @@ const ChangeEmailPage: React.FC = () => {
         
         // Проверяем существование email в базе
         try {
-          await userAPI.getEmailToken(email);
+          await authAPI.getRegistrationToken(email);
           setIsVerificationStage(true);
         } catch (error: any) {
           if (error.response?.status === 409) {
-            throw new Error('Пользователь с таким email уже существует');
+            setErrors({ email: 'Пользователь с таким email уже существует' });
+            setIsVerificationStage(false);
+            return;
           }
           throw error;
         }
