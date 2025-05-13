@@ -15,7 +15,7 @@ const RegisterPage: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
-  const [isVerificationStage, setIsVerificationStage] = useState(false);
+  const [stage, setStage] = useState<'email' | 'code' | 'register'>('email');
 
   const isEmailValid = (value: string) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ru|com|net|org|io|dev)$/.test(value);
@@ -55,54 +55,75 @@ const RegisterPage: React.FC = () => {
     setSuccess(false);
   };
 
-  const handleRegister = async () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!email) newErrors.email = 'Введите email.';
-    else if (!isEmailValid(email)) newErrors.email = 'Неверный формат email.';
-
-    if (!username) newErrors.username = 'Введите логин.';
-    else if (!isUsernameValid(username)) newErrors.username = 'Логин может содержать только английские буквы и цифры.';
-
-    if (!password) newErrors.password = 'Введите пароль.';
-    else if (!isPasswordValid(password)) newErrors.password = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
-
-    if (!confirmPassword) newErrors.confirmPassword = 'Подтвердите пароль.';
-    else if (password !== confirmPassword) newErrors.confirmPassword = 'Пароли не совпадают.';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-    } else {
-      try {
-        await authAPI.register(email, username, password);
-        await authAPI.getRegistrationToken(email);
-        setErrors({});
-        setIsVerificationStage(true);
-      } catch (error: any) {
-        if (error.response?.status === 409) {
-          setErrors({ email: 'Пользователь с таким email уже зарегистрирован. Проверьте почту или восстановите доступ.' });
-        } else if (error.response?.status === 500) {
-          setErrors({ email: 'Ошибка сервера. Попробуйте позже.' });
-        } else if (error.response?.data?.message) {
-          setErrors({ email: error.response.data.message });
-        } else {
-          setErrors({ email: 'Произошла ошибка при регистрации' });
-        }
+  const handleSendToken = async () => {
+    if (!email) {
+      setErrors({ email: 'Введите email.' });
+      return;
+    }
+    if (!isEmailValid(email)) {
+      setErrors({ email: 'Неверный формат email.' });
+      return;
+    }
+    try {
+      await authAPI.getRegistrationToken(email);
+      setErrors({});
+      setStage('code');
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        setErrors({ email: 'Пользователь с таким email уже зарегистрирован. Проверьте почту или восстановите доступ.' });
+      } else if (error.response?.status === 500) {
+        setErrors({ email: 'Ошибка сервера. Попробуйте позже.' });
+      } else if (error.response?.data?.message) {
+        setErrors({ email: error.response.data.message });
+      } else {
+        setErrors({ email: 'Произошла ошибка при отправке кода' });
       }
     }
   };
 
-  const handleVerification = async () => {
+  const handleVerifyCode = async () => {
+    if (!verificationCode) {
+      setErrors({ verificationCode: 'Введите код подтверждения.' });
+      return;
+    }
     try {
       await authAPI.validateRegistrationToken(email, verificationCode);
-      const loginResponse = await authAPI.login(email, password);
-      localStorage.setItem('token', loginResponse.token);
-      setSuccess(true);
-      setTimeout(() => {
-        window.location.href = '/profile';
-      }, 2000);
+      setErrors({});
+      setStage('register');
     } catch (error: any) {
       setErrors({ verificationCode: 'Неверный код подтверждения' });
+    }
+  };
+
+  const handleRegister = async () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!username) newErrors.username = 'Введите логин.';
+    else if (!isUsernameValid(username)) newErrors.username = 'Логин может содержать только английские буквы и цифры.';
+    if (!password) newErrors.password = 'Введите пароль.';
+    else if (!isPasswordValid(password)) newErrors.password = 'Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, а также цифры.';
+    if (!confirmPassword) newErrors.confirmPassword = 'Подтвердите пароль.';
+    else if (password !== confirmPassword) newErrors.confirmPassword = 'Пароли не совпадают.';
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+    } else {
+      try {
+        const regRes = await authAPI.register(email, username, password);
+        localStorage.setItem('token', regRes.token);
+        setSuccess(true);
+        setTimeout(() => {
+          window.location.href = '/profile';
+        }, 2000);
+      } catch (error: any) {
+        if (error.response?.status === 409) {
+          setErrors({ username: 'Пользователь с таким email уже зарегистрирован.' });
+        } else if (error.response?.status === 500) {
+          setErrors({ username: 'Ошибка сервера. Попробуйте позже.' });
+        } else if (error.response?.data?.message) {
+          setErrors({ username: error.response.data.message });
+        } else {
+          setErrors({ username: 'Произошла ошибка при регистрации' });
+        }
+      }
     }
   };
 
@@ -144,17 +165,73 @@ const RegisterPage: React.FC = () => {
           letterSpacing: '0.04em',
           fontFamily: '"Lettersano Full", sans-serif'
         }}>
-          {isVerificationStage ? 'Подтверждение email' : 'Регистрация'}
+          {stage === 'register' ? 'Регистрация' : stage === 'code' ? 'Подтверждение email' : 'Регистрация'}
         </Typography>
         <Box sx={{ width: '90%', maxWidth: 500, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {!isVerificationStage ? (
+          {stage === 'email' && (
             <>
               <FormControl variant="outlined" fullWidth error={!!errors.email}>
                 <FormLabel sx={labelStyle}>Email</FormLabel>
                 <OutlinedInput type="email" value={email} onChange={(e) => handleChange('email', e.target.value)} sx={inputStyle} />
                 {errors.email && <FormHelperText sx={errorStyle}>{errors.email}</FormHelperText>}
               </FormControl>
-
+              <Button
+                onClick={handleSendToken}
+                variant="contained"
+                fullWidth
+                sx={{ 
+                  backgroundColor: '#737EB5', 
+                  color: '#F6F7FF', 
+                  fontFamily: 'Raleway',
+                  fontWeight: 600,
+                  fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, 
+                  height: '6.5vh', 
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: '#5f6999' }, 
+                  '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } 
+                }}
+              >
+                Получить код
+              </Button>
+            </>
+          )}
+          {stage === 'code' && (
+            <>
+              <Typography sx={{ textAlign: 'center', mb: 2 }}>
+                На ваш email {email} был отправлен код подтверждения
+              </Typography>
+              <FormControl variant="outlined" fullWidth error={!!errors.verificationCode}>
+                <FormLabel sx={labelStyle}>Код подтверждения</FormLabel>
+                <OutlinedInput
+                  type="text"
+                  value={verificationCode}
+                  onChange={(e) => handleChange('verificationCode', e.target.value)}
+                  sx={inputStyle}
+                />
+                {errors.verificationCode && <FormHelperText sx={errorStyle}>{errors.verificationCode}</FormHelperText>}
+              </FormControl>
+              <Button
+                onClick={handleVerifyCode}
+                variant="contained"
+                fullWidth
+                sx={{ 
+                  backgroundColor: '#737EB5', 
+                  color: '#F6F7FF', 
+                  fontFamily: 'Raleway',
+                  fontWeight: 600,
+                  fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, 
+                  height: '6.5vh', 
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: '#5f6999' }, 
+                  '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } 
+                }}
+              >
+                Подтвердить
+              </Button>
+            </>
+          )}
+          {stage === 'register' && (
+            <>
               <FormControl variant="outlined" fullWidth error={!!errors.username}>
                 <FormLabel sx={labelStyle}>Логин</FormLabel>
                 <OutlinedInput type="text" value={username} onChange={(e) => handleChange('username', e.target.value)} sx={inputStyle} />
@@ -196,45 +273,29 @@ const RegisterPage: React.FC = () => {
                 />
                 {errors.confirmPassword && <FormHelperText sx={errorStyle}>{errors.confirmPassword}</FormHelperText>}
               </FormControl>
-            </>
-          ) : (
-            <>
-              <Typography sx={{ textAlign: 'center', mb: 2 }}>
-                На ваш email {email} был отправлен код подтверждения
-              </Typography>
-              <FormControl variant="outlined" fullWidth error={!!errors.verificationCode}>
-                <FormLabel sx={labelStyle}>Код подтверждения</FormLabel>
-                <OutlinedInput
-                  type="text"
-                  value={verificationCode}
-                  onChange={(e) => handleChange('verificationCode', e.target.value)}
-                  sx={inputStyle}
-                />
-                {errors.verificationCode && <FormHelperText sx={errorStyle}>{errors.verificationCode}</FormHelperText>}
-              </FormControl>
+
+              <Button
+                onClick={handleRegister}
+                variant="contained"
+                fullWidth
+                disabled={!isFormValid()}
+                startIcon={success ? <CheckCircleOutline /> : undefined}
+                sx={{ 
+                  backgroundColor: success ? '#4caf50' : '#737EB5', 
+                  color: '#F6F7FF', 
+                  fontFamily: 'Raleway',
+                  fontWeight: 600,
+                  fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, 
+                  height: '6.5vh', 
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' }, 
+                  '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } 
+                }}
+              >
+                {success ? 'Успешно!' : 'Создать аккаунт'}
+              </Button>
             </>
           )}
-
-          <Button
-            onClick={isVerificationStage ? handleVerification : handleRegister}
-            variant="contained"
-            fullWidth
-            disabled={isVerificationStage ? !verificationCode : !isFormValid()}
-            startIcon={success ? <CheckCircleOutline /> : undefined}
-            sx={{ 
-              backgroundColor: success ? '#4caf50' : '#737EB5', 
-              color: '#F6F7FF', 
-              fontFamily: 'Raleway',
-              fontWeight: 600,
-              fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' }, 
-              height: '6.5vh', 
-              textTransform: 'none',
-              '&:hover': { backgroundColor: success ? '#388e3c' : '#5f6999' }, 
-              '&.Mui-disabled': { backgroundColor: '#b5b8c7', color: '#ffffffaa' } 
-            }}
-          >
-            {success ? 'Успешно!' : (isVerificationStage ? 'Подтвердить' : 'Создать аккаунт')}
-          </Button>
         </Box>
       </Box>
       <Snackbar open={success} autoHideDuration={4000} onClose={handleCloseSuccess}>

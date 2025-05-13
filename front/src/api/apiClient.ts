@@ -30,12 +30,12 @@ export const authAPI = {
   },
 
   getRegistrationToken: async (email: string) => {
-    const response = await apiClient.get('/api/v1/user/registration/token', { params: { email } });
+    const response = await apiClient.post('/api/v1/user/registration/token', null, { params: { email } });
     return response.data;
   },
 
   validateRegistrationToken: async (email: string, token: string) => {
-    const response = await apiClient.get('/api/v1/user/registration/validate-token', { params: { email, token } });
+    const response = await apiClient.post('/api/v1/user/registration/validate-token', null, { params: { email, token } });
     return response.data;
   },
 
