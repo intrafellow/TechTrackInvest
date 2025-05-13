@@ -340,25 +340,18 @@ const FirstMonthPage: React.FC = () => {
             ];
           }
         }
-		const allStartups = [...bought, ...available];
-		const uniqueByCategory: { [category: string]: any } = {};
-		
-		for (const startup of allStartups) {
-		  if (!uniqueByCategory[startup.categoryName]) {
-			uniqueByCategory[startup.categoryName] = startup;
-		  }
-		}
-		
-		const selectedStartups = Object.values(uniqueByCategory).slice(0, 4);
-		setSelectedStartups(selectedStartups); // ❗Нужен соответствующий useState
-		
-		// Обновляем месяц из API, если он есть в ответе
-		if (data.currentMonth !== undefined) {
-		  setCurrentMonth(data.currentMonth);
-		}
-		
-		setBoughtStartups(bought);
-		setAvailableStartups(available);
+
+        // Группируем доступные стартапы по категориям и берем по одному из каждой
+        const availableByCategory: { [key: string]: Startup } = {};
+        for (const startup of available) {
+          if (!availableByCategory[startup.categoryName]) {
+            availableByCategory[startup.categoryName] = startup;
+          }
+        }
+        available = Object.values(availableByCategory);
+
+        setBoughtStartups(bought);
+        setAvailableStartups(available);
         const eventsDataRaw = await conferenceAPI.getAll();
         const eventsData = eventsDataRaw.map((e: any) => ({
           ...e,
