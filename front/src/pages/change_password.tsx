@@ -52,7 +52,7 @@ const ChangePasswordPage: React.FC = () => {
       
       await userAPI.updatePassword(newPassword);
       setSuccess(true);
-      setTimeout(() => navigate('/profile'), 2000);
+      setTimeout(() => navigate('/login'), 2000);
     } catch (error: any) {
       if (error.response?.data?.message) {
         setErrors({ password: error.response.data.message });

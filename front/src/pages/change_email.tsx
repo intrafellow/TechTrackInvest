@@ -47,13 +47,23 @@ const ChangeEmailPage: React.FC = () => {
       if (!isVerificationStage) {
         if (!email) throw new Error('Введите email.');
         if (!isEmailValid(email)) throw new Error('Неверный формат email.');
-        await userAPI.updateEmail(email);
-        setIsVerificationStage(true);
+        
+        // Проверяем существование email в базе
+        try {
+          await userAPI.getEmailToken(email);
+          setIsVerificationStage(true);
+        } catch (error: any) {
+          if (error.response?.status === 409) {
+            throw new Error('Пользователь с таким email уже существует');
+          }
+          throw error;
+        }
       } else {
         if (!verificationCode) throw new Error('Введите код подтверждения.');
         await userAPI.validateEmailToken(email, verificationCode);
+        await userAPI.updateEmail(email);
         setSuccess(true);
-        setTimeout(() => navigate('/profile'), 2000);
+        setTimeout(() => navigate('/login'), 2000);
       }
     } catch (error: any) {
       if (error.response?.data?.message) {

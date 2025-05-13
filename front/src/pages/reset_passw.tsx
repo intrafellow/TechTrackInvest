@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, OutlinedInput, FormControl, FormLabel,
   IconButton, InputAdornment, FormHelperText, Snackbar, Alert, CircularProgress
@@ -7,6 +8,7 @@ import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-materi
 import { authAPI } from '../api/apiClient';
 
 const ResetPasswordPage: React.FC = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<'email' | 'code' | 'password'>('email');
   const [form, setForm] = useState({ email: '', code: '', newPassword: '', confirmPassword: '' });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -55,6 +57,7 @@ const ResetPasswordPage: React.FC = () => {
         if (form.newPassword !== form.confirmPassword) throw new Error('Пароли не совпадают.');
         await authAPI.resetPassword(form.email, form.newPassword);
         setSuccess(true);
+        setTimeout(() => navigate('/login'), 2000);
       }
     } catch (error: any) {
       if (error.response?.data?.message) {

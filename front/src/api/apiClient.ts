@@ -77,22 +77,34 @@ export const userAPI = {
   },
 
   updateUsername: async (username: string) => {
-    const response = await apiClient.put('/api/v1/user/username', { username });
+    const response = await apiClient.post('/api/v1/user/change-username', null, { params: { username } });
     return response.data;
   },
 
   updateEmail: async (email: string) => {
-    const response = await apiClient.put('/api/v1/user/email', { email });
+    const response = await apiClient.post('/api/v1/user/change-email', null, { params: { email } });
     return response.data;
+  },
+
+  getEmailToken: async (email: string) => {
+    try {
+      const response = await apiClient.post('/api/v1/user/registration/token', null, { params: { email } });
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        throw error;
+      }
+      throw error;
+    }
   },
 
   validateEmailToken: async (email: string, token: string) => {
-    const response = await apiClient.post('/api/v1/user/email/validate', { email, token });
+    const response = await apiClient.post('/api/v1/user/registration/validate-token', null, { params: { email, token } });
     return response.data;
   },
 
-  updatePassword: async (newPassword: string) => {
-    const response = await apiClient.put('/api/v1/user/password', { newPassword });
+  updatePassword: async (password: string) => {
+    const response = await apiClient.post('/api/v1/user/change-password', null, { params: { password } });
     return response.data;
   },
 
