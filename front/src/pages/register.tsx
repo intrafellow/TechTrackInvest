@@ -79,7 +79,11 @@ const RegisterPage: React.FC = () => {
         setErrors({});
         setIsVerificationStage(true);
       } catch (error: any) {
-        if (error.response?.data?.message) {
+        if (error.response?.status === 409) {
+          setErrors({ email: 'Пользователь с таким email уже зарегистрирован. Проверьте почту или восстановите доступ.' });
+        } else if (error.response?.status === 500) {
+          setErrors({ email: 'Ошибка сервера. Попробуйте позже.' });
+        } else if (error.response?.data?.message) {
           setErrors({ email: error.response.data.message });
         } else {
           setErrors({ email: 'Произошла ошибка при регистрации' });
@@ -91,9 +95,11 @@ const RegisterPage: React.FC = () => {
   const handleVerification = async () => {
     try {
       await authAPI.validateRegistrationToken(email, verificationCode);
+      const loginResponse = await authAPI.login(email, password);
+      localStorage.setItem('token', loginResponse.token);
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = '/login';
+        window.location.href = '/profile';
       }, 2000);
     } catch (error: any) {
       setErrors({ verificationCode: 'Неверный код подтверждения' });
