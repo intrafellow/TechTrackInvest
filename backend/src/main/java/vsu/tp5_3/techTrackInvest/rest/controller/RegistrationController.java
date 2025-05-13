@@ -63,6 +63,9 @@ public class RegistrationController {
 
     @PostMapping("/token")
     public ResponseEntity<?> getToken(@RequestParam String email) {
+        if (userService.findByEmail(email).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователь с таким email уже существует");
+        }
         emailMailingService.getRegistrationToken(email);
         return ResponseEntity.ok("Токен отправлен на электронную почту");
     }
