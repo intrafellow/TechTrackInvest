@@ -75,6 +75,7 @@ const RegisterPage: React.FC = () => {
     } else {
       try {
         await authAPI.register(email, username, password);
+        await authAPI.getRegistrationToken(email);
         setErrors({});
         setIsVerificationStage(true);
       } catch (error: any) {
@@ -89,7 +90,7 @@ const RegisterPage: React.FC = () => {
 
   const handleVerification = async () => {
     try {
-      await authAPI.validateToken(email, verificationCode);
+      await authAPI.validateRegistrationToken(email, verificationCode);
       setSuccess(true);
       setTimeout(() => {
         window.location.href = '/login';

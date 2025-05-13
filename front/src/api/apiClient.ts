@@ -29,6 +29,16 @@ export const authAPI = {
     return response.data;
   },
 
+  getRegistrationToken: async (email: string) => {
+    const response = await apiClient.get('/api/v1/user/registration/token', { params: { email } });
+    return response.data;
+  },
+
+  validateRegistrationToken: async (email: string, token: string) => {
+    const response = await apiClient.get('/api/v1/user/registration/validate-token', { params: { email, token } });
+    return response.data;
+  },
+
   forgotPassword: async (email: string) => {
     const response = await apiClient.post('/api/v1/auth/forgot-password', null, { params: { email } });
     return response.data;
@@ -46,6 +56,11 @@ export const authAPI = {
 };
 
 export const userAPI = {
+  getProfile: async () => {
+    const response = await apiClient.get('/api/v1/user/profile');
+    return response.data;
+  },
+
   getReputation: async () => {
     const response = await apiClient.get('/api/v1/user/reputation');
     return response.data;

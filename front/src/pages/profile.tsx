@@ -1,23 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
   Button,
   Avatar,
-  Link
+  Link,
+  CircularProgress
 } from '@mui/material';
 import boyAvatar from '../icons/boy.png';
 import logo from '../icons/logo.png';
-import { sessionAPI } from '../api/apiClient';
+import { sessionAPI, userAPI } from '../api/apiClient';
+
+interface UserProfile {
+  email: string;
+  username: string;
+}
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  // Временные данные пользователя
-  const userData = {
-    email: 'ya@ya.ru',
-    username: 'testuser'
-  };
+  const [userData, setUserData] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profile = await userAPI.getProfile();
+        setUserData(profile);
+      } catch (err) {
+        setError('Ошибка при загрузке профиля');
+        console.error('Ошибка при загрузке профиля:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleStartGame = async () => {
     try {
@@ -27,6 +47,37 @@ const ProfilePage: React.FC = () => {
       console.error('Ошибка при создании сессии:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ 
+        width: '100vw', 
+        minHeight: '100vh', 
+        backgroundColor: '#585C87', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center' 
+      }}>
+        <CircularProgress sx={{ color: '#F6F7FF' }} />
+      </Box>
+    );
+  }
+
+  if (error || !userData) {
+    return (
+      <Box sx={{ 
+        width: '100vw', 
+        minHeight: '100vh', 
+        backgroundColor: '#585C87', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        color: '#F6F7FF'
+      }}>
+        <Typography>{error || 'Не удалось загрузить профиль'}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
