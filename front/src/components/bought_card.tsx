@@ -183,55 +183,11 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
     try {
       console.log('Начало продажи стартапа:', { resourceId, statistics });
       
-      // Пробуем вызвать API для продажи
-      try {
-        await startupsAPI.sell(resourceId);
-      } catch (apiError) {
-        // Если API недоступен, используем демо-режим
-        console.log('API недоступен, используем демо-режим');
-        
-        // Получаем текущий баланс из localStorage
-        const currentBalance = JSON.parse(localStorage.getItem('balance') || JSON.stringify(balance));
-        
-        // Обновляем баланс в демо-режиме
-        const salePrice = statistics?.salePrice || 0;
-        
-        // Получаем информацию о начальной цене инвестиции
-        const investments = JSON.parse(localStorage.getItem('investments') || '{}');
-        const investedAmount = investments[resourceId];
-        
-        // Если сумма инвестиций не найдена, используем текущую цену продажи
-        if (!investedAmount) {
-          console.warn('Не найдена сохраненная сумма инвестиций для стартапа:', resourceId, 'Используем текущую цену продажи');
-        }
-
-        console.log('Продажа стартапа:', {
-          startupId: resourceId,
-          investedAmount: investedAmount || salePrice,
-          salePrice,
-          profit: salePrice - (investedAmount || salePrice)
-        });
-        
-        const newBalance = {
-          cash: currentBalance.cash + salePrice, // Увеличиваем наличные на сумму продажи
-          investment: currentBalance.investment - (investedAmount || salePrice), // Уменьшаем инвестиции на сумму первоначальных инвестиций или текущую цену
-          total: (currentBalance.cash + salePrice) + (currentBalance.investment - (investedAmount || salePrice)) // Общий капитал = новые наличные + новые инвестиции
-        };
-        
-        // Удаляем информацию об инвестиции после продажи, если она была
-        if (investedAmount) {
-          delete investments[resourceId];
-          localStorage.setItem('investments', JSON.stringify(investments));
-        }
-        
-        // Сохраняем новый баланс
-        localStorage.setItem('balance', JSON.stringify(newBalance));
-        setBalance(newBalance);
-        
-        // Отправляем событие об обновлении баланса
-        window.dispatchEvent(new CustomEvent('balanceUpdate', {
-          detail: newBalance
-        }));
+      // Вызываем API для продажи
+      const result = await startupsAPI.sell(resourceId);
+      
+      if (!result.success) {
+        throw new Error(result.errorMessage || 'Ошибка при продаже стартапа');
       }
       
       // Закрываем оба диалога
