@@ -1,6 +1,7 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,14 @@ public class RegistrationController {
         ));
     }
 
+    @Operation(
+            summary = "Метод для отправки токена на почту для регистрации",
+            description = "Отправляет цифровой код на почту игрока для подтверждения владения ею",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Уникальный правильный email, на который отправлен токен"),
+                    @ApiResponse(responseCode = "409", description = "Пользователь с таким email уже существует в системе")
+            }
+    )
     @PostMapping("/token")
     public ResponseEntity<?> getToken(@RequestParam String email) {
         if (userService.findByEmail(email).isPresent()) {
@@ -70,6 +79,13 @@ public class RegistrationController {
         return ResponseEntity.ok("Токен отправлен на электронную почту");
     }
 
+    @Operation(
+            summary = "Сверяем введённый пользователем токен, с тем что был выслан ему на почту",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Токены совпадают. Успешная регистрация почты"),
+                    @ApiResponse(responseCode = "400", description = "Токены различаются")
+            }
+    )
     @PostMapping("/validate-token")
     public ResponseEntity<?> validateToken(
             @RequestParam String email,
