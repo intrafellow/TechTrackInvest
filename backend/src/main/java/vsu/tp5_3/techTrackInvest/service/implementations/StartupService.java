@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
@@ -118,7 +119,6 @@ public class StartupService {
     //Метод, который отвечает за экспертизу
     @Transactional
     public StepActionDto<StartupExpertiseDTO> getExpertise(String resourceId, int expertisePrice) {
-        //логично было бы сделать ограничения на покупку экспертизы на один и тот же стартап на одном ходу
         StepValidationResult validationResult = stepService.validateStep();
 
         if (!validationResult.isValid()) {
@@ -169,15 +169,6 @@ public class StartupService {
         startup.setSession(session);
         startupRepository.save(startup);
 
-        /*AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        CurrentDisplayedStartup boughtStartup1 = session.getCurrentDisplayedStartups().stream().filter(c -> c.getResourceId().equals(startupBuyDTO.getResourceId())).findFirst().get();
-       *//* CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.
-                findByResourceId(startupBuyDTO.getResourceId()).orElseThrow();*//*
-        System.out.println(boughtStartup1.getId());
-        CurrentDisplayedStartup boughtStartup = currentDisplayedStartupRepository.findById(boughtStartup1.getId()).orElseThrow();
-        System.out.println(boughtStartup.getId());*/
-
         List<CurrentDisplayedStartup> startups = currentDisplayedStartupRepository
                 .findAllByResourceId(startupBuyDTO.getResourceId());
 
@@ -202,6 +193,7 @@ public class StartupService {
 
     }
 
+    @NeedTest
     @Transactional
     public StepActionDto<StartupSellDTO> sellStartup(String resourceId) {
         StepValidationResult validationResult = stepService.validateStep();
@@ -211,24 +203,24 @@ public class StartupService {
 
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();
-
-        Startup startupToSell = startupRepository.findById(resourceId).orElseThrow(
-                () -> new EntityNotFoundException("No startup found in startup postgresql to sell"));
+        Startup startupToSell = session.getStartups().stream().filter(startup -> startup.getResId().equals(resourceId))
+                .findFirst().orElseThrow();
 
         int salePrice = startupToSell.getSalePrice();
         Step currentStep = stepService.getCurrentStep(session);
         int newPlayerCash = currentStep.getCash() + salePrice;
         currentStep.setCash(newPlayerCash);
-        startupRepository.delete(startupToSell);
+        session.getStartups().remove(startupToSell);
         stepService.executeStep();
 
         var resultDTO = new StartupSellDTO(startupToSell.getName(), salePrice);
         return new StepActionDto<>(true, resultDTO, "", session.getStepCount());
     }
 
+    @NeedTest
     public StartupStatisticsDTO getStartupStatistics(String resourceId) {
-        Session session = sessionService.getCurrentSession();
-        Startup startup = startupRepository.findById(resourceId).orElseThrow();
+        Startup startup = sessionService.getCurrentSession().getStartups().stream()
+                .filter(st -> st.getResId().equals(resourceId)).findFirst().orElseThrow();
 
         return startupStatisticsMapper.map(startup);
     }
