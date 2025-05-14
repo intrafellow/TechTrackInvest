@@ -144,6 +144,7 @@ public class RegistrationController {
     )
     @GetMapping("/is-mail-available/{mail}")
     public ResponseEntity<Boolean> isMailAvailable(
+            @Parameter(description = "Передаём почту, которую хотим проверить на доступность.")
             @PathVariable String mail) {
         boolean isExists = userService.checkMailExists(mail);
         return ResponseEntity.ok(!isExists);
