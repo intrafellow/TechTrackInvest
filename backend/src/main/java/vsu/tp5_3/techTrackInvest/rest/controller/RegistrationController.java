@@ -125,4 +125,27 @@ public class RegistrationController {
         boolean isExists = userService.checkUsernameExists(username);
         return ResponseEntity.ok(!isExists);
     }
+
+    @Operation(
+            summary = "Проверяем не занял ли переданный mail",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Запрос всегда возвращает 200 код, только если сервер не поломался",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            type = "boolean",
+                                            description = "true - почта доступна для регистрации, false - уже занята"
+                                    )
+                            )
+                    )
+            }
+    )
+    @GetMapping("/is-mail-available/{mail}")
+    public ResponseEntity<Boolean> isMailAvailable(
+            @PathVariable String mail) {
+        boolean isExists = userService.checkMailExists(mail);
+        return ResponseEntity.ok(!isExists);
+    }
 }

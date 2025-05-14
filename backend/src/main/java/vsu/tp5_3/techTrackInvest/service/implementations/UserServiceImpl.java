@@ -214,4 +214,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public boolean checkUsernameExists(String username) {
         return userRepository.existsByUsername(username);
     }
+
+    public boolean checkMailExists(String mail) {
+        return userRepository.existsByEmail(mail);
+    }
 }
