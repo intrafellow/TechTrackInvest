@@ -210,4 +210,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userRepository.save(user);
         return Optional.ofNullable(userProfileMapper.map(user));
     }
+
+    public boolean checkUsernameExists(String username) {
+        return userRepository.existsByUsername(username);
+    }
 }

@@ -1,17 +1,18 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationDto;
 import vsu.tp5_3.techTrackInvest.dto.RegistrationResponse;
 import vsu.tp5_3.techTrackInvest.dto.UserReadDto;
@@ -98,5 +99,30 @@ public class RegistrationController {
         } else {
             return ResponseEntity.badRequest().body("Токен не валиден");
         }
+    }
+
+    @Operation(
+            summary = "Проверяем есть ли пользователь с таким юзернеймом",
+            description = "Если данный юзерней доступен для регистрации то возвращаем true, иначе - false",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Запрос всегда возвращает 200 код, только если сервер не поломался",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            type = "boolean",
+                                            description = "true - юзернейм доступен, false - уже занят"
+                                    )
+                            )
+                    )
+            }
+    )
+    @GetMapping("/is-username-available/{username}")
+    public ResponseEntity<Boolean> isUsernameAvailable(
+            @Parameter(description = "Юзернейм, который мы хотим проверить на занятость")
+            @PathVariable String username) {
+        boolean isExists = userService.checkUsernameExists(username);
+        return ResponseEntity.ok(!isExists);
     }
 }
