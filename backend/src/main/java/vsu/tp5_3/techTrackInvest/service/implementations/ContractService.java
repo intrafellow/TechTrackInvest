@@ -47,8 +47,17 @@ public class ContractService {
         }
 
         int delta = maxPrice - suggestedPrice;
-        int badCasePrice = (int) (suggestedPrice + delta * ((double) (rollResult - 1) / 19));
-        return (rollResult < 10) ? suggestedPrice : badCasePrice;
+        int modifiedPrice = (int) (suggestedPrice + delta * ((double) (rollResult - 1) / 19));
+
+        if (rollResult < 10) {
+            int inverseRoll = 20 - rollResult;
+            modifiedPrice = (int) (suggestedPrice + delta * ((double) (inverseRoll - 1) / 19));
+            return modifiedPrice;
+        } else if (rollResult <= 13) {
+            return suggestedPrice;
+        } else {
+            return modifiedPrice;
+        }
     }
 
     //тут добавлю интерфейс, который будет возвращать сообщение. Чтобы потом было удобно всё заменить нейронкой
