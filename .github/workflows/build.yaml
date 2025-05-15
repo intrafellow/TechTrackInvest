@@ -1,4 +1,4 @@
-name: TechTrackInvest CI
+name: backend CI
 on:
   pull_request:
     branches: [ "main", "dev" ]

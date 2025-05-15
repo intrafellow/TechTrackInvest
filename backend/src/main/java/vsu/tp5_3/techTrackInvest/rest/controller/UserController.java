@@ -1,6 +1,7 @@
 package vsu.tp5_3.techTrackInvest.rest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,14 @@ public class UserController {
                 ));
     }
 
+    @Operation(
+            summary = "Получаем данные профиля пользователя",
+            description = "Получаем почту пользователя и его юзернейм",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Успешно получили описание"),
+                    @ApiResponse(responseCode = "404", description = "Данный пользователь был не найден. Возможно проблемы с jwt")
+            }
+    )
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDto> getProfile() {
         return userService.getProfile()
@@ -69,6 +78,14 @@ public class UserController {
                 ));
     }
 
+    @Operation(
+            summary = "Меняет email пользователя на переданный в запросе",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Успешно сменили email"),
+                    @ApiResponse(responseCode = "404", description = "В базе не был найден пользователь, " +
+                            "которому необходимо сменить email")
+            }
+    )
     @PostMapping("/change-email")
     public ResponseEntity<UserProfileDto> changeEmail(@RequestParam String email) {
         return userService.changeEmail(email)
@@ -79,6 +96,14 @@ public class UserController {
                 ));
     }
 
+    @Operation(
+            summary = "Меняет username пользователя на переданный в запросе",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Успешно сменили username"),
+                    @ApiResponse(responseCode = "404", description = "В базе не был найден пользователь, " +
+                            "которому необходимо сменить username")
+            }
+    )
     @PostMapping("/change-username")
     public ResponseEntity<UserProfileDto> changeUsername(@RequestParam String username) {
         return userService.changeUsername(username)
@@ -89,6 +114,14 @@ public class UserController {
                 ));
     }
 
+    @Operation(
+            summary = "Меняет пароль пользователя на переданный в запросе",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Успешно сменили пароль"),
+                    @ApiResponse(responseCode = "404", description = "В базе не был найден пользователь, " +
+                            "которому необходимо сменить пароль")
+            }
+    )
     @PostMapping("/change-password")
     public ResponseEntity<UserProfileDto> changePassword(@RequestParam String password) {
         return userService.changePassword(password)

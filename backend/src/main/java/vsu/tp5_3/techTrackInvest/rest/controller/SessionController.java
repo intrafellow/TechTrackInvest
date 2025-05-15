@@ -46,6 +46,10 @@ public class SessionController {
                 ));
     }
 
+    @Operation(
+            summary = "Загрузить последнюю игровую сессию",
+            description = "Загружает последнюю незавершенную игровую сессию игрока"
+    )
     @GetMapping("/load")
     public ResponseEntity<SessionReadDto> loadSession() {
         //sessionService.finishSession();
