@@ -343,7 +343,6 @@ const FirstMonthPage: React.FC = () => {
 
         setBoughtStartups(bought);
         setAllAvailableStartups(available);
-        setAvailableStartups(available);
         const eventsDataRaw = await conferenceAPI.getAll();
         const eventsData = eventsDataRaw.map((e: any) => ({
           ...e,
@@ -369,7 +368,6 @@ const FirstMonthPage: React.FC = () => {
           setBoughtStartups([]);
         }
         setAllAvailableStartups([]);
-        setAvailableStartups([]);
         setEvents([]);
         setError('Ошибка при загрузке данных');
       } finally {
