@@ -171,7 +171,7 @@ const FirstMonthPage: React.FC = () => {
   const [selected, setSelected] = useState<string>('');
   const [isBlurred, setIsBlurred] = useState(false);
   const [boughtStartups, setBoughtStartups] = useState<Startup[]>([]);
-  const [availableStartups, setAvailableStartups] = useState<Startup[]>([]);
+  const [allAvailableStartups, setAllAvailableStartups] = useState<Startup[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -341,16 +341,8 @@ const FirstMonthPage: React.FC = () => {
           }
         }
 
-        // Группируем доступные стартапы по категориям и берем по одному из каждой
-        const availableByCategory: { [key: string]: Startup } = {};
-        for (const startup of available) {
-          if (!availableByCategory[startup.categoryName]) {
-            availableByCategory[startup.categoryName] = startup;
-          }
-        }
-        available = Object.values(availableByCategory);
-
         setBoughtStartups(bought);
+        setAllAvailableStartups(available);
         setAvailableStartups(available);
         const eventsDataRaw = await conferenceAPI.getAll();
         const eventsData = eventsDataRaw.map((e: any) => ({
@@ -376,6 +368,7 @@ const FirstMonthPage: React.FC = () => {
         } else {
           setBoughtStartups([]);
         }
+        setAllAvailableStartups([]);
         setAvailableStartups([]);
         setEvents([]);
         setError('Ошибка при загрузке данных');
@@ -419,7 +412,19 @@ const FirstMonthPage: React.FC = () => {
 
   // Фильтрация по selected
   const filteredBought = boughtStartups.filter(s => selected === '' || s.nicheId === selected);
-  const filteredAvailable = availableStartups.filter(s => selected === '' || s.nicheId === selected);
+
+  let filteredAvailable: Startup[] = [];
+  if (selected === '') {
+    // Группируем по категориям и берём по одному на каждую
+    const byCategory: { [key: string]: Startup } = {};
+    for (const s of allAvailableStartups) {
+      if (!byCategory[s.categoryName]) byCategory[s.categoryName] = s;
+    }
+    filteredAvailable = Object.values(byCategory);
+  } else {
+    // Показываем все стартапы выбранной сферы
+    filteredAvailable = allAvailableStartups.filter(s => s.nicheId === selected);
+  }
 
   const handleSellStartup = async (startupId: string) => {
     try {
