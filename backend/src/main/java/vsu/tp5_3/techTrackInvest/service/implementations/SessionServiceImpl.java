@@ -93,13 +93,13 @@ public class SessionServiceImpl implements SessionService {
 
 
         List<CurrentDisplayedStartup> currentDisplayedStartups = new ArrayList<>();
-        List<CurrentDisplayedStartup> niche1S = getRandomStartupsIntoNiche(2, "niche-1", session)
+        List<CurrentDisplayedStartup> niche1S = getRandomStartupsIntoNiche(4, "niche-1", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        List<CurrentDisplayedStartup> niche2S = getRandomStartupsIntoNiche(2, "niche-2", session)
+        List<CurrentDisplayedStartup> niche2S = getRandomStartupsIntoNiche(4, "niche-2", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        List<CurrentDisplayedStartup> niche3S = getRandomStartupsIntoNiche(2, "niche-3", session)
+        List<CurrentDisplayedStartup> niche3S = getRandomStartupsIntoNiche(4, "niche-3", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        List<CurrentDisplayedStartup> niche4S = getRandomStartupsIntoNiche(2, "niche-4", session)
+        List<CurrentDisplayedStartup> niche4S = getRandomStartupsIntoNiche(4, "niche-4", session)
                 .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
         currentDisplayedStartups.addAll(niche1S);
         currentDisplayedStartups.addAll(niche2S);
