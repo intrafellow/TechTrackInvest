@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button, Box } from '@mui/material';
 import it from '../icons/IT.png';
 import med from '../icons/Med.png';
@@ -6,6 +6,7 @@ import green from '../icons/Green.png';
 import space from '../icons/Space.png';
 import { startupsAPI, contractAPI, monthAPI } from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
+import ExpertiseDialog from './expertise_dialog';
 
 const NICHE_MAP: { [key: string]: { id: string; name: string; icon: string } } = {
   'IT': { id: 'IT', name: 'IT', icon: it },
@@ -44,25 +45,55 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
   const [expertiseDone, setExpertiseDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expertiseDialogOpen, setExpertiseDialogOpen] = useState(false);
+  const [expertiseOrdered, setExpertiseOrdered] = useState(false);
+  const [expertiseLoading, setExpertiseLoading] = useState(false);
+  const [expertiseError, setExpertiseError] = useState<string | null>(null);
+  const [expertiseData, setExpertiseData] = useState<any>(null);
   const nicheInfo = NICHE_MAP[subtitle] || NICHE_MAP['IT'];
   const backgroundImage = image || nicheInfo.icon;
   const isHighlighted = active || expertiseDone;
   const navigate = useNavigate();
 
-  const handleExpertise = async () => {
+  const handleOpenExpertiseDialog = async () => {
+    setExpertiseDialogOpen(true);
+    setExpertiseError(null);
+    setExpertiseLoading(true);
     try {
-      setLoading(true);
-      const expertiseData = await startupsAPI.getExpertise(resourceId, price);
-      setExpertiseDone(true);
-      // Обновляем очки действий после заказа экспертизы
-      try {
-        const stepCountData = await monthAPI.getStepCount();
-        window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: stepCountData.stepCount } }));
-      } catch (e) { /* ignore */ }
+      const data = await startupsAPI.getExpertise(resourceId, price);
+      if (data.success) {
+        setExpertiseData(data.content);
+        setExpertiseOrdered(false);
+      } else {
+        setExpertiseError(data.errorMessage || 'Ошибка при получении стоимости экспертизы');
+      }
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Ошибка при получении экспертизы');
+      setExpertiseError(error.response?.data?.message || 'Ошибка при получении стоимости экспертизы');
     } finally {
-      setLoading(false);
+      setExpertiseLoading(false);
+    }
+  };
+
+  const handleExpertiseOrder = async () => {
+    setExpertiseLoading(true);
+    setExpertiseError(null);
+    try {
+      const data = await startupsAPI.getExpertise(resourceId, price);
+      if (data.success) {
+        setExpertiseData(data.content);
+        setExpertiseOrdered(true);
+        // Обновляем очки действий после заказа экспертизы
+        try {
+          const stepCountData = await monthAPI.getStepCount();
+          window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: stepCountData.stepCount } }));
+        } catch (e) { /* ignore */ }
+      } else {
+        setExpertiseError(data.errorMessage || 'Ошибка при получении экспертизы');
+      }
+    } catch (error: any) {
+      setExpertiseError(error.response?.data?.message || 'Ошибка при получении экспертизы');
+    } finally {
+      setExpertiseLoading(false);
     }
   };
 
@@ -211,7 +242,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
       <Box sx={{ display: 'flex', gap: '1vh' }}>
         <Button
           variant="outlined"
-          onClick={handleExpertise}
+          onClick={handleOpenExpertiseDialog}
           disabled={loading || expertiseDone}
           sx={{
             borderColor: '#79747E',
@@ -247,6 +278,23 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
           {active ? 'Сделка заключена' : 'Заключить сделку'}
         </Button>
       </Box>
+
+      <ExpertiseDialog
+        open={expertiseDialogOpen}
+        onClose={() => {
+          setExpertiseDialogOpen(false);
+          setExpertiseError(null);
+          setExpertiseLoading(false);
+          setExpertiseData(null);
+          setExpertiseOrdered(false);
+        }}
+        onOrder={handleExpertiseOrder}
+        ordered={expertiseOrdered}
+        loading={expertiseLoading}
+        error={expertiseError}
+        expertiseData={expertiseData}
+        startupPrice={expertiseData?.price || price}
+      />
     </Card>
   );
 };
