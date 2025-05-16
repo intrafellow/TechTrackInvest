@@ -12,6 +12,7 @@ import FirstMonthPage from './pages/first_month';
 import ChangeEmailPage from './pages/change_email';
 import ChangeUsernamePage from './pages/change_username';
 import DealPage from './pages/deal_page';
+import ProtectedRoute from './components/ProtectedRoute';
 import theme from './theme';
 
 const NotFoundPage: React.FC = () => (
@@ -38,14 +39,42 @@ const App: React.FC = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/reset_passw" element={<ResetPasswordPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/change_password" element={<ChangePasswordPage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/first-month" element={<FirstMonthPage />} />
-          <Route path="/change_email" element={<ChangeEmailPage />} />
-          <Route path="/change_username" element={<ChangeUsernamePage />} />
-          <Route path="/deal/:startupId" element={<DealPage />} />
-          <Route path="*" element={<NotFoundPage />} /> {/* 404 */}
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/change_password" element={
+            <ProtectedRoute>
+              <ChangePasswordPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/game" element={
+            <ProtectedRoute>
+              <GamePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/game_field" element={
+            <ProtectedRoute>
+              <FirstMonthPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/change_email" element={
+            <ProtectedRoute>
+              <ChangeEmailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/change_username" element={
+            <ProtectedRoute>
+              <ChangeUsernamePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/deal/:startupId" element={
+            <ProtectedRoute>
+              <DealPage />
+            </ProtectedRoute>
+          } />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </ThemeProvider>
