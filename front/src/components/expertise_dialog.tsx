@@ -92,7 +92,7 @@ const ExpertiseDialog: React.FC<ExpertiseDialogProps> = ({
               <Button
                 variant="contained"
                 onClick={onOrder}
-                disabled={loading || !expertiseData?.price}
+                disabled={loading}
                 sx={{
                   backgroundColor: '#E8DEF8',
                   color: '#4A4459',
@@ -107,7 +107,7 @@ const ExpertiseDialog: React.FC<ExpertiseDialogProps> = ({
                   }
                 }}
               >
-                {loading ? 'Заказ...' : expertiseData?.price ? `Заказать за ${expertiseData.price.toLocaleString()}₽` : 'Заказать'}
+                {loading ? 'Заказ...' : `Заказать за ${startupPrice.toLocaleString()}₽`}
               </Button>
             </Box>
           </>
