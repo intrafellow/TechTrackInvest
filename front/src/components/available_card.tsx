@@ -50,19 +50,33 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
   const [expertiseLoading, setExpertiseLoading] = useState(false);
   const [expertiseError, setExpertiseError] = useState<string | null>(null);
   const [expertiseData, setExpertiseData] = useState<any>(null);
-  const [expertisePrice] = useState(80000);
+  const [expertisePrice, setExpertisePrice] = useState<number | null>(null);
   const nicheInfo = NICHE_MAP[subtitle] || NICHE_MAP['IT'];
   const backgroundImage = image || nicheInfo.icon;
   const isHighlighted = active || expertiseDone;
   const navigate = useNavigate();
 
-  const handleOpenExpertiseDialog = () => {
+  const handleOpenExpertiseDialog = async () => {
     setExpertiseDialogOpen(true);
     setExpertiseError(null);
-    setExpertiseLoading(false);
+    setExpertiseLoading(true);
+    try {
+      // Получаем только цену (без списания денег)
+      const data = await startupsAPI.getExpertise(resourceId, 0);
+      if (data.content && data.content.price) {
+        setExpertisePrice(data.content.price);
+      } else {
+        setExpertiseError('Не удалось получить стоимость экспертизы');
+      }
+    } catch (error: any) {
+      setExpertiseError(error.response?.data?.message || 'Ошибка при получении стоимости экспертизы');
+    } finally {
+      setExpertiseLoading(false);
+    }
   };
 
   const handleExpertiseOrder = async () => {
+    if (!expertisePrice) return;
     setExpertiseLoading(true);
     setExpertiseError(null);
     try {
@@ -276,13 +290,14 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
           setExpertiseLoading(false);
           setExpertiseData(null);
           setExpertiseOrdered(false);
+          setExpertisePrice(null);
         }}
         onOrder={handleExpertiseOrder}
         ordered={expertiseOrdered}
         loading={expertiseLoading}
         error={expertiseError}
         expertiseData={expertiseData}
-        startupPrice={expertisePrice}
+        startupPrice={expertisePrice ?? 0}
       />
     </Card>
   );
