@@ -130,7 +130,7 @@ const ExpertiseDialog: React.FC<ExpertiseDialogProps> = ({
                 <li>Репутация: {expertiseData.reputation}</li>
                 <li>Уровень: {expertiseData.level}</li>
                 <li>Стадия: {expertiseData.stage}</li>
-                <li><b>Стоимость экспертизы: {expertiseData.price.toLocaleString()}₽</b></li>
+                <li><b>Стоимость продажи стартапа: {expertiseData.price.toLocaleString()}₽</b></li>
               </ul>
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
                 <Button

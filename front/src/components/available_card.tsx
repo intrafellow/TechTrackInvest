@@ -70,6 +70,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
       if (data.success) {
         setExpertiseData(data.content);
         setExpertiseOrdered(true);
+        setExpertiseDone(true);
         // Обновляем очки действий после заказа экспертизы
         try {
           const stepCountData = await monthAPI.getStepCount();
