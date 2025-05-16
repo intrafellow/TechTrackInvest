@@ -172,6 +172,11 @@ export const startupsAPI = {
   sell: async (startupResourceId: string) => {
     const response = await apiClient.get(`/api/v1/startups/sell/${startupResourceId}`);
     return response.data;
+  },
+
+  getExpertiseInfo: async (resourceId: string) => {
+    const response = await apiClient.get(`/api/v1/startups/${resourceId}/expertise/`);
+    return response.data;
   }
 };
 
