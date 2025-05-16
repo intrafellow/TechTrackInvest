@@ -137,6 +137,13 @@ public class StartupService {
         );
 
         int currentPlayerCash = currentStep.getCash();
+
+        // Если price == 0, просто возвращаем цену экспертизы, не тратим деньги и очки действий
+        if (expertisePrice == 0) {
+            StartupExpertiseDTO startupExpertiseDTO = startupExpertiseMapper.map(originalStartup);
+            return new StepActionDto<>(true, startupExpertiseDTO, null, validationResult.getSteps());
+        }
+
         if (currentPlayerCash < expertisePrice) return new StepActionDto<>(false, null,
                 "Недостаточно средств для покупки экспертизы", validationResult.getSteps());
 
