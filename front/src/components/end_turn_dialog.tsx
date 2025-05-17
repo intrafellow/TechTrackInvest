@@ -75,10 +75,12 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({
       const response = await monthAPI.endMonth();
 
       if (response.isVictory) {
+        onClose(); // Закрываем EndTurnDialog перед показом WinDialog
         setGameResultMessage(response.gameResultMessage);
         setTotalEarnings(response.totalEarnings);
         setIsWinDialogOpen(true);
       } else if (response.isGameOver) {
+        onClose(); // Закрываем EndTurnDialog перед показом LoseDialog
         setGameResultMessage(response.gameResultMessage);
         setIsLoseDialogOpen(true);
       } else {
