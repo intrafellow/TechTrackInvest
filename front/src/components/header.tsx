@@ -12,6 +12,7 @@ import tea from '../icons/tea.png';
 import calender from '../icons/calender.png';
 import { sessionAPI, userAPI, monthAPI } from '../api/apiClient';
 import StatsDialog from './stats_dialog';
+import ProfileMenu from './profile_menu';
 
 const navItems = [
   { label: 'Экспертиза', icon: file, type: 'expertise' },
@@ -88,6 +89,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     money: { cash: 0, investment: 0, total: 0 },
     reputation: 0
   });
+  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(null);
 
   // Демо-данные для разных месяцев
   interface DemoMonthData {
@@ -364,6 +366,14 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     return `Изменение: ${diff > 0 ? '+' : ''}${diff} (${percentage}%)`;
   };
 
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileAnchorEl(null);
+  };
+
   return (
     <Box
       sx={{
@@ -563,8 +573,10 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
               '&:hover': {
                 transform: 'scale(1.05)',
               },
+              cursor: 'pointer'
             }}
             id="profile"
+            onClick={handleProfileClick}
           />
         </Box>
 
@@ -582,6 +594,11 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
           />
         ))}
       </Box>
+
+      <ProfileMenu
+        anchorEl={profileAnchorEl}
+        onClose={handleProfileMenuClose}
+      />
     </Box>
   );
 };

@@ -263,6 +263,11 @@ export const sessionAPI = {
     return response.data;
   },
 
+  load: async () => {
+    const response = await apiClient.get('/api/v1/session/load');
+    return response.data;
+  },
+
   endMonth: async () => {
     const response = await apiClient.get('/api/v1/month/finish');
     return response.data;

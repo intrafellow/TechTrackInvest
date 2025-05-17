@@ -6,7 +6,11 @@ import {
   Button,
   Avatar,
   Link,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import boyAvatar from '../icons/boy.png';
 import logo from '../icons/logo.png';
@@ -22,6 +26,7 @@ const ProfilePage: React.FC = () => {
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [startGameDialogOpen, setStartGameDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -40,12 +45,27 @@ const ProfilePage: React.FC = () => {
   }, []);
 
   const handleStartGame = async () => {
+    setStartGameDialogOpen(true);
+  };
+
+  const handleStartNewGame = async () => {
     try {
       await sessionAPI.start();
       navigate('/first-month');
     } catch (error) {
       console.error('Ошибка при создании сессии:', error);
     }
+    setStartGameDialogOpen(false);
+  };
+
+  const handleContinueGame = async () => {
+    try {
+      await sessionAPI.load();
+      navigate('/first-month');
+    } catch (error) {
+      console.error('Ошибка при загрузке сессии:', error);
+    }
+    setStartGameDialogOpen(false);
   };
 
   if (loading) {
@@ -239,6 +259,53 @@ const ProfilePage: React.FC = () => {
           </Button>
         </Box>
       </Box>
+
+      <Dialog
+        open={startGameDialogOpen}
+        onClose={() => setStartGameDialogOpen(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#59618C',
+            color: '#F6F7FF',
+            fontFamily: 'Raleway, sans-serif',
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontSize: '2vh' }}>Начать игру</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ fontSize: '1.6vh', mb: 2 }}>
+            Выберите способ начала игры:
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ padding: '1vh 2vh 2vh' }}>
+          <Button
+            onClick={handleStartNewGame}
+            variant="contained"
+            sx={{
+              backgroundColor: '#737EB5',
+              color: '#F6F7FF',
+              '&:hover': { backgroundColor: '#5f6999' },
+              fontSize: '1.4vh',
+              textTransform: 'none',
+            }}
+          >
+            Начать без сохранения
+          </Button>
+          <Button
+            onClick={handleContinueGame}
+            variant="contained"
+            sx={{
+              backgroundColor: '#585C87',
+              color: '#F6F7FF',
+              '&:hover': { backgroundColor: '#4a4d75' },
+              fontSize: '1.4vh',
+              textTransform: 'none',
+            }}
+          >
+            Продолжить игру
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
