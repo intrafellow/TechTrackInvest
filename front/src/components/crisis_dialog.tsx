@@ -42,6 +42,18 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
   solutions
 }) => {
   const [hoveredSolution, setHoveredSolution] = useState<string | null>(null);
+  const [selectedSolution, setSelectedSolution] = useState<string | null>(null);
+
+  const handleSolutionClick = (solutionId: string) => {
+    setSelectedSolution(solutionId);
+  };
+
+  const handleConfirm = () => {
+    if (selectedSolution) {
+      onSolutionSelect(selectedSolution);
+      setSelectedSolution(null);
+    }
+  };
 
   return (
     <Dialog
@@ -49,6 +61,8 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      disableEscapeKeyDown
+      disableBackdropClick
       PaperProps={{
         sx: {
           backgroundColor: '#F2D9D9',
@@ -99,12 +113,16 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
             >
               <Button
                 variant="contained"
-                onClick={() => onSolutionSelect(solution.id)}
+                onClick={() => handleSolutionClick(solution.id)}
                 onMouseEnter={() => setHoveredSolution(solution.id)}
                 onMouseLeave={() => setHoveredSolution(null)}
                 sx={{
                   width: '100%',
-                  backgroundColor: hoveredSolution === solution.id ? '#D0BCFF' : '#EADDFF',
+                  backgroundColor: selectedSolution === solution.id 
+                    ? '#D0BCFF' 
+                    : hoveredSolution === solution.id 
+                      ? '#EADDFF' 
+                      : '#F2D9D9',
                   color: '#4A4459',
                   fontFamily: 'Raleway',
                   fontWeight: 500,
@@ -114,7 +132,9 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
                   textTransform: 'none',
                   transition: 'background-color 0.2s',
                   '&:hover': {
-                    backgroundColor: '#D0BCFF'
+                    backgroundColor: selectedSolution === solution.id 
+                      ? '#D0BCFF' 
+                      : '#EADDFF'
                   }
                 }}
               >
@@ -122,6 +142,29 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
               </Button>
             </Tooltip>
           ))}
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleConfirm}
+            disabled={!selectedSolution}
+            sx={{
+              backgroundColor: selectedSolution ? '#D0BCFF' : '#EADDFF',
+              color: '#4A4459',
+              fontFamily: 'Raleway',
+              fontWeight: 500,
+              fontSize: '16px',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: selectedSolution ? '#CAC4D0' : '#EADDFF'
+              }
+            }}
+          >
+            Подтвердить
+          </Button>
         </Box>
       </DialogContent>
     </Dialog>
