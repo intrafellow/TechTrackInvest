@@ -182,7 +182,7 @@ const DealPage: React.FC = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-	navigate('/first-month');
+	navigate('/game_field');
   };
 
   const handleDialogAccept = async () => {
@@ -215,7 +215,7 @@ const DealPage: React.FC = () => {
         const stepCountData = await monthAPI.getStepCount();
         window.dispatchEvent(new CustomEvent('stepCountUpdate', { detail: { stepsLeft: stepCountData.stepCount } }));
       } catch (e) { /* ignore */ }
-      navigate('/first-month', { state: { justBought: contractData } });
+      navigate('/game_field', { state: { justBought: contractData } });
     } catch (err: any) {
       console.error('Error buying startup:', {
         error: err,
@@ -244,7 +244,7 @@ const DealPage: React.FC = () => {
       
       // Отправляем событие об обновлении баланса
       window.dispatchEvent(new CustomEvent('balanceUpdate', { detail: newBalance }));
-      navigate('/first-month', { state: { justBought: contractData } });
+      navigate('/game_field', { state: { justBought: contractData } });
     } finally {
       setLoading(false);
     }

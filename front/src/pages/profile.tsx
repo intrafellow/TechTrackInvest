@@ -51,7 +51,7 @@ const ProfilePage: React.FC = () => {
   const handleStartNewGame = async () => {
     try {
       await sessionAPI.start();
-      navigate('/first-month');
+      navigate('/game_field');
     } catch (error) {
       console.error('Ошибка при создании сессии:', error);
     }
@@ -61,7 +61,7 @@ const ProfilePage: React.FC = () => {
   const handleContinueGame = async () => {
     try {
       await sessionAPI.load();
-      navigate('/first-month');
+      navigate('/game_field');
     } catch (error) {
       console.error('Ошибка при загрузке сессии:', error);
     }
