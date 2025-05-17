@@ -202,7 +202,7 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
       
       // Перенаправляем на поле игры
       console.log('Перенаправляем на /first-month');
-      navigate('/first-month');
+      navigate('/game_field');
     } catch (err) {
       console.error('Ошибка при продаже стартапа:', err);
       setError('Ошибка при продаже стартапа');
