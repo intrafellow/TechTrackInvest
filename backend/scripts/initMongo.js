@@ -7,6 +7,7 @@ if (!db) {
 
 print("Успешное подключение к MongoDB");
 
+// Очистка коллекций
 db.articles.drop();
 db.niches.drop();
 db.conferences.drop();
@@ -15,332 +16,323 @@ db.solutions.drop();
 db.crises.drop();
 db.startups.drop();
 
+// Добавление статьи
 db.articles.insertOne({
   _id: "article-1",
   title: "Top 10 Energy Startups",
   content: "Here are the most promising startups in the green energy niche..."
 });
 
+// Добавление ниш
 db.niches.insertMany([
-  {
-  _id: "niche-1",
-  name: "GreenTech"},
-  {
-    _id: "niche-2",
-    name: "MedTech"
-  },
-  {
-    _id: "niche-3",
-    name: "SpaceTech"
-  },
-  {
-    _id: "niche-4",
-    name: "IT"
-  }
+  {_id: "niche-1", name: "GreenTech"},
+  {_id: "niche-2", name: "MedTech"},
+  {_id: "niche-3", name: "SpaceTech"},
+  {_id: "niche-4", name: "IT"}
 ]);
 
+// Добавление конференций (по 8 для каждой ниши)
 db.conferences.insertMany([
+  // GreenTech conferences (1-8)
   {
-    _id: "conf-green-1",
-    name: "Global Solar Innovation Summit",
-    description: "Международный саммит по инновациям в солнечной энергетике и интеграции возобновляемых источников в энергосети",
+    _id: "conf-niche-1-1",
+    name: "GreenTech Conference 1",
+    description: "GreenTech conference description 1",
     nicheId: "niche-1",
-    enrollPrice: 300,
-    gainedReputation: 60,
-    expertise: [{ nicheId: "niche-1", change: 12 }]
+    enrollPrice: 3500,
+    gainedReputation: 5,
+    expertise: [{ nicheId: "niche-1", change: 5 }]
   },
   {
-    _id: "conf-green-2",
-    name: "WindTech Symposium",
-    description: "Семинар по последним достижениям в области ветроэнергетики и морским ветряным электростанциям",
+    _id: "conf-niche-1-2",
+    name: "GreenTech Conference 2",
+    description: "GreenTech conference description 2",
     nicheId: "niche-1",
-    enrollPrice: 450,
-    gainedReputation: 75,
-    expertise: [{ nicheId: "niche-1", change: 15 }]
+    enrollPrice: 4500,
+    gainedReputation: 7,
+    expertise: [{ nicheId: "niche-1", change: 6 }]
   },
   {
-    _id: "conf-green-3",
-    name: "Circular Economy Forum",
-    description: "Форум по технологиям циркулярной экономики и переработки промышленных отходов",
+    _id: "conf-niche-1-3",
+    name: "GreenTech Conference 3",
+    description: "GreenTech conference description 3",
     nicheId: "niche-1",
-    enrollPrice: 250,
-    gainedReputation: 55,
-    expertise: [{ nicheId: "niche-1", change: 10 }]
+    enrollPrice: 2500,
+    gainedReputation: 4,
+    expertise: [{ nicheId: "niche-1", change: 4 }]
   },
   {
-    _id: "conf-green-4",
-    name: "Smart Cities Expo",
-    description: "Выставка экологичных решений для умных городов: от энергоэффективности до эко-транспорта",
+    _id: "conf-niche-1-4",
+    name: "GreenTech Conference 4",
+    description: "GreenTech conference description 4",
     nicheId: "niche-1",
-    enrollPrice: 400,
-    gainedReputation: 80,
-    expertise: [{ nicheId: "niche-1", change: 18 }]
+    enrollPrice: 5500,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-1", change: 7 }]
+  },
+  {
+    _id: "conf-niche-1-5",
+    name: "GreenTech Conference 5",
+    description: "GreenTech conference description 5",
+    nicheId: "niche-1",
+    enrollPrice: 6000,
+    gainedReputation: 9,
+    expertise: [{ nicheId: "niche-1", change: 8 }]
+  },
+  {
+    _id: "conf-niche-1-6",
+    name: "GreenTech Conference 6",
+    description: "GreenTech conference description 6",
+    nicheId: "niche-1",
+    enrollPrice: 4000,
+    gainedReputation: 6,
+    expertise: [{ nicheId: "niche-1", change: 5 }]
+  },
+  {
+    _id: "conf-niche-1-7",
+    name: "GreenTech Conference 7",
+    description: "GreenTech conference description 7",
+    nicheId: "niche-1",
+    enrollPrice: 5000,
+    gainedReputation: 7,
+    expertise: [{ nicheId: "niche-1", change: 6 }]
+  },
+  {
+    _id: "conf-niche-1-8",
+    name: "GreenTech Conference 8",
+    description: "GreenTech conference description 8",
+    nicheId: "niche-1",
+    enrollPrice: 3000,
+    gainedReputation: 5,
+    expertise: [{ nicheId: "niche-1", change: 4 }]
   },
 
+  // MedTech conferences (1-8)
   {
-    _id: "conf-med-1",
-    name: "Future Surgery Conference",
-    description: "Конференция по роботизированной хирургии и AI-ассистированным медицинским операциям",
+    _id: "conf-niche-2-1",
+    name: "MedTech Conference 1",
+    description: "MedTech conference description 1",
     nicheId: "niche-2",
-    enrollPrice: 600,
-    gainedReputation: 90,
-    expertise: [{ nicheId: "niche-2", change: 20 }]
+    enrollPrice: 5000,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-2", change: 7 }]
   },
   {
-    _id: "conf-med-2",
-    name: "BioPrinting Symposium",
-    description: "Саммит по 3D-биопечати и созданию искусственных органов",
+    _id: "conf-niche-2-2",
+    name: "MedTech Conference 2",
+    description: "MedTech conference description 2",
     nicheId: "niche-2",
-    enrollPrice: 550,
-    gainedReputation: 85,
-    expertise: [{ nicheId: "niche-2", change: 18 }]
+    enrollPrice: 6000,
+    gainedReputation: 9,
+    expertise: [{ nicheId: "niche-2", change: 8 }]
   },
   {
-    _id: "conf-med-3",
-    name: "NeuroTech Summit",
-    description: "Исследования в области нейроинтерфейсов и мозго-компьютерных интерфейсов",
+    _id: "conf-niche-2-3",
+    name: "MedTech Conference 3",
+    description: "MedTech conference description 3",
     nicheId: "niche-2",
-    enrollPrice: 500,
-    gainedReputation: 80,
-    expertise: [{ nicheId: "niche-2", change: 15 }]
+    enrollPrice: 4500,
+    gainedReputation: 7,
+    expertise: [{ nicheId: "niche-2", change: 6 }]
   },
   {
-    _id: "conf-med-4",
-    name: "Digital Health Expo",
-    description: "Выставка телемедицинских решений и носимых медицинских устройств",
+    _id: "conf-niche-2-4",
+    name: "MedTech Conference 4",
+    description: "MedTech conference description 4",
     nicheId: "niche-2",
-    enrollPrice: 450,
-    gainedReputation: 75,
-    expertise: [{ nicheId: "niche-2", change: 12 }]
+    enrollPrice: 5500,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-2", change: 7 }]
+  },
+  {
+    _id: "conf-niche-2-5",
+    name: "MedTech Conference 5",
+    description: "MedTech conference description 5",
+    nicheId: "niche-2",
+    enrollPrice: 6500,
+    gainedReputation: 9,
+    expertise: [{ nicheId: "niche-2", change: 8 }]
+  },
+  {
+    _id: "conf-niche-2-6",
+    name: "MedTech Conference 6",
+    description: "MedTech conference description 6",
+    nicheId: "niche-2",
+    enrollPrice: 4000,
+    gainedReputation: 6,
+    expertise: [{ nicheId: "niche-2", change: 5 }]
+  },
+  {
+    _id: "conf-niche-2-7",
+    name: "MedTech Conference 7",
+    description: "MedTech conference description 7",
+    nicheId: "niche-2",
+    enrollPrice: 7000,
+    gainedReputation: 10,
+    expertise: [{ nicheId: "niche-2", change: 9 }]
+  },
+  {
+    _id: "conf-niche-2-8",
+    name: "MedTech Conference 8",
+    description: "MedTech conference description 8",
+    nicheId: "niche-2",
+    enrollPrice: 4800,
+    gainedReputation: 7,
+    expertise: [{ nicheId: "niche-2", change: 6 }]
   },
 
+  // SpaceTech conferences (1-8)
   {
-    _id: "conf-space-1",
-    name: "New Space Economy Forum",
-    description: "Форум частной космонавтики: от микроспутников до орбитальных станций",
+    _id: "conf-niche-3-1",
+    name: "SpaceTech Conference 1",
+    description: "SpaceTech conference description 1",
     nicheId: "niche-3",
-    enrollPrice: 800,
-    gainedReputation: 100,
-    expertise: [{ nicheId: "niche-3", change: 25 }]
+    enrollPrice: 6500,
+    gainedReputation: 10,
+    expertise: [{ nicheId: "niche-3", change: 9 }]
   },
   {
-    _id: "conf-space-2",
-    name: "Mars Colonization Symposium",
-    description: "Технологии для создания самоподдерживающихся колоний на Марсе",
+    _id: "conf-niche-3-2",
+    name: "SpaceTech Conference 2",
+    description: "SpaceTech conference description 2",
     nicheId: "niche-3",
-    enrollPrice: 750,
-    gainedReputation: 95,
-    expertise: [{ nicheId: "niche-3", change: 22 }]
+    enrollPrice: 7000,
+    gainedReputation: 10,
+    expertise: [{ nicheId: "niche-3", change: 10 }]
   },
   {
-    _id: "conf-space-3",
-    name: "Satellite Innovation Summit",
-    description: "Саммит по новым технологиям в области спутниковой связи и дистанционного зондирования",
+    _id: "conf-niche-3-3",
+    name: "SpaceTech Conference 3",
+    description: "SpaceTech conference description 3",
     nicheId: "niche-3",
-    enrollPrice: 700,
-    gainedReputation: 90,
-    expertise: [{ nicheId: "niche-3", change: 20 }]
+    enrollPrice: 5500,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-3", change: 7 }]
   },
   {
-    _id: "conf-space-4",
-    name: "Reusable Rocket Congress",
-    description: "Конгресс по разработке многоразовых ракет-носителей и систем космического запуска",
+    _id: "conf-niche-3-4",
+    name: "SpaceTech Conference 4",
+    description: "SpaceTech conference description 4",
     nicheId: "niche-3",
-    enrollPrice: 850,
-    gainedReputation: 110,
-    expertise: [{ nicheId: "niche-3", change: 28 }]
+    enrollPrice: 6000,
+    gainedReputation: 9,
+    expertise: [{ nicheId: "niche-3", change: 8 }]
+  },
+  {
+    _id: "conf-niche-3-5",
+    name: "SpaceTech Conference 5",
+    description: "SpaceTech conference description 5",
+    nicheId: "niche-3",
+    enrollPrice: 4500,
+    gainedReputation: 7,
+    expertise: [{ nicheId: "niche-3", change: 6 }]
+  },
+  {
+    _id: "conf-niche-3-6",
+    name: "SpaceTech Conference 6",
+    description: "SpaceTech conference description 6",
+    nicheId: "niche-3",
+    enrollPrice: 5000,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-3", change: 7 }]
+  },
+  {
+    _id: "conf-niche-3-7",
+    name: "SpaceTech Conference 7",
+    description: "SpaceTech conference description 7",
+    nicheId: "niche-3",
+    enrollPrice: 7500,
+    gainedReputation: 10,
+    expertise: [{ nicheId: "niche-3", change: 10 }]
+  },
+  {
+    _id: "conf-niche-3-8",
+    name: "SpaceTech Conference 8",
+    description: "SpaceTech conference description 8",
+    nicheId: "niche-3",
+    enrollPrice: 4000,
+    gainedReputation: 6,
+    expertise: [{ nicheId: "niche-3", change: 5 }]
   },
 
+  // IT conferences (1-8)
   {
-    _id: "conf-it-1",
-    name: "AI Revolution Conference",
-    description: "Конференция по этике ИИ и глубокому машинному обучению",
+    _id: "conf-niche-4-1",
+    name: "IT Conference 1",
+    description: "IT conference description 1",
     nicheId: "niche-4",
-    enrollPrice: 400,
-    gainedReputation: 70,
-    expertise: [{ nicheId: "niche-4", change: 15 }]
+    enrollPrice: 4000,
+    gainedReputation: 6,
+    expertise: [{ nicheId: "niche-4", change: 6 }]
   },
   {
-    _id: "conf-it-2",
-    name: "Quantum Computing Summit",
-    description: "Саммит по разработке квантовых компьютеров и их промышленному применению",
+    _id: "conf-niche-4-2",
+    name: "IT Conference 2",
+    description: "IT conference description 2",
     nicheId: "niche-4",
-    enrollPrice: 600,
-    gainedReputation: 95,
-    expertise: [{ nicheId: "niche-4", change: 20 }]
+    enrollPrice: 5500,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-4", change: 7 }]
   },
   {
-    _id: "conf-it-3",
-    name: "CyberSecurity Expo",
-    description: "Выставка решений в области кибербезопасности и защиты критической инфраструктуры",
+    _id: "conf-niche-4-3",
+    name: "IT Conference 3",
+    description: "IT conference description 3",
     nicheId: "niche-4",
-    enrollPrice: 500,
-    gainedReputation: 80,
-    expertise: [{ nicheId: "niche-4", change: 18 }]
+    enrollPrice: 3000,
+    gainedReputation: 5,
+    expertise: [{ nicheId: "niche-4", change: 4 }]
   },
   {
-    _id: "conf-it-4",
-    name: "Blockchain Revolution Forum",
-    description: "Форум по децентрализованным финансам и смарт-контрактам нового поколения",
+    _id: "conf-niche-4-4",
+    name: "IT Conference 4",
+    description: "IT conference description 4",
     nicheId: "niche-4",
-    enrollPrice: 550,
-    gainedReputation: 85,
-    expertise: [{ nicheId: "niche-4", change: 22 }]
+    enrollPrice: 4500,
+    gainedReputation: 7,
+    expertise: [{ nicheId: "niche-4", change: 6 }]
   },
   {
-    _id: "conf-green-5",
-    name: "Hydrogen Future Congress",
-    description: "Разработка технологий зеленого водорода и систем хранения энергии",
-    nicheId: "niche-1",
-    enrollPrice: 350,
-    gainedReputation: 65,
-    expertise: [{ nicheId: "niche-1", change: 14 }]
-  },
-  {
-    _id: "conf-green-6",
-    name: "BioEnergy Symposium",
-    description: "Инновации в производстве биотоплива из органических отходов",
-    nicheId: "niche-1",
-    enrollPrice: 280,
-    gainedReputation: 58,
-    expertise: [{ nicheId: "niche-1", change: 11 }]
-  },
-  {
-    _id: "conf-green-7",
-    name: "Arctic CleanTech Summit",
-    description: "Технологии для работы в экстремальных условиях Арктики",
-    nicheId: "niche-1",
-    enrollPrice: 420,
-    gainedReputation: 78,
-    expertise: [{ nicheId: "niche-1", change: 17 }]
-  },
-  {
-    _id: "conf-green-8",
-    name: "AgroTech Revolution Forum",
-    description: "Умные решения для устойчивого сельского хозяйства",
-    nicheId: "niche-1",
-    enrollPrice: 320,
-    gainedReputation: 62,
-    expertise: [{ nicheId: "niche-1", change: 13 }]
-  },
-
-  {
-    _id: "conf-med-5",
-    name: "CRISPR Genome Editing Congress",
-    description: "Передовые методы генной инженерии и терапии",
-    nicheId: "niche-2",
-    enrollPrice: 700,
-    gainedReputation: 95,
-    expertise: [{ nicheId: "niche-2", change: 22 }]
-  },
-  {
-    _id: "conf-med-6",
-    name: "NanoMed Symposium",
-    description: "Нанороботы для целевой доставки лекарств",
-    nicheId: "niche-2",
-    enrollPrice: 650,
-    gainedReputation: 88,
-    expertise: [{ nicheId: "niche-2", change: 19 }]
-  },
-  {
-    _id: "conf-med-7",
-    name: "Digital Twin in Healthcare Summit",
-    description: "Создание цифровых двойников для персонализированной медицины",
-    nicheId: "niche-2",
-    enrollPrice: 580,
-    gainedReputation: 82,
-    expertise: [{ nicheId: "niche-2", change: 16 }]
-  },
-  {
-    _id: "conf-med-8",
-    name: "Future Prosthetics Expo",
-    description: "Бионические протезы с нейроинтерфейсом",
-    nicheId: "niche-2",
-    enrollPrice: 720,
-    gainedReputation: 98,
-    expertise: [{ nicheId: "niche-2", change: 24 }]
-  },
-
-  {
-    _id: "conf-space-5",
-    name: "Lunar Base Architecture Congress",
-    description: "Проектирование постоянной базы на Луне",
-    nicheId: "niche-3",
-    enrollPrice: 900,
-    gainedReputation: 115,
-    expertise: [{ nicheId: "niche-3", change: 30 }]
-  },
-  {
-    _id: "conf-space-6",
-    name: "Asteroid Mining Symposium",
-    description: "Технологии добычи полезных ископаемых на астероидах",
-    nicheId: "niche-3",
-    enrollPrice: 880,
-    gainedReputation: 110,
-    expertise: [{ nicheId: "niche-3", change: 28 }]
-  },
-  {
-    _id: "conf-space-7",
-    name: "Space Tourism Summit",
-    description: "Развитие инфраструктуры для космического туризма",
-    nicheId: "niche-3",
-    enrollPrice: 820,
-    gainedReputation: 105,
-    expertise: [{ nicheId: "niche-3", change: 25 }]
-  },
-  {
-    _id: "conf-space-8",
-    name: "Orbital Debris Solutions Forum",
-    description: "Методы очистки околоземной орбиты от космического мусора",
-    nicheId: "niche-3",
-    enrollPrice: 780,
-    gainedReputation: 100,
-    expertise: [{ nicheId: "niche-3", change: 23 }]
-  },
-
-
-  {
-    _id: "conf-it-5",
-    name: "Metaverse Architecture Congress",
-    description: "Создание инфраструктуры для параллельных цифровых вселенных",
+    _id: "conf-niche-4-5",
+    name: "IT Conference 5",
+    description: "IT conference description 5",
     nicheId: "niche-4",
-    enrollPrice: 480,
-    gainedReputation: 75,
-    expertise: [{ nicheId: "niche-4", change: 17 }]
+    enrollPrice: 6000,
+    gainedReputation: 9,
+    expertise: [{ nicheId: "niche-4", change: 8 }]
   },
   {
-    _id: "conf-it-6",
-    name: "IoT for Smart Factories Summit",
-    description: "Промышленный интернет вещей для Industry 4.0",
+    _id: "conf-niche-4-6",
+    name: "IT Conference 6",
+    description: "IT conference description 6",
     nicheId: "niche-4",
-    enrollPrice: 530,
-    gainedReputation: 83,
-    expertise: [{ nicheId: "niche-4", change: 19 }]
+    enrollPrice: 3500,
+    gainedReputation: 6,
+    expertise: [{ nicheId: "niche-4", change: 5 }]
   },
   {
-    _id: "conf-it-7",
-    name: "Post-Quantum Cryptography Forum",
-    description: "Защита данных в эпоху квантовых компьютеров",
+    _id: "conf-niche-4-7",
+    name: "IT Conference 7",
+    description: "IT conference description 7",
     nicheId: "niche-4",
-    enrollPrice: 610,
-    gainedReputation: 92,
-    expertise: [{ nicheId: "niche-4", change: 21 }]
+    enrollPrice: 5000,
+    gainedReputation: 8,
+    expertise: [{ nicheId: "niche-4", change: 7 }]
   },
   {
-    _id: "conf-it-8",
-    name: "AI Governance Symposium",
-    description: "Этическое регулирование искусственного интеллекта",
+    _id: "conf-niche-4-8",
+    name: "IT Conference 8",
+    description: "IT conference description 8",
     nicheId: "niche-4",
-    enrollPrice: 570,
-    gainedReputation: 87,
-    expertise: [{ nicheId: "niche-4", change: 20 }]
+    enrollPrice: 6500,
+    gainedReputation: 10,
+    expertise: [{ nicheId: "niche-4", change: 9 }]
   }
 ]);
 
-
-
+// Решения (полный список как в оригинале)
 db.solutions.insertMany([
-    {
+  {
     _id: "solution-2",
     title: "Поиск альтернативных поставщиков",
     description: "Найти новых поставщиков компонентов в других регионах.",
@@ -450,9 +442,9 @@ db.solutions.insertMany([
   }
 ]);
 
-
+// Кризисы (полный список как в оригинале)
 db.crises.insertMany([
-    {
+  {
     _id: "crisis-2",
     name: "Дефицит микрочипов",
     description: "Глобальная нехватка полупроводниковых компонентов нарушает производственные цепочки.",
@@ -589,119 +581,794 @@ db.crises.insertMany([
   }
 ]);
 
-const startups = [];
-const contracts = [];
+// Добавление стартапов (по 8 для каждой ниши)
+db.startups.insertMany([
+  // GreenTech startups (1-8)
+  {
+    _id: "startup-niche-1-1",
+    name: "GreenTech Startup 1",
+    description: "GreenTech startup description 1",
+    price: 12000,
+    uniqueProductOffer: "Unique GreenTech offer 1",
+    lastMonthRevenue: 5000,
+    expenses: 4000,
+    team: 15,
+    budget: 8000,
+    product: 20,
+    reputation: 25,
+    level: 1,
+    stage: "IDEA",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-2",
+    name: "GreenTech Startup 2",
+    description: "GreenTech startup description 2",
+    price: 18000,
+    uniqueProductOffer: "Unique GreenTech offer 2",
+    lastMonthRevenue: 7000,
+    expenses: 5000,
+    team: 25,
+    budget: 9000,
+    product: 35,
+    reputation: 40,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-3",
+    name: "GreenTech Startup 3",
+    description: "GreenTech startup description 3",
+    price: 22000,
+    uniqueProductOffer: "Unique GreenTech offer 3",
+    lastMonthRevenue: 6000,
+    expenses: 4500,
+    team: 20,
+    budget: 8500,
+    product: 30,
+    reputation: 35,
+    level: 2,
+    stage: "SCALE",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-4",
+    name: "GreenTech Startup 4",
+    description: "GreenTech startup description 4",
+    price: 28000,
+    uniqueProductOffer: "Unique GreenTech offer 4",
+    lastMonthRevenue: 8000,
+    expenses: 6000,
+    team: 35,
+    budget: 9500,
+    product: 45,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-5",
+    name: "GreenTech Startup 5",
+    description: "GreenTech startup description 5",
+    price: 15000,
+    uniqueProductOffer: "Unique GreenTech offer 5",
+    lastMonthRevenue: 5500,
+    expenses: 4200,
+    team: 18,
+    budget: 8200,
+    product: 25,
+    reputation: 30,
+    level: 1,
+    stage: "IDEA",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-6",
+    name: "GreenTech Startup 6",
+    description: "GreenTech startup description 6",
+    price: 25000,
+    uniqueProductOffer: "Unique GreenTech offer 6",
+    lastMonthRevenue: 9000,
+    expenses: 7000,
+    team: 40,
+    budget: 9800,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "SCALE",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-7",
+    name: "GreenTech Startup 7",
+    description: "GreenTech startup description 7",
+    price: 19000,
+    uniqueProductOffer: "Unique GreenTech offer 7",
+    lastMonthRevenue: 6500,
+    expenses: 4800,
+    team: 28,
+    budget: 8800,
+    product: 38,
+    reputation: 42,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-1"
+  },
+  {
+    _id: "startup-niche-1-8",
+    name: "GreenTech Startup 8",
+    description: "GreenTech startup description 8",
+    price: 32000,
+    uniqueProductOffer: "Unique GreenTech offer 8",
+    lastMonthRevenue: 10000,
+    expenses: 8000,
+    team: 50,
+    budget: 10000,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-1"
+  },
 
+  // MedTech startups (1-8)
+  {
+    _id: "startup-niche-2-1",
+    name: "MedTech Startup 1",
+    description: "MedTech startup description 1",
+    price: 25000,
+    uniqueProductOffer: "Unique MedTech offer 1",
+    lastMonthRevenue: 8000,
+    expenses: 6000,
+    team: 30,
+    budget: 9500,
+    product: 40,
+    reputation: 45,
+    level: 2,
+    stage: "SCALE",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-2",
+    name: "MedTech Startup 2",
+    description: "MedTech startup description 2",
+    price: 35000,
+    uniqueProductOffer: "Unique MedTech offer 2",
+    lastMonthRevenue: 10000,
+    expenses: 8000,
+    team: 45,
+    budget: 10000,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-3",
+    name: "MedTech Startup 3",
+    description: "MedTech startup description 3",
+    price: 18000,
+    uniqueProductOffer: "Unique MedTech offer 3",
+    lastMonthRevenue: 7000,
+    expenses: 5500,
+    team: 25,
+    budget: 9000,
+    product: 35,
+    reputation: 40,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-4",
+    name: "MedTech Startup 4",
+    description: "MedTech startup description 4",
+    price: 28000,
+    uniqueProductOffer: "Unique MedTech offer 4",
+    lastMonthRevenue: 9000,
+    expenses: 7000,
+    team: 38,
+    budget: 9800,
+    product: 45,
+    reputation: 48,
+    level: 3,
+    stage: "SCALE",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-5",
+    name: "MedTech Startup 5",
+    description: "MedTech startup description 5",
+    price: 15000,
+    uniqueProductOffer: "Unique MedTech offer 5",
+    lastMonthRevenue: 6000,
+    expenses: 4500,
+    team: 20,
+    budget: 8500,
+    product: 30,
+    reputation: 35,
+    level: 1,
+    stage: "IDEA",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-6",
+    name: "MedTech Startup 6",
+    description: "MedTech startup description 6",
+    price: 22000,
+    uniqueProductOffer: "Unique MedTech offer 6",
+    lastMonthRevenue: 7500,
+    expenses: 5800,
+    team: 32,
+    budget: 9200,
+    product: 42,
+    reputation: 45,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-7",
+    name: "MedTech Startup 7",
+    description: "MedTech startup description 7",
+    price: 30000,
+    uniqueProductOffer: "Unique MedTech offer 7",
+    lastMonthRevenue: 9500,
+    expenses: 7500,
+    team: 42,
+    budget: 9900,
+    product: 48,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-2"
+  },
+  {
+    _id: "startup-niche-2-8",
+    name: "MedTech Startup 8",
+    description: "MedTech startup description 8",
+    price: 20000,
+    uniqueProductOffer: "Unique MedTech offer 8",
+    lastMonthRevenue: 6500,
+    expenses: 5000,
+    team: 28,
+    budget: 8700,
+    product: 38,
+    reputation: 42,
+    level: 2,
+    stage: "SCALE",
+    niche: "niche-2"
+  },
 
-const niches = [
-  {id: "niche-1", name: "GreenTech"},
-  {id: "niche-2", name: "MedTech"},
-  {id: "niche-3", name: "SpaceTech"},
-  {id: "niche-4", name: "IT"}
-];
+  // SpaceTech startups (1-8)
+  {
+    _id: "startup-niche-3-1",
+    name: "SpaceTech Startup 1",
+    description: "SpaceTech startup description 1",
+    price: 30000,
+    uniqueProductOffer: "Unique SpaceTech offer 1",
+    lastMonthRevenue: 9500,
+    expenses: 7500,
+    team: 42,
+    budget: 9900,
+    product: 48,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-2",
+    name: "SpaceTech Startup 2",
+    description: "SpaceTech startup description 2",
+    price: 40000,
+    uniqueProductOffer: "Unique SpaceTech offer 2",
+    lastMonthRevenue: 10000,
+    expenses: 8000,
+    team: 50,
+    budget: 10000,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-3",
+    name: "SpaceTech Startup 3",
+    description: "SpaceTech startup description 3",
+    price: 22000,
+    uniqueProductOffer: "Unique SpaceTech offer 3",
+    lastMonthRevenue: 7500,
+    expenses: 5800,
+    team: 32,
+    budget: 9200,
+    product: 42,
+    reputation: 45,
+    level: 2,
+    stage: "SCALE",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-4",
+    name: "SpaceTech Startup 4",
+    description: "SpaceTech startup description 4",
+    price: 28000,
+    uniqueProductOffer: "Unique SpaceTech offer 4",
+    lastMonthRevenue: 9000,
+    expenses: 7000,
+    team: 38,
+    budget: 9800,
+    product: 45,
+    reputation: 48,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-5",
+    name: "SpaceTech Startup 5",
+    description: "SpaceTech startup description 5",
+    price: 18000,
+    uniqueProductOffer: "Unique SpaceTech offer 5",
+    lastMonthRevenue: 7000,
+    expenses: 5500,
+    team: 25,
+    budget: 9000,
+    product: 35,
+    reputation: 40,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-6",
+    name: "SpaceTech Startup 6",
+    description: "SpaceTech startup description 6",
+    price: 25000,
+    uniqueProductOffer: "Unique SpaceTech offer 6",
+    lastMonthRevenue: 8000,
+    expenses: 6000,
+    team: 35,
+    budget: 9500,
+    product: 45,
+    reputation: 50,
+    level: 3,
+    stage: "SCALE",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-7",
+    name: "SpaceTech Startup 7",
+    description: "SpaceTech startup description 7",
+    price: 32000,
+    uniqueProductOffer: "Unique SpaceTech offer 7",
+    lastMonthRevenue: 10000,
+    expenses: 8000,
+    team: 48,
+    budget: 10000,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-3"
+  },
+  {
+    _id: "startup-niche-3-8",
+    name: "SpaceTech Startup 8",
+    description: "SpaceTech startup description 8",
+    price: 20000,
+    uniqueProductOffer: "Unique SpaceTech offer 8",
+    lastMonthRevenue: 6500,
+    expenses: 5000,
+    team: 28,
+    budget: 8700,
+    product: 38,
+    reputation: 42,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-3"
+  },
 
-niches.forEach((niche, nicheIndex) => {
-  for(let i = 1; i <= 8; i++) {
-    const startupId = `startup-${niche.name.toLowerCase()}-${i}`;
-
-
-    const basePrice = 3000 + (i * 500);
-    const teamSize = 5 + i;
-    const productQuality = 5 + Math.floor(i * 0.8);
-    const reputation = 60 + (i * 3);
-
-
-    startups.push({
-      _id: startupId,
-      name: `${niche.name} Innovators #${i}`,
-      description: `Передовые решения в области ${niche.name} - ${getStartupDescription(niche.name, i)}`,
-      price: basePrice,
-      uniqueProductOffer: getUniqueOffer(niche.name, i),
-      lastMonthRevenue: 8000 + (i * 1000),
-      expenses: 2000 + (i * 300),
-      team: teamSize,
-      budget: 10000 + (i * 2000),
-      product: productQuality,
-      reputation: reputation,
-      level: Math.floor(i/3) + 1,
-      stage: getStage(i),
-      niche: niche.id
-    });
-
-
-    contracts.push({
-      _id: `contract-${niche.name.toLowerCase()}-${i}`,
-      startupId: startupId,
-      minPrice: basePrice * 0.3,
-      maxPrice: basePrice * 0.7,
-      teamEffect: Math.floor(i/2) + 1,
-      reputationEffect: 3 + (i % 4)
-    });
+  // IT startups (1-8)
+  {
+    _id: "startup-niche-4-1",
+    name: "IT Startup 1",
+    description: "IT startup description 1",
+    price: 15000,
+    uniqueProductOffer: "Unique IT offer 1",
+    lastMonthRevenue: 6000,
+    expenses: 4500,
+    team: 20,
+    budget: 8500,
+    product: 30,
+    reputation: 35,
+    level: 1,
+    stage: "IDEA",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-2",
+    name: "IT Startup 2",
+    description: "IT startup description 2",
+    price: 22000,
+    uniqueProductOffer: "Unique IT offer 2",
+    lastMonthRevenue: 7500,
+    expenses: 5800,
+    team: 32,
+    budget: 9200,
+    product: 42,
+    reputation: 45,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-3",
+    name: "IT Startup 3",
+    description: "IT startup description 3",
+    price: 28000,
+    uniqueProductOffer: "Unique IT offer 3",
+    lastMonthRevenue: 9000,
+    expenses: 7000,
+    team: 38,
+    budget: 9800,
+    product: 45,
+    reputation: 48,
+    level: 3,
+    stage: "SCALE",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-4",
+    name: "IT Startup 4",
+    description: "IT startup description 4",
+    price: 35000,
+    uniqueProductOffer: "Unique IT offer 4",
+    lastMonthRevenue: 10000,
+    expenses: 8000,
+    team: 50,
+    budget: 10000,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-5",
+    name: "IT Startup 5",
+    description: "IT startup description 5",
+    price: 18000,
+    uniqueProductOffer: "Unique IT offer 5",
+    lastMonthRevenue: 7000,  // Исправлено с 700 на 7000
+    expenses: 5500,
+    team: 25,
+    budget: 9000,
+    product: 35,
+    reputation: 40,
+    level: 2,
+    stage: "MVP",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-6",
+    name: "IT Startup 6",
+    description: "IT startup description 6",
+    price: 25000,
+    uniqueProductOffer: "Unique IT offer 6",
+    lastMonthRevenue: 8000,
+    expenses: 6000,
+    team: 35,
+    budget: 9500,
+    product: 45,
+    reputation: 50,
+    level: 3,
+    stage: "SCALE",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-7",
+    name: "IT Startup 7",
+    description: "IT startup description 7",
+    price: 30000,
+    uniqueProductOffer: "Unique IT offer 7",
+    lastMonthRevenue: 9500,
+    expenses: 7500,
+    team: 45,
+    budget: 9900,
+    product: 50,
+    reputation: 50,
+    level: 3,
+    stage: "MARKET",
+    niche: "niche-4"
+  },
+  {
+    _id: "startup-niche-4-8",
+    name: "IT Startup 8",
+    description: "IT startup description 8",
+    price: 20000,
+    uniqueProductOffer: "Unique IT offer 8",
+    lastMonthRevenue: 6500,
+    expenses: 5000,
+    team: 30,
+    budget: 8800,
+    product: 40,
+    reputation: 45,
+    level: 2,
+    stage: "SCALE",
+    niche: "niche-4"
   }
-});
+]);
 
+// Добавление контрактов (по одному для каждого стартапа)
+db.contracts.insertMany([
+  // Контракты для GreenTech стартапов (1-8)
+  {
+    _id: "contract-niche-1-1",
+    startupId: "startup-niche-1-1",
+    minPrice: 9600,  // 12000 * 0.8
+    maxPrice: 14400, // 12000 * 1.2
+    teamEffect: 5,
+    reputationEffect: 6
+  },
+  {
+    _id: "contract-niche-1-2",
+    startupId: "startup-niche-1-2",
+    minPrice: 14400, // 18000 * 0.8
+    maxPrice: 21600, // 18000 * 1.2
+    teamEffect: 7,
+    reputationEffect: 8
+  },
+  {
+    _id: "contract-niche-1-3",
+    startupId: "startup-niche-1-3",
+    minPrice: 17600, // 22000 * 0.8
+    maxPrice: 26400, // 22000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  },
+  {
+    _id: "contract-niche-1-4",
+    startupId: "startup-niche-1-4",
+    minPrice: 22400, // 28000 * 0.8
+    maxPrice: 33600, // 28000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-1-5",
+    startupId: "startup-niche-1-5",
+    minPrice: 12000, // 15000 * 0.8
+    maxPrice: 18000, // 15000 * 1.2
+    teamEffect: 4,
+    reputationEffect: 5
+  },
+  {
+    _id: "contract-niche-1-6",
+    startupId: "startup-niche-1-6",
+    minPrice: 20000, // 25000 * 0.8
+    maxPrice: 30000, // 25000 * 1.2
+    teamEffect: 9,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-1-7",
+    startupId: "startup-niche-1-7",
+    minPrice: 15200, // 19000 * 0.8
+    maxPrice: 22800, // 19000 * 1.2
+    teamEffect: 7,
+    reputationEffect: 8
+  },
+  {
+    _id: "contract-niche-1-8",
+    startupId: "startup-niche-1-8",
+    minPrice: 25600, // 32000 * 0.8
+    maxPrice: 38400, // 32000 * 1.2
+    teamEffect: 10,
+    reputationEffect: 10
+  },
 
-function getStartupDescription(niche, index) {
-  const descriptions = {
-    GreenTech: [
-      "Солнечные панели с КПД 35%",
-      "Ветрогенераторы для городской среды",
-      "Система рециклинга пластика",
-      "Биотопливо из водорослей",
-      "Умные энергосети",
-      "Эко-стройматериалы",
-      "Зеленый водород",
-      "Контроль качества воздуха"
-    ],
-    MedTech: [
-      "ИИ для диагностики рака",
-      "Бионические протезы",
-      "Наноботы для доставки лекарств",
-      "Цифровой двойник органов",
-      "Генная терапия",
-      "Телемедицинская платформа",
-      "Импланты с сенсорами",
-      "VR-реабилитация"
-    ],
-    SpaceTech: [
-      "Мини-спутники связи",
-      "Ракетные двигатели на метане",
-      "Космический 3D-принтер",
-      "Орбитальная солнечная станция",
-      "Лунный ровер",
-      "Система уборки космического мусора",
-      "Космическая оранжерея",
-      "Гиперзвуковые двигатели"
-    ],
-    IT: [
-      "AI-оптимизация бизнес-процессов",
-      "Квантовые алгоритмы",
-      "Блокчейн для логистики",
-      "Кибербезопасность для IoT",
-      "AR-платформа для ритейла",
-      "Нейроинтерфейсы управления",
-      "Распределенные вычисления",
-      "Генеративные дизайн-системы"
-    ]
-  };
-  return descriptions[niche][index-1];
-}
+  // Контракты для MedTech стартапов (1-8)
+  {
+    _id: "contract-niche-2-1",
+    startupId: "startup-niche-2-1",
+    minPrice: 20000, // 25000 * 0.8
+    maxPrice: 30000, // 25000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-2-2",
+    startupId: "startup-niche-2-2",
+    minPrice: 28000, // 35000 * 0.8
+    maxPrice: 42000, // 35000 * 1.2
+    teamEffect: 10,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-2-3",
+    startupId: "startup-niche-2-3",
+    minPrice: 14400, // 18000 * 0.8
+    maxPrice: 21600, // 18000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  },
+  {
+    _id: "contract-niche-2-4",
+    startupId: "startup-niche-2-4",
+    minPrice: 22400, // 28000 * 0.8
+    maxPrice: 33600, // 28000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-2-5",
+    startupId: "startup-niche-2-5",
+    minPrice: 12000, // 15000 * 0.8
+    maxPrice: 18000, // 15000 * 1.2
+    teamEffect: 5,
+    reputationEffect: 6
+  },
+  {
+    _id: "contract-niche-2-6",
+    startupId: "startup-niche-2-6",
+    minPrice: 17600, // 22000 * 0.8
+    maxPrice: 26400, // 22000 * 1.2
+    teamEffect: 7,
+    reputationEffect: 8
+  },
+  {
+    _id: "contract-niche-2-7",
+    startupId: "startup-niche-2-7",
+    minPrice: 24000, // 30000 * 0.8
+    maxPrice: 36000, // 30000 * 1.2
+    teamEffect: 9,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-2-8",
+    startupId: "startup-niche-2-8",
+    minPrice: 16000, // 20000 * 0.8
+    maxPrice: 24000, // 20000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  },
 
-function getUniqueOffer(niche, index) {
-  const offers = {
-    GreenTech: ["Эко-сертификация", "Государственная поддержка", "Патентованные технологии", "Нулевые выбросы"],
-    MedTech: ["FDA approval", "Клинические испытания", "Индивидуальный подход", "Медицинская лицензия"],
-    SpaceTech: ["NASA партнерство", "Сертификация ESA", "Уникальные материалы", "Орбитальные испытания"],
-    IT: ["Патентованные алгоритмы", "Криптозащита", "Облачная интеграция", "Масштабируемость"]
-  };
-  return offers[niche][index % 4] + ` +${index * 5}% эффективности`;
-}
+  // Контракты для SpaceTech стартапов (1-8)
+  {
+    _id: "contract-niche-3-1",
+    startupId: "startup-niche-3-1",
+    minPrice: 24000, // 30000 * 0.8
+    maxPrice: 36000, // 30000 * 1.2
+    teamEffect: 9,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-3-2",
+    startupId: "startup-niche-3-2",
+    minPrice: 32000, // 40000 * 0.8
+    maxPrice: 48000, // 40000 * 1.2
+    teamEffect: 10,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-3-3",
+    startupId: "startup-niche-3-3",
+    minPrice: 17600, // 22000 * 0.8
+    maxPrice: 26400, // 22000 * 1.2
+    teamEffect: 7,
+    reputationEffect: 8
+  },
+  {
+    _id: "contract-niche-3-4",
+    startupId: "startup-niche-3-4",
+    minPrice: 22400, // 28000 * 0.8
+    maxPrice: 33600, // 28000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-3-5",
+    startupId: "startup-niche-3-5",
+    minPrice: 14400, // 18000 * 0.8
+    maxPrice: 21600, // 18000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  },
+  {
+    _id: "contract-niche-3-6",
+    startupId: "startup-niche-3-6",
+    minPrice: 20000, // 25000 * 0.8
+    maxPrice: 30000, // 25000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-3-7",
+    startupId: "startup-niche-3-7",
+    minPrice: 25600, // 32000 * 0.8
+    maxPrice: 38400, // 32000 * 1.2
+    teamEffect: 10,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-3-8",
+    startupId: "startup-niche-3-8",
+    minPrice: 16000, // 20000 * 0.8
+    maxPrice: 24000, // 20000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  },
 
-function getStage(index) {
-  const stages = ["IDEA", "MVP", "SCALE", "MARKET"];
-  return stages[index % 4];
-}
+  // Контракты для IT стартапов (1-8)
+  {
+    _id: "contract-niche-4-1",
+    startupId: "startup-niche-4-1",
+    minPrice: 12000, // 15000 * 0.8
+    maxPrice: 18000, // 15000 * 1.2
+    teamEffect: 5,
+    reputationEffect: 6
+  },
+  {
+    _id: "contract-niche-4-2",
+    startupId: "startup-niche-4-2",
+    minPrice: 17600, // 22000 * 0.8
+    maxPrice: 26400, // 22000 * 1.2
+    teamEffect: 7,
+    reputationEffect: 8
+  },
+  {
+    _id: "contract-niche-4-3",
+    startupId: "startup-niche-4-3",
+    minPrice: 22400, // 28000 * 0.8
+    maxPrice: 33600, // 28000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-4-4",
+    startupId: "startup-niche-4-4",
+    minPrice: 28000, // 35000 * 0.8
+    maxPrice: 42000, // 35000 * 1.2
+    teamEffect: 10,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-4-5",
+    startupId: "startup-niche-4-5",
+    minPrice: 14400, // 18000 * 0.8
+    maxPrice: 21600, // 18000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  },
+  {
+    _id: "contract-niche-4-6",
+    startupId: "startup-niche-4-6",
+    minPrice: 20000, // 25000 * 0.8
+    maxPrice: 30000, // 25000 * 1.2
+    teamEffect: 8,
+    reputationEffect: 9
+  },
+  {
+    _id: "contract-niche-4-7",
+    startupId: "startup-niche-4-7",
+    minPrice: 24000, // 30000 * 0.8
+    maxPrice: 36000, // 30000 * 1.2
+    teamEffect: 9,
+    reputationEffect: 10
+  },
+  {
+    _id: "contract-niche-4-8",
+    startupId: "startup-niche-4-8",
+    minPrice: 16000, // 20000 * 0.8
+    maxPrice: 24000, // 20000 * 1.2
+    teamEffect: 6,
+    reputationEffect: 7
+  }
+]);
 
-
-db.startups.insertMany(startups);
-db.contracts.insertMany(contracts);
+print("Данные успешно сгенерированы и добавлены в базу");

@@ -62,8 +62,8 @@ public class SessionServiceImpl implements SessionService {
         session.setSteps(new ArrayList<>());
 
         Step step = new Step();
-        step.setReputation(50);
-        step.setCash(1000000);
+        step.setReputation(10);
+        step.setCash(70000);
         step.setSequenceNumber(1);
 
         List<Expertise> expertiseList = new ArrayList<>();
