@@ -75,7 +75,7 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({
       }
       // После успешного перехода, закрываем диалог и обновляем страницу
       onClose();
-      navigate('/first-month', { 
+      navigate('/game_field', { 
         state: { 
           monthChanged: true,
           justBought: location.state?.justBought, // Сохраняем информацию о купленном стартапе
