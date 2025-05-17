@@ -75,9 +75,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         // Получаем монетки пользователя
         // Получаем из сессии
         // Получаем пользователя
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Session session = userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
-
+//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Session session = userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
+        Session session = getCurrentDBSession();
         //суммарная стоимость стартапов
         double totalStartupsCost = session.getStartups().stream().mapToDouble(Startup::getSalePrice).sum();
 

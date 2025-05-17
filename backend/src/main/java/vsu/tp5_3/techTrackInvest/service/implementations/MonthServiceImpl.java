@@ -32,6 +32,7 @@ public class MonthServiceImpl implements MonthService {
     private final EntityManager entityManager;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
+    private final UpdateStartupService updateStartupService;
 
     private final Integer DEFAULT_ACTION_POINTS_PER_STEP = 5;
     @Override
@@ -44,8 +45,13 @@ public class MonthServiceImpl implements MonthService {
                 .orElseThrow(() -> new EntityNotFoundException("Сессия не найдена"));
 
         Step currentStep = session.getSteps().getLast();
-
-
+        //сначала мы обновляем значения всех стартапов, после уже начинаем проверять закончилась ли игра
+        //чтобы обновлённые данные предоставлялись.
+        updateStartupService.updateStartupsSpecs();
+        //Далее проверяем, нужно учесть мёртвые стартапы и количество денег у игрока
+        //Есть проблема, если будем сначала проверять хватит ли денег игроку на стартап хоть один то будем учитывать
+        //предыдущие. Хотя если сразу покажем что он проиграл, то он и не увидит, что там могли бы быть те, что подойдут
+        //по стоимости
         boolean isGameOver = false;
         String gameResultMessage = null;
         Integer totalEarnings = null;
@@ -63,10 +69,10 @@ public class MonthServiceImpl implements MonthService {
 
 
         boolean isVictory = false;
-        if (!isGameOver && session.getMonthCount() >= 6) {
+        if (!isGameOver && session.getMonthCount() >= 20) {
             isVictory = true;
             totalEarnings = calculateTotalEarnings(session);
-            gameResultMessage = String.format("Победа! Вы прошли 6 месяцев и ваша общая прибыль: %d", totalEarnings);
+            gameResultMessage = String.format("Победа! Вы прошли 10 месяцев и ваша общая прибыль: %d", totalEarnings);
         }
 
 

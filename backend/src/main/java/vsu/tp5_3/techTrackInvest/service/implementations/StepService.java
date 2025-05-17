@@ -10,6 +10,7 @@ import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
+import vsu.tp5_3.techTrackInvest.exceptions.StepGetException;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 
@@ -53,8 +54,7 @@ public class StepService {
 
     public Step getCurrentStep(Session session) {
         return session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).orElseThrow(
-                () -> new EntityNotFoundException("Not found current step")
+                () -> new StepGetException("Не найден последний ход игрока")
         );
     }
-
 }
