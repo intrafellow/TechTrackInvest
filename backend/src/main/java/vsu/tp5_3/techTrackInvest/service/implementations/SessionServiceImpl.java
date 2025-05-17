@@ -51,7 +51,9 @@ public class SessionServiceImpl implements SessionService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
-
+        if (user.getSessions() != null) {
+            user.getSessions().clear();
+        }
         Session session = new Session();
         session.setAppUser(user);
         session.setMonthCount(0);
