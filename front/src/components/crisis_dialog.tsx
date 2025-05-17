@@ -55,14 +55,20 @@ const CrisisDialog: React.FC<CrisisDialogProps> = ({
     }
   };
 
+  const handleClose = (event: object, reason: string) => {
+    if (reason === 'backdropClick') {
+      return;
+    }
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
       disableEscapeKeyDown
-      disableBackdropClick
       PaperProps={{
         sx: {
           backgroundColor: '#F2D9D9',
