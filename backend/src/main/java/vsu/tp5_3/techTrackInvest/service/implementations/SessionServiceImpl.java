@@ -88,14 +88,6 @@ public class SessionServiceImpl implements SessionService {
                     getRandomConferencesByNiche(2, mongoNiche.getName(), session);
             currentDisplayedConferences.addAll(randomConferences);
         }
-//        List<CurrentDisplayedConference> niche1C = conferenceService.getRandomConferencesByNiche(2, "", session);
-//        List<CurrentDisplayedConference> niche2C = conferenceService.getRandomConferencesByNiche(2, "niche-2", session);
-//        List<CurrentDisplayedConference> niche3C = conferenceService.getRandomConferencesByNiche(2, "niche-3", session);
-//        List<CurrentDisplayedConference> niche4C = conferenceService.getRandomConferencesByNiche(2, "niche-4", session);
-//        currentDisplayedConferences.addAll(niche1C);
-//        currentDisplayedConferences.addAll(niche2C);
-//        currentDisplayedConferences.addAll(niche3C);
-//        currentDisplayedConferences.addAll(niche4C);
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
 
@@ -105,18 +97,6 @@ public class SessionServiceImpl implements SessionService {
                     .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
             currentDisplayedStartups.addAll(randomStartupsList);
         }
-//        List<CurrentDisplayedStartup> niche1S = getRandomStartupsIntoNiche(4, "niche-1", session)
-//                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-//        List<CurrentDisplayedStartup> niche2S = getRandomStartupsIntoNiche(4, "niche-2", session)
-//                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-//        List<CurrentDisplayedStartup> niche3S = getRandomStartupsIntoNiche(4, "niche-3", session)
-//                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-//        List<CurrentDisplayedStartup> niche4S = getRandomStartupsIntoNiche(4, "niche-4", session)
-//                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-//        currentDisplayedStartups.addAll(niche1S);
-//        currentDisplayedStartups.addAll(niche2S);
-//        currentDisplayedStartups.addAll(niche3S);
-//        currentDisplayedStartups.addAll(niche4S);
         session.setCurrentDisplayedStartups(currentDisplayedStartups);
 
 

@@ -29,7 +29,6 @@ import java.util.Comparator;
 public class ContractService {
     private final ContractMongoRepository contractMongoRepository;
     private final ContractReadMapper contractReadMapper;
-    private final CurrentDisplayedStartupRepository currentDisplayedStartupRepository;
     private final StepService stepService;
     private final UserRepository userRepository;
 

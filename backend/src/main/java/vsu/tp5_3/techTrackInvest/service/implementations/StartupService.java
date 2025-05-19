@@ -87,10 +87,6 @@ public class StartupService {
             session.getStartups().forEach(startup -> usedStartupIds.add(startup.getResId()));
 
             List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
-
-//            PageRequest pageRequest = PageRequest.of(0, startupsCount);
-//            List<StartupMongo> retrievedStartups = startupMongoRepository.findAllByNicheAndIdNotIn(nicheId,
-//                    new ArrayList<>(usedStartupIds), pageRequest);
             List<StartupMongo> retrievedStartups = startupMongoRepository.findRandomStartupsByNicheAndExcludedIds(nicheId,
                     new ArrayList<>(usedStartupIds), startupsCount);
             if (retrievedStartups.isEmpty()) {

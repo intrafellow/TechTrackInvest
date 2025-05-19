@@ -7,10 +7,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.*;
+import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
-import vsu.tp5_3.techTrackInvest.mapper.StartupReadMapper;
+import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
 import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
@@ -23,16 +24,12 @@ import java.util.*;
 public class MonthServiceImpl implements MonthService {
     private final UserRepository userRepository;
     private final StartupService startupService;
-    private final StepRepository stepRepository;
     private final SessionRepository sessionRepository;
-    private final SessionService sessionService;
     private final ConferenceService conferenceService;
-    private final CurrentDisplayedStartupRepository startupRepository;
-    private final CurrentDisplayedConferenceRepository conferenceRepository;
-    private final EntityManager entityManager;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
     private final UpdateStartupService updateStartupService;
+    private final NicheMongoRepository nicheMongoRepository;
 
     private final Integer DEFAULT_ACTION_POINTS_PER_STEP = 5;
     @Override
@@ -106,12 +103,13 @@ public class MonthServiceImpl implements MonthService {
         session.getCurrentDisplayedStartups().clear();
 
         List<CurrentDisplayedConference> newConferences = new ArrayList<>();
-        for (String nicheId : List.of("niche-1", "niche-2", "niche-3", "niche-4")) {
+        List<String> allNichesIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
+        for (String nicheId : allNichesIds) {
             newConferences.addAll(conferenceService.getRandomConferencesByNiche(4, nicheId, session));
         }
         session.getCurrentDisplayedConferences().addAll(newConferences);
 
-        for (String nicheId : List.of("niche-1", "niche-2", "niche-3", "niche-4")) {
+        for (String nicheId : allNichesIds) {
             startupService.updateDisplayedStartups(4, nicheId);
         }
 

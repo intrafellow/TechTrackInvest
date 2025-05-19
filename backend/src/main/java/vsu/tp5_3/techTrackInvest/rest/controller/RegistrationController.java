@@ -27,7 +27,6 @@ import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
 public class RegistrationController {
     private final UserServiceImpl userService;
     private final JwtTokenUtils jwtTokenUtils;
-    private final AuthenticationManager authenticationManager;
     private final EmailMailingService emailMailingService;
 
     @Operation(

@@ -30,8 +30,6 @@ public class CrisisServiceImpl implements CrisisService {
     private final UserRepository userRepository;
     private final CrisisMongoRepository crisisMongoRepository;
     private final CurrentCrisisRepository currentCrisisRepository;
-    private final SolutionMongoRepository solutionMongoRepository;
-    private final StartupRepository startupRepository;
     private final CrisisReadMapper crisisReadMapper;
     private final CurrentCrisisMapper currentCrisisMapper;
     private final EntityManager entityManager;
