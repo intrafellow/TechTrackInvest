@@ -6,15 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "solutions")
 public class Solution {
 
-    @Id
+    @Field("_id")
     private String id;
 
     private String title;
@@ -22,4 +22,6 @@ public class Solution {
     private String description;
 
     private Effect effect;
+
+    private UserEffect userEffect;
 }

@@ -449,7 +449,10 @@ db.crises.insertMany([
     name: "Дефицит микрочипов",
     description: "Глобальная нехватка полупроводниковых компонентов нарушает производственные цепочки.",
     danger: 4,
-    niches: ["niche-2", "niche-3"],
+    niches: [
+      "niche-2",
+      "niche-3"
+    ],
     possibleSolutions: [
       {
         _id: "solution-2",
@@ -461,6 +464,20 @@ db.crises.insertMany([
           team: 0,
           product: 2,
           reputation: 5
+        },
+        userEffect: {
+          moneyChange: 2500,
+          reputationChange: 1,
+          expertise: [
+            {
+              nicheId: "niche-2",
+              change: 3
+            },
+            {
+              nicheId: "niche-3",
+              change: 2
+            }
+          ]
         }
       },
       {
@@ -473,6 +490,20 @@ db.crises.insertMany([
           team: 2,
           product: -1,
           reputation: -3
+        },
+        userEffect: {
+          moneyChange: 1500,
+          reputationChange: -1,
+          expertise: [
+            {
+              nicheId: "niche-2",
+              change: 4
+            },
+            {
+              nicheId: "niche-3",
+              change: 1
+            }
+          ]
         }
       },
       {
@@ -485,99 +516,255 @@ db.crises.insertMany([
           team: -1,
           product: 0,
           reputation: 2
+        },
+        userEffect: {
+          moneyChange: 2500,
+          reputationChange: 1,
+          expertise: [
+            {
+              nicheId: "niche-2",
+              change: 1
+            },
+            {
+              nicheId: "niche-3",
+              change: 1
+            }
+          ]
         }
       }
     ]
   },
   {
-    _id: "crisis-3",
-    name: "Утечка данных клиентов",
-    description: "Хакерская атака привела к компрометации персональных данных пользователей.",
-    danger: 5,
-    niches: ["niche-4"],
-    possibleSolutions: [
-      {
-        _id: "solution-5",
-        title: "Усиление защиты",
-        description: "Инвестировать в современные системы кибербезопасности.",
-        effect: {
-          price: 0,
-          expenses: 250,
-          team: 1,
-          product: 1,
-          reputation: 8
-        }
-      },
-      {
-        _id: "solution-6",
-        title: "Компенсация клиентам",
-        description: "Предложить пострадавшим клиентам возмещение ущерба.",
-        effect: {
-          price: -400,
-          expenses: -300,
-          team: 0,
-          product: 0,
-          reputation: 5
-        }
-      },
-      {
-        _id: "solution-7",
-        title: "Смена ИТ-провайдера",
-        description: "Перейти на более надежного хостинг-провайдера.",
-        effect: {
-          price: 100,
-          expenses: 180,
-          team: -2,
-          product: -1,
-          reputation: 3
-        }
-      }
-    ]
+      _id: "crisis-3",
+      name: "Кибератака на серверы компании",
+      description: "Хакерская атака привела к утечке данных и временной остановке работы IT-систем.",
+      danger: 5,
+      niches: [
+          "niche-1",
+          "niche-4"
+      ],
+      possibleSolutions: [
+          {
+              _id: "solution-5",
+              title: "Усиление кибербезопасности",
+              description: "Нанять экспертов по безопасности и обновить защитные системы.",
+              effect: {
+                  price: 400,
+                  expenses: 200,
+                  team: 1,
+                  product: 0,
+                  reputation: 3
+              },
+              userEffect: {
+                  moneyChange: -3000,
+                  reputationChange: 2,
+                  expertise: [
+                      {
+                          nicheId: "niche-1",
+                          change: 2
+                      },
+                      {
+                          nicheId: "niche-4",
+                          change: 3
+                      }
+                  ]
+              }
+          },
+          {
+              _id: "solution-6",
+              title: "Выкуп данных у хакеров",
+              description: "Попытаться договориться с злоумышленниками, чтобы минимизировать ущерб.",
+              effect: {
+                  price: -300,
+                  expenses: 500,
+                  team: -2,
+                  product: -1,
+                  reputation: -5
+              },
+              userEffect: {
+                  moneyChange: -5000,
+                  reputationChange: -3,
+                  expertise: [
+                      {
+                          nicheId: "niche-1",
+                          change: 1
+                      }
+                  ]
+              }
+          },
+          {
+              _id: "solution-7",
+              title: "Публичное признание и компенсации",
+              description: "Открыто сообщить клиентам об инциденте и предложить бонусы.",
+              effect: {
+                  price: -100,
+                  expenses: 300,
+                  team: 0,
+                  product: 1,
+                  reputation: 1
+              },
+              userEffect: {
+                  moneyChange: -2000,
+                  reputationChange: 0,
+                  expertise: [
+                      {
+                          nicheId: "niche-4",
+                          change: 2
+                      }
+                  ]
+              }
+          }
+      ]
   },
   {
-    _id: "crisis-4",
-    name: "Экологический скандал",
-    description: "Компанию обвиняют в нанесении вреда местной экосистеме.",
-    danger: 3,
-    niches: ["niche-1", "niche-4"],
-    possibleSolutions: [
-      {
-        _id: "solution-8",
-        title: "Экологические инициативы",
-        description: "Запустить программу по восстановлению экологии.",
-        effect: {
-          price: -100,
-          expenses: -150,
-          team: 1,
-          product: 0,
-          reputation: 12
-        }
-      },
-      {
-        _id: "solution-9",
-        title: "Отрицание ответственности",
-        description: "Оспорить обвинения через суд.",
-        effect: {
-          price: 200,
-          expenses: 100,
-          team: -1,
-          product: -2,
-          reputation: -5
-        }
-      },
-      {
-        _id: "solution-10",
-        title: "Переход на зеленые технологии",
-        description: "Модернизировать производство с учетом экологических стандартов.",
-        effect: {
-          price: 300,
-          expenses: 400,
-          team: 0,
-          product: 1,
-          reputation: 15
-        }
-      }
-    ]
+      _id: "crisis-4",
+      name: "Массовый отзыв продукции",
+      description: "Обнаружен критический дефект в продукте, требующий отзыва партии из продажи.",
+      danger: 4,
+      niches: [
+          "niche-2",
+          "niche-5"
+      ],
+      possibleSolutions: [
+          {
+              _id: "solution-8",
+              title: "Быстрый отзыв и замена",
+              description: "Организовать оперативный обмен бракованных товаров на новые.",
+              effect: {
+                  price: -200,
+                  expenses: 600,
+                  team: 1,
+                  product: 3,
+                  reputation: 4
+              },
+              userEffect: {
+                  moneyChange: -4000,
+                  reputationChange: 2,
+                  expertise: [
+                      {
+                          nicheId: "niche-2",
+                          change: 2
+                      }
+                  ]
+              }
+          },
+          {
+              _id: "solution-9",
+              title: "Скрыть проблему",
+              description: "Минимизировать публичность, ремонтируя товары по гарантии точечно.",
+              effect: {
+                  price: 100,
+                  expenses: 100,
+                  team: -2,
+                  product: -3,
+                  reputation: -5
+              },
+              userEffect: {
+                  moneyChange: -1000,
+                  reputationChange: -4,
+                  expertise: []
+              }
+          },
+          {
+              _id: "solution-10",
+              title: "Партнерство с независимыми экспертами",
+              description: "Пригласить сторонних специалистов для анализа и подтверждения исправления дефекта.",
+              effect: {
+                  price: 0,
+                  expenses: 400,
+                  team: 2,
+                  product: 1,
+                  reputation: 3
+              },
+              userEffect: {
+                  moneyChange: -2500,
+                  reputationChange: 1,
+                  expertise: [
+                      {
+                          nicheId: "niche-5",
+                          change: 3
+                      }
+                  ]
+              }
+          }
+      ]
+  },
+  {
+      _id: "crisis-5",
+      name: "Бунт сотрудников",
+      description: "Ключевые сотрудники угрожают увольнением из-за недовольства условиями труда.",
+      danger: 3,
+      niches: [
+          "niche-1",
+          "niche-6"
+      ],
+      possibleSolutions: [
+          {
+              _id: "solution-11",
+              title: "Повышение зарплат",
+              description: "Увеличить оплату труда, чтобы удержать команду.",
+              effect: {
+                  price: 300,
+                  expenses: 500,
+                  team: 3,
+                  product: 1,
+                  reputation: 2
+              },
+              userEffect: {
+                  moneyChange: -3500,
+                  reputationChange: 1,
+                  expertise: [
+                      {
+                          nicheId: "niche-6",
+                          change: 2
+                      }
+                  ]
+              }
+          },
+          {
+              _id: "solution-12",
+              title: "Жесткие увольнения",
+              description: "Заменить недовольных новыми кадрами.",
+              effect: {
+                  price: -100,
+                  expenses: 200,
+                  team: -3,
+                  product: -2,
+                  reputation: -3
+              },
+              userEffect: {
+                  moneyChange: -1500,
+                  reputationChange: -2,
+                  expertise: []
+              }
+          },
+          {
+              _id: "solution-13",
+              title: "Реформа корпоративной культуры",
+              description: "Ввести гибкий график и программы мотивации.",
+              effect: {
+                  price: 0,
+                  expenses: 300,
+                  team: 4,
+                  product: 0,
+                  reputation: 5
+              },
+              userEffect: {
+                  moneyChange: -2000,
+                  reputationChange: 3,
+                  expertise: [
+                      {
+                          nicheId: "niche-1",
+                          change: 1
+                      },
+                      {
+                          nicheId: "niche-6",
+                          change: 2
+                      }
+                  ]
+              }
+          }
+      ]
   }
 ]);
 
