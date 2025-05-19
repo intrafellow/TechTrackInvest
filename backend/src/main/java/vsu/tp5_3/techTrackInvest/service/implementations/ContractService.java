@@ -74,7 +74,8 @@ public class ContractService {
         String startupResourceId = contract.getStartupId();
         AppUser user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        CurrentDisplayedStartup startup = user.getSessions().getLast().getCurrentDisplayedStartups().stream().filter(c -> c.getResourceId().equals(startupResourceId)).findFirst().get();
+        CurrentDisplayedStartup startup = user.getSessions().getLast().getCurrentDisplayedStartups().stream()
+                .filter(c -> c.getResourceId().equals(startupResourceId)).findFirst().get();
         Pair<Integer, Integer> contractEffects = getEffectsFromContract(rollResult, contract);
 
         String messageDescription;

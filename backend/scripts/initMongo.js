@@ -25,308 +25,308 @@ db.articles.insertOne({
 
 // Добавление ниш
 db.niches.insertMany([
-  {_id: "niche-1", name: "GreenTech"},
-  {_id: "niche-2", name: "MedTech"},
-  {_id: "niche-3", name: "SpaceTech"},
-  {_id: "niche-4", name: "IT"}
+  {_id: "GreenTech"},
+  {_id: "MedTech"},
+  {_id: "SpaceTech"},
+  {_id: "IT"}
 ]);
 
 // Добавление конференций (по 8 для каждой ниши)
 db.conferences.insertMany([
   // GreenTech conferences (1-8)
   {
-    _id: "conf-niche-1-1",
+    _id: "conf-GreenTech-1",
     name: "GreenTech Conference 1",
     description: "GreenTech conference description 1",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 3500,
     gainedReputation: 5,
-    expertise: [{ nicheId: "niche-1", change: 5 }]
+    expertise: [{ nicheId: "GreenTech", change: 5 }]
   },
   {
-    _id: "conf-niche-1-2",
+    _id: "conf-GreenTech-2",
     name: "GreenTech Conference 2",
     description: "GreenTech conference description 2",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 4500,
     gainedReputation: 7,
-    expertise: [{ nicheId: "niche-1", change: 6 }]
+    expertise: [{ nicheId: "GreenTech", change: 6 }]
   },
   {
-    _id: "conf-niche-1-3",
+    _id: "conf-GreenTech-3",
     name: "GreenTech Conference 3",
     description: "GreenTech conference description 3",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 2500,
     gainedReputation: 4,
-    expertise: [{ nicheId: "niche-1", change: 4 }]
+    expertise: [{ nicheId: "GreenTech", change: 4 }]
   },
   {
-    _id: "conf-niche-1-4",
+    _id: "conf-GreenTech-4",
     name: "GreenTech Conference 4",
     description: "GreenTech conference description 4",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 5500,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-1", change: 7 }]
+    expertise: [{ nicheId: "GreenTech", change: 7 }]
   },
   {
-    _id: "conf-niche-1-5",
+    _id: "conf-GreenTech-5",
     name: "GreenTech Conference 5",
     description: "GreenTech conference description 5",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 6000,
     gainedReputation: 9,
-    expertise: [{ nicheId: "niche-1", change: 8 }]
+    expertise: [{ nicheId: "GreenTech", change: 8 }]
   },
   {
-    _id: "conf-niche-1-6",
+    _id: "conf-GreenTech-6",
     name: "GreenTech Conference 6",
     description: "GreenTech conference description 6",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 4000,
     gainedReputation: 6,
-    expertise: [{ nicheId: "niche-1", change: 5 }]
+    expertise: [{ nicheId: "GreenTech", change: 5 }]
   },
   {
-    _id: "conf-niche-1-7",
+    _id: "conf-GreenTech-7",
     name: "GreenTech Conference 7",
     description: "GreenTech conference description 7",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 5000,
     gainedReputation: 7,
-    expertise: [{ nicheId: "niche-1", change: 6 }]
+    expertise: [{ nicheId: "GreenTech", change: 6 }]
   },
   {
-    _id: "conf-niche-1-8",
+    _id: "conf-GreenTech-8",
     name: "GreenTech Conference 8",
     description: "GreenTech conference description 8",
-    nicheId: "niche-1",
+    nicheId: "GreenTech",
     enrollPrice: 3000,
     gainedReputation: 5,
-    expertise: [{ nicheId: "niche-1", change: 4 }]
+    expertise: [{ nicheId: "GreenTech", change: 4 }]
   },
 
   // MedTech conferences (1-8)
   {
-    _id: "conf-niche-2-1",
+    _id: "conf-MedTech-1",
     name: "MedTech Conference 1",
     description: "MedTech conference description 1",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 5000,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-2", change: 7 }]
+    expertise: [{ nicheId: "MedTech", change: 7 }]
   },
   {
-    _id: "conf-niche-2-2",
+    _id: "conf-MedTech-2",
     name: "MedTech Conference 2",
     description: "MedTech conference description 2",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 6000,
     gainedReputation: 9,
-    expertise: [{ nicheId: "niche-2", change: 8 }]
+    expertise: [{ nicheId: "MedTech", change: 8 }]
   },
   {
-    _id: "conf-niche-2-3",
+    _id: "conf-MedTech-3",
     name: "MedTech Conference 3",
     description: "MedTech conference description 3",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 4500,
     gainedReputation: 7,
-    expertise: [{ nicheId: "niche-2", change: 6 }]
+    expertise: [{ nicheId: "MedTech", change: 6 }]
   },
   {
-    _id: "conf-niche-2-4",
+    _id: "conf-MedTech-4",
     name: "MedTech Conference 4",
     description: "MedTech conference description 4",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 5500,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-2", change: 7 }]
+    expertise: [{ nicheId: "MedTech", change: 7 }]
   },
   {
-    _id: "conf-niche-2-5",
+    _id: "conf-MedTech-5",
     name: "MedTech Conference 5",
     description: "MedTech conference description 5",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 6500,
     gainedReputation: 9,
-    expertise: [{ nicheId: "niche-2", change: 8 }]
+    expertise: [{ nicheId: "MedTech", change: 8 }]
   },
   {
-    _id: "conf-niche-2-6",
+    _id: "conf-MedTech-6",
     name: "MedTech Conference 6",
     description: "MedTech conference description 6",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 4000,
     gainedReputation: 6,
-    expertise: [{ nicheId: "niche-2", change: 5 }]
+    expertise: [{ nicheId: "MedTech", change: 5 }]
   },
   {
-    _id: "conf-niche-2-7",
+    _id: "conf-MedTech-7",
     name: "MedTech Conference 7",
     description: "MedTech conference description 7",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 7000,
     gainedReputation: 10,
-    expertise: [{ nicheId: "niche-2", change: 9 }]
+    expertise: [{ nicheId: "MedTech", change: 9 }]
   },
   {
-    _id: "conf-niche-2-8",
+    _id: "conf-MedTech-8",
     name: "MedTech Conference 8",
     description: "MedTech conference description 8",
-    nicheId: "niche-2",
+    nicheId: "MedTech",
     enrollPrice: 4800,
     gainedReputation: 7,
-    expertise: [{ nicheId: "niche-2", change: 6 }]
+    expertise: [{ nicheId: "MedTech", change: 6 }]
   },
 
   // SpaceTech conferences (1-8)
   {
-    _id: "conf-niche-3-1",
+    _id: "conf-SpaceTech-1",
     name: "SpaceTech Conference 1",
     description: "SpaceTech conference description 1",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 6500,
     gainedReputation: 10,
-    expertise: [{ nicheId: "niche-3", change: 9 }]
+    expertise: [{ nicheId: "SpaceTech", change: 9 }]
   },
   {
-    _id: "conf-niche-3-2",
+    _id: "conf-SpaceTech-2",
     name: "SpaceTech Conference 2",
     description: "SpaceTech conference description 2",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 7000,
     gainedReputation: 10,
-    expertise: [{ nicheId: "niche-3", change: 10 }]
+    expertise: [{ nicheId: "SpaceTech", change: 10 }]
   },
   {
-    _id: "conf-niche-3-3",
+    _id: "conf-SpaceTech-3",
     name: "SpaceTech Conference 3",
     description: "SpaceTech conference description 3",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 5500,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-3", change: 7 }]
+    expertise: [{ nicheId: "SpaceTech", change: 7 }]
   },
   {
-    _id: "conf-niche-3-4",
+    _id: "conf-SpaceTech-4",
     name: "SpaceTech Conference 4",
     description: "SpaceTech conference description 4",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 6000,
     gainedReputation: 9,
-    expertise: [{ nicheId: "niche-3", change: 8 }]
+    expertise: [{ nicheId: "SpaceTech", change: 8 }]
   },
   {
-    _id: "conf-niche-3-5",
+    _id: "conf-SpaceTech-5",
     name: "SpaceTech Conference 5",
     description: "SpaceTech conference description 5",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 4500,
     gainedReputation: 7,
-    expertise: [{ nicheId: "niche-3", change: 6 }]
+    expertise: [{ nicheId: "SpaceTech", change: 6 }]
   },
   {
-    _id: "conf-niche-3-6",
+    _id: "conf-SpaceTech-6",
     name: "SpaceTech Conference 6",
     description: "SpaceTech conference description 6",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 5000,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-3", change: 7 }]
+    expertise: [{ nicheId: "SpaceTech", change: 7 }]
   },
   {
-    _id: "conf-niche-3-7",
+    _id: "conf-SpaceTech-7",
     name: "SpaceTech Conference 7",
     description: "SpaceTech conference description 7",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 7500,
     gainedReputation: 10,
-    expertise: [{ nicheId: "niche-3", change: 10 }]
+    expertise: [{ nicheId: "SpaceTech", change: 10 }]
   },
   {
-    _id: "conf-niche-3-8",
+    _id: "conf-SpaceTech-8",
     name: "SpaceTech Conference 8",
     description: "SpaceTech conference description 8",
-    nicheId: "niche-3",
+    nicheId: "SpaceTech",
     enrollPrice: 4000,
     gainedReputation: 6,
-    expertise: [{ nicheId: "niche-3", change: 5 }]
+    expertise: [{ nicheId: "SpaceTech", change: 5 }]
   },
 
   // IT conferences (1-8)
   {
-    _id: "conf-niche-4-1",
+    _id: "conf-IT-1",
     name: "IT Conference 1",
     description: "IT conference description 1",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 4000,
     gainedReputation: 6,
-    expertise: [{ nicheId: "niche-4", change: 6 }]
+    expertise: [{ nicheId: "IT", change: 6 }]
   },
   {
-    _id: "conf-niche-4-2",
+    _id: "conf-IT-2",
     name: "IT Conference 2",
     description: "IT conference description 2",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 5500,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-4", change: 7 }]
+    expertise: [{ nicheId: "IT", change: 7 }]
   },
   {
-    _id: "conf-niche-4-3",
+    _id: "conf-IT-3",
     name: "IT Conference 3",
     description: "IT conference description 3",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 3000,
     gainedReputation: 5,
-    expertise: [{ nicheId: "niche-4", change: 4 }]
+    expertise: [{ nicheId: "IT", change: 4 }]
   },
   {
-    _id: "conf-niche-4-4",
+    _id: "conf-IT-4",
     name: "IT Conference 4",
     description: "IT conference description 4",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 4500,
     gainedReputation: 7,
-    expertise: [{ nicheId: "niche-4", change: 6 }]
+    expertise: [{ nicheId: "IT", change: 6 }]
   },
   {
-    _id: "conf-niche-4-5",
+    _id: "conf-IT-5",
     name: "IT Conference 5",
     description: "IT conference description 5",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 6000,
     gainedReputation: 9,
-    expertise: [{ nicheId: "niche-4", change: 8 }]
+    expertise: [{ nicheId: "IT", change: 8 }]
   },
   {
-    _id: "conf-niche-4-6",
+    _id: "conf-IT-6",
     name: "IT Conference 6",
     description: "IT conference description 6",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 3500,
     gainedReputation: 6,
-    expertise: [{ nicheId: "niche-4", change: 5 }]
+    expertise: [{ nicheId: "IT", change: 5 }]
   },
   {
-    _id: "conf-niche-4-7",
+    _id: "conf-IT-7",
     name: "IT Conference 7",
     description: "IT conference description 7",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 5000,
     gainedReputation: 8,
-    expertise: [{ nicheId: "niche-4", change: 7 }]
+    expertise: [{ nicheId: "IT", change: 7 }]
   },
   {
-    _id: "conf-niche-4-8",
+    _id: "conf-IT-8",
     name: "IT Conference 8",
     description: "IT conference description 8",
-    nicheId: "niche-4",
+    nicheId: "IT",
     enrollPrice: 6500,
     gainedReputation: 10,
-    expertise: [{ nicheId: "niche-4", change: 9 }]
+    expertise: [{ nicheId: "IT", change: 9 }]
   }
 ]);
 
@@ -450,8 +450,8 @@ db.crises.insertMany([
     description: "Глобальная нехватка полупроводниковых компонентов нарушает производственные цепочки.",
     danger: 4,
     niches: [
-      "niche-2",
-      "niche-3"
+      "MedTech",
+      "SpaceTech"
     ],
     possibleSolutions: [
       {
@@ -470,11 +470,11 @@ db.crises.insertMany([
           reputationChange: 1,
           expertise: [
             {
-              nicheId: "niche-2",
+              nicheId: "MedTech",
               change: 3
             },
             {
-              nicheId: "niche-3",
+              nicheId: "SpaceTech",
               change: 2
             }
           ]
@@ -496,11 +496,11 @@ db.crises.insertMany([
           reputationChange: -1,
           expertise: [
             {
-              nicheId: "niche-2",
+              nicheId: "MedTech",
               change: 4
             },
             {
-              nicheId: "niche-3",
+              nicheId: "SpaceTech",
               change: 1
             }
           ]
@@ -522,11 +522,11 @@ db.crises.insertMany([
           reputationChange: 1,
           expertise: [
             {
-              nicheId: "niche-2",
+              nicheId: "MedTech",
               change: 1
             },
             {
-              nicheId: "niche-3",
+              nicheId: "SpaceTech",
               change: 1
             }
           ]
@@ -540,8 +540,8 @@ db.crises.insertMany([
       description: "Хакерская атака привела к утечке данных и временной остановке работы IT-систем.",
       danger: 5,
       niches: [
-          "niche-1",
-          "niche-4"
+          "GreenTech",
+          "IT"
       ],
       possibleSolutions: [
           {
@@ -560,11 +560,11 @@ db.crises.insertMany([
                   reputationChange: 2,
                   expertise: [
                       {
-                          nicheId: "niche-1",
+                          nicheId: "GreenTech",
                           change: 2
                       },
                       {
-                          nicheId: "niche-4",
+                          nicheId: "IT",
                           change: 3
                       }
                   ]
@@ -586,7 +586,7 @@ db.crises.insertMany([
                   reputationChange: -3,
                   expertise: [
                       {
-                          nicheId: "niche-1",
+                          nicheId: "GreenTech",
                           change: 1
                       }
                   ]
@@ -608,7 +608,7 @@ db.crises.insertMany([
                   reputationChange: 0,
                   expertise: [
                       {
-                          nicheId: "niche-4",
+                          nicheId: "IT",
                           change: 2
                       }
                   ]
@@ -622,7 +622,7 @@ db.crises.insertMany([
       description: "Обнаружен критический дефект в продукте, требующий отзыва партии из продажи.",
       danger: 4,
       niches: [
-          "niche-2",
+          "MedTech",
           "niche-5"
       ],
       possibleSolutions: [
@@ -642,7 +642,7 @@ db.crises.insertMany([
                   reputationChange: 2,
                   expertise: [
                       {
-                          nicheId: "niche-2",
+                          nicheId: "MedTech",
                           change: 2
                       }
                   ]
@@ -695,7 +695,7 @@ db.crises.insertMany([
       description: "Ключевые сотрудники угрожают увольнением из-за недовольства условиями труда.",
       danger: 3,
       niches: [
-          "niche-1",
+          "GreenTech",
           "niche-6"
       ],
       possibleSolutions: [
@@ -754,7 +754,7 @@ db.crises.insertMany([
                   reputationChange: 3,
                   expertise: [
                       {
-                          nicheId: "niche-1",
+                          nicheId: "GreenTech",
                           change: 1
                       },
                       {
@@ -772,7 +772,7 @@ db.crises.insertMany([
 db.startups.insertMany([
   // GreenTech startups (1-8)
   {
-    _id: "startup-niche-1-1",
+    _id: "startup-GreenTech-1",
     name: "GreenTech Startup 1",
     description: "GreenTech startup description 1",
     price: 12000,
@@ -785,10 +785,10 @@ db.startups.insertMany([
     reputation: 25,
     level: 1,
     stage: "IDEA",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-2",
+    _id: "startup-GreenTech-2",
     name: "GreenTech Startup 2",
     description: "GreenTech startup description 2",
     price: 18000,
@@ -801,10 +801,10 @@ db.startups.insertMany([
     reputation: 40,
     level: 2,
     stage: "MVP",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-3",
+    _id: "startup-GreenTech-3",
     name: "GreenTech Startup 3",
     description: "GreenTech startup description 3",
     price: 22000,
@@ -817,10 +817,10 @@ db.startups.insertMany([
     reputation: 35,
     level: 2,
     stage: "SCALE",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-4",
+    _id: "startup-GreenTech-4",
     name: "GreenTech Startup 4",
     description: "GreenTech startup description 4",
     price: 28000,
@@ -833,10 +833,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-5",
+    _id: "startup-GreenTech-5",
     name: "GreenTech Startup 5",
     description: "GreenTech startup description 5",
     price: 15000,
@@ -849,10 +849,10 @@ db.startups.insertMany([
     reputation: 30,
     level: 1,
     stage: "IDEA",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-6",
+    _id: "startup-GreenTech-6",
     name: "GreenTech Startup 6",
     description: "GreenTech startup description 6",
     price: 25000,
@@ -865,10 +865,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "SCALE",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-7",
+    _id: "startup-GreenTech-7",
     name: "GreenTech Startup 7",
     description: "GreenTech startup description 7",
     price: 19000,
@@ -881,10 +881,10 @@ db.startups.insertMany([
     reputation: 42,
     level: 2,
     stage: "MVP",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
   {
-    _id: "startup-niche-1-8",
+    _id: "startup-GreenTech-8",
     name: "GreenTech Startup 8",
     description: "GreenTech startup description 8",
     price: 32000,
@@ -897,12 +897,12 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-1"
+    niche: "GreenTech"
   },
 
   // MedTech startups (1-8)
   {
-    _id: "startup-niche-2-1",
+    _id: "startup-MedTech-1",
     name: "MedTech Startup 1",
     description: "MedTech startup description 1",
     price: 25000,
@@ -915,10 +915,10 @@ db.startups.insertMany([
     reputation: 45,
     level: 2,
     stage: "SCALE",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-2",
+    _id: "startup-MedTech-2",
     name: "MedTech Startup 2",
     description: "MedTech startup description 2",
     price: 35000,
@@ -931,10 +931,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-3",
+    _id: "startup-MedTech-3",
     name: "MedTech Startup 3",
     description: "MedTech startup description 3",
     price: 18000,
@@ -947,10 +947,10 @@ db.startups.insertMany([
     reputation: 40,
     level: 2,
     stage: "MVP",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-4",
+    _id: "startup-MedTech-4",
     name: "MedTech Startup 4",
     description: "MedTech startup description 4",
     price: 28000,
@@ -963,10 +963,10 @@ db.startups.insertMany([
     reputation: 48,
     level: 3,
     stage: "SCALE",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-5",
+    _id: "startup-MedTech-5",
     name: "MedTech Startup 5",
     description: "MedTech startup description 5",
     price: 15000,
@@ -979,10 +979,10 @@ db.startups.insertMany([
     reputation: 35,
     level: 1,
     stage: "IDEA",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-6",
+    _id: "startup-MedTech-6",
     name: "MedTech Startup 6",
     description: "MedTech startup description 6",
     price: 22000,
@@ -995,10 +995,10 @@ db.startups.insertMany([
     reputation: 45,
     level: 2,
     stage: "MVP",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-7",
+    _id: "startup-MedTech-7",
     name: "MedTech Startup 7",
     description: "MedTech startup description 7",
     price: 30000,
@@ -1011,10 +1011,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-2"
+    niche: "MedTech"
   },
   {
-    _id: "startup-niche-2-8",
+    _id: "startup-MedTech-8",
     name: "MedTech Startup 8",
     description: "MedTech startup description 8",
     price: 20000,
@@ -1027,12 +1027,12 @@ db.startups.insertMany([
     reputation: 42,
     level: 2,
     stage: "SCALE",
-    niche: "niche-2"
+    niche: "MedTech"
   },
 
   // SpaceTech startups (1-8)
   {
-    _id: "startup-niche-3-1",
+    _id: "startup-SpaceTech-1",
     name: "SpaceTech Startup 1",
     description: "SpaceTech startup description 1",
     price: 30000,
@@ -1045,10 +1045,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-2",
+    _id: "startup-SpaceTech-2",
     name: "SpaceTech Startup 2",
     description: "SpaceTech startup description 2",
     price: 40000,
@@ -1061,10 +1061,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-3",
+    _id: "startup-SpaceTech-3",
     name: "SpaceTech Startup 3",
     description: "SpaceTech startup description 3",
     price: 22000,
@@ -1077,10 +1077,10 @@ db.startups.insertMany([
     reputation: 45,
     level: 2,
     stage: "SCALE",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-4",
+    _id: "startup-SpaceTech-4",
     name: "SpaceTech Startup 4",
     description: "SpaceTech startup description 4",
     price: 28000,
@@ -1093,10 +1093,10 @@ db.startups.insertMany([
     reputation: 48,
     level: 3,
     stage: "MARKET",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-5",
+    _id: "startup-SpaceTech-5",
     name: "SpaceTech Startup 5",
     description: "SpaceTech startup description 5",
     price: 18000,
@@ -1109,10 +1109,10 @@ db.startups.insertMany([
     reputation: 40,
     level: 2,
     stage: "MVP",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-6",
+    _id: "startup-SpaceTech-6",
     name: "SpaceTech Startup 6",
     description: "SpaceTech startup description 6",
     price: 25000,
@@ -1125,10 +1125,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "SCALE",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-7",
+    _id: "startup-SpaceTech-7",
     name: "SpaceTech Startup 7",
     description: "SpaceTech startup description 7",
     price: 32000,
@@ -1141,10 +1141,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
   {
-    _id: "startup-niche-3-8",
+    _id: "startup-SpaceTech-8",
     name: "SpaceTech Startup 8",
     description: "SpaceTech startup description 8",
     price: 20000,
@@ -1157,12 +1157,12 @@ db.startups.insertMany([
     reputation: 42,
     level: 2,
     stage: "MVP",
-    niche: "niche-3"
+    niche: "SpaceTech"
   },
 
   // IT startups (1-8)
   {
-    _id: "startup-niche-4-1",
+    _id: "startup-IT-1",
     name: "IT Startup 1",
     description: "IT startup description 1",
     price: 15000,
@@ -1175,10 +1175,10 @@ db.startups.insertMany([
     reputation: 35,
     level: 1,
     stage: "IDEA",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-2",
+    _id: "startup-IT-2",
     name: "IT Startup 2",
     description: "IT startup description 2",
     price: 22000,
@@ -1191,10 +1191,10 @@ db.startups.insertMany([
     reputation: 45,
     level: 2,
     stage: "MVP",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-3",
+    _id: "startup-IT-3",
     name: "IT Startup 3",
     description: "IT startup description 3",
     price: 28000,
@@ -1207,10 +1207,10 @@ db.startups.insertMany([
     reputation: 48,
     level: 3,
     stage: "SCALE",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-4",
+    _id: "startup-IT-4",
     name: "IT Startup 4",
     description: "IT startup description 4",
     price: 35000,
@@ -1223,10 +1223,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-5",
+    _id: "startup-IT-5",
     name: "IT Startup 5",
     description: "IT startup description 5",
     price: 18000,
@@ -1239,10 +1239,10 @@ db.startups.insertMany([
     reputation: 40,
     level: 2,
     stage: "MVP",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-6",
+    _id: "startup-IT-6",
     name: "IT Startup 6",
     description: "IT startup description 6",
     price: 25000,
@@ -1255,10 +1255,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "SCALE",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-7",
+    _id: "startup-IT-7",
     name: "IT Startup 7",
     description: "IT startup description 7",
     price: 30000,
@@ -1271,10 +1271,10 @@ db.startups.insertMany([
     reputation: 50,
     level: 3,
     stage: "MARKET",
-    niche: "niche-4"
+    niche: "IT"
   },
   {
-    _id: "startup-niche-4-8",
+    _id: "startup-IT-8",
     name: "IT Startup 8",
     description: "IT startup description 8",
     price: 20000,
@@ -1287,7 +1287,7 @@ db.startups.insertMany([
     reputation: 45,
     level: 2,
     stage: "SCALE",
-    niche: "niche-4"
+    niche: "IT"
   }
 ]);
 
@@ -1295,64 +1295,64 @@ db.startups.insertMany([
 db.contracts.insertMany([
   // Контракты для GreenTech стартапов (1-8)
   {
-    _id: "contract-niche-1-1",
-    startupId: "startup-niche-1-1",
+    _id: "contract-GreenTech-1",
+    startupId: "startup-GreenTech-1",
     minPrice: 9600,  // 12000 * 0.8
     maxPrice: 14400, // 12000 * 1.2
     teamEffect: 5,
     reputationEffect: 6
   },
   {
-    _id: "contract-niche-1-2",
-    startupId: "startup-niche-1-2",
+    _id: "contract-GreenTech-2",
+    startupId: "startup-GreenTech-2",
     minPrice: 14400, // 18000 * 0.8
     maxPrice: 21600, // 18000 * 1.2
     teamEffect: 7,
     reputationEffect: 8
   },
   {
-    _id: "contract-niche-1-3",
-    startupId: "startup-niche-1-3",
+    _id: "contract-GreenTech-3",
+    startupId: "startup-GreenTech-3",
     minPrice: 17600, // 22000 * 0.8
     maxPrice: 26400, // 22000 * 1.2
     teamEffect: 6,
     reputationEffect: 7
   },
   {
-    _id: "contract-niche-1-4",
-    startupId: "startup-niche-1-4",
+    _id: "contract-GreenTech-4",
+    startupId: "startup-GreenTech-4",
     minPrice: 22400, // 28000 * 0.8
     maxPrice: 33600, // 28000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-1-5",
-    startupId: "startup-niche-1-5",
+    _id: "contract-GreenTech-5",
+    startupId: "startup-GreenTech-5",
     minPrice: 12000, // 15000 * 0.8
     maxPrice: 18000, // 15000 * 1.2
     teamEffect: 4,
     reputationEffect: 5
   },
   {
-    _id: "contract-niche-1-6",
-    startupId: "startup-niche-1-6",
+    _id: "contract-GreenTech-6",
+    startupId: "startup-GreenTech-6",
     minPrice: 20000, // 25000 * 0.8
     maxPrice: 30000, // 25000 * 1.2
     teamEffect: 9,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-1-7",
-    startupId: "startup-niche-1-7",
+    _id: "contract-GreenTech-7",
+    startupId: "startup-GreenTech-7",
     minPrice: 15200, // 19000 * 0.8
     maxPrice: 22800, // 19000 * 1.2
     teamEffect: 7,
     reputationEffect: 8
   },
   {
-    _id: "contract-niche-1-8",
-    startupId: "startup-niche-1-8",
+    _id: "contract-GreenTech-8",
+    startupId: "startup-GreenTech-8",
     minPrice: 25600, // 32000 * 0.8
     maxPrice: 38400, // 32000 * 1.2
     teamEffect: 10,
@@ -1361,64 +1361,64 @@ db.contracts.insertMany([
 
   // Контракты для MedTech стартапов (1-8)
   {
-    _id: "contract-niche-2-1",
-    startupId: "startup-niche-2-1",
+    _id: "contract-MedTech-1",
+    startupId: "startup-MedTech-1",
     minPrice: 20000, // 25000 * 0.8
     maxPrice: 30000, // 25000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-2-2",
-    startupId: "startup-niche-2-2",
+    _id: "contract-MedTech-2",
+    startupId: "startup-MedTech-2",
     minPrice: 28000, // 35000 * 0.8
     maxPrice: 42000, // 35000 * 1.2
     teamEffect: 10,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-2-3",
-    startupId: "startup-niche-2-3",
+    _id: "contract-MedTech-3",
+    startupId: "startup-MedTech-3",
     minPrice: 14400, // 18000 * 0.8
     maxPrice: 21600, // 18000 * 1.2
     teamEffect: 6,
     reputationEffect: 7
   },
   {
-    _id: "contract-niche-2-4",
-    startupId: "startup-niche-2-4",
+    _id: "contract-MedTech-4",
+    startupId: "startup-MedTech-4",
     minPrice: 22400, // 28000 * 0.8
     maxPrice: 33600, // 28000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-2-5",
-    startupId: "startup-niche-2-5",
+    _id: "contract-MedTech-5",
+    startupId: "startup-MedTech-5",
     minPrice: 12000, // 15000 * 0.8
     maxPrice: 18000, // 15000 * 1.2
     teamEffect: 5,
     reputationEffect: 6
   },
   {
-    _id: "contract-niche-2-6",
-    startupId: "startup-niche-2-6",
+    _id: "contract-MedTech-6",
+    startupId: "startup-MedTech-6",
     minPrice: 17600, // 22000 * 0.8
     maxPrice: 26400, // 22000 * 1.2
     teamEffect: 7,
     reputationEffect: 8
   },
   {
-    _id: "contract-niche-2-7",
-    startupId: "startup-niche-2-7",
+    _id: "contract-MedTech-7",
+    startupId: "startup-MedTech-7",
     minPrice: 24000, // 30000 * 0.8
     maxPrice: 36000, // 30000 * 1.2
     teamEffect: 9,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-2-8",
-    startupId: "startup-niche-2-8",
+    _id: "contract-MedTech-8",
+    startupId: "startup-MedTech-8",
     minPrice: 16000, // 20000 * 0.8
     maxPrice: 24000, // 20000 * 1.2
     teamEffect: 6,
@@ -1427,64 +1427,64 @@ db.contracts.insertMany([
 
   // Контракты для SpaceTech стартапов (1-8)
   {
-    _id: "contract-niche-3-1",
-    startupId: "startup-niche-3-1",
+    _id: "contract-SpaceTech-1",
+    startupId: "startup-SpaceTech-1",
     minPrice: 24000, // 30000 * 0.8
     maxPrice: 36000, // 30000 * 1.2
     teamEffect: 9,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-3-2",
-    startupId: "startup-niche-3-2",
+    _id: "contract-SpaceTech-2",
+    startupId: "startup-SpaceTech-2",
     minPrice: 32000, // 40000 * 0.8
     maxPrice: 48000, // 40000 * 1.2
     teamEffect: 10,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-3-3",
-    startupId: "startup-niche-3-3",
+    _id: "contract-SpaceTech-3",
+    startupId: "startup-SpaceTech-3",
     minPrice: 17600, // 22000 * 0.8
     maxPrice: 26400, // 22000 * 1.2
     teamEffect: 7,
     reputationEffect: 8
   },
   {
-    _id: "contract-niche-3-4",
-    startupId: "startup-niche-3-4",
+    _id: "contract-SpaceTech-4",
+    startupId: "startup-SpaceTech-4",
     minPrice: 22400, // 28000 * 0.8
     maxPrice: 33600, // 28000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-3-5",
-    startupId: "startup-niche-3-5",
+    _id: "contract-SpaceTech-5",
+    startupId: "startup-SpaceTech-5",
     minPrice: 14400, // 18000 * 0.8
     maxPrice: 21600, // 18000 * 1.2
     teamEffect: 6,
     reputationEffect: 7
   },
   {
-    _id: "contract-niche-3-6",
-    startupId: "startup-niche-3-6",
+    _id: "contract-SpaceTech-6",
+    startupId: "startup-SpaceTech-6",
     minPrice: 20000, // 25000 * 0.8
     maxPrice: 30000, // 25000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-3-7",
-    startupId: "startup-niche-3-7",
+    _id: "contract-SpaceTech-7",
+    startupId: "startup-SpaceTech-7",
     minPrice: 25600, // 32000 * 0.8
     maxPrice: 38400, // 32000 * 1.2
     teamEffect: 10,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-3-8",
-    startupId: "startup-niche-3-8",
+    _id: "contract-SpaceTech-8",
+    startupId: "startup-SpaceTech-8",
     minPrice: 16000, // 20000 * 0.8
     maxPrice: 24000, // 20000 * 1.2
     teamEffect: 6,
@@ -1493,64 +1493,64 @@ db.contracts.insertMany([
 
   // Контракты для IT стартапов (1-8)
   {
-    _id: "contract-niche-4-1",
-    startupId: "startup-niche-4-1",
+    _id: "contract-IT-1",
+    startupId: "startup-IT-1",
     minPrice: 12000, // 15000 * 0.8
     maxPrice: 18000, // 15000 * 1.2
     teamEffect: 5,
     reputationEffect: 6
   },
   {
-    _id: "contract-niche-4-2",
-    startupId: "startup-niche-4-2",
+    _id: "contract-IT-2",
+    startupId: "startup-IT-2",
     minPrice: 17600, // 22000 * 0.8
     maxPrice: 26400, // 22000 * 1.2
     teamEffect: 7,
     reputationEffect: 8
   },
   {
-    _id: "contract-niche-4-3",
-    startupId: "startup-niche-4-3",
+    _id: "contract-IT-3",
+    startupId: "startup-IT-3",
     minPrice: 22400, // 28000 * 0.8
     maxPrice: 33600, // 28000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-4-4",
-    startupId: "startup-niche-4-4",
+    _id: "contract-IT-4",
+    startupId: "startup-IT-4",
     minPrice: 28000, // 35000 * 0.8
     maxPrice: 42000, // 35000 * 1.2
     teamEffect: 10,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-4-5",
-    startupId: "startup-niche-4-5",
+    _id: "contract-IT-5",
+    startupId: "startup-IT-5",
     minPrice: 14400, // 18000 * 0.8
     maxPrice: 21600, // 18000 * 1.2
     teamEffect: 6,
     reputationEffect: 7
   },
   {
-    _id: "contract-niche-4-6",
-    startupId: "startup-niche-4-6",
+    _id: "contract-IT-6",
+    startupId: "startup-IT-6",
     minPrice: 20000, // 25000 * 0.8
     maxPrice: 30000, // 25000 * 1.2
     teamEffect: 8,
     reputationEffect: 9
   },
   {
-    _id: "contract-niche-4-7",
-    startupId: "startup-niche-4-7",
+    _id: "contract-IT-7",
+    startupId: "startup-IT-7",
     minPrice: 24000, // 30000 * 0.8
     maxPrice: 36000, // 30000 * 1.2
     teamEffect: 9,
     reputationEffect: 10
   },
   {
-    _id: "contract-niche-4-8",
-    startupId: "startup-niche-4-8",
+    _id: "contract-IT-8",
+    startupId: "startup-IT-8",
     minPrice: 16000, // 20000 * 0.8
     maxPrice: 24000, // 20000 * 1.2
     teamEffect: 6,

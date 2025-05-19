@@ -27,7 +27,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ConferenceController {
     private final ConferenceService conferenceService;
-    private final UserServiceImpl userService;
 
     @Operation(
             summary = "Получаем все доступные для посещения конференции"

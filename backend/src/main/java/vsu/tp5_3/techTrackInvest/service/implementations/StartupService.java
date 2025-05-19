@@ -28,7 +28,6 @@ import java.util.*;
 public class StartupService {
     private final StartupRepository startupRepository;
     private final StartupMongoRepository startupMongoRepository;
-    private final NicheService nicheService;
     private final CurrentDisplayedStartupRepository currentDisplayedStartupRepository;
     private final SessionRepository sessionRepository;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
@@ -195,7 +194,7 @@ public class StartupService {
 
 
         return new StepActionDto<>(true, new StartupReadDto(startupBuyDTO.getResourceId(),
-                nicheService.getNicheName(startup.getNicheId()), startup.getName(), startup.getDescription()),
+                startup.getNicheId(), startup.getName(), startup.getDescription()),
                 "", session.getStepCount());
 
     }
