@@ -14,6 +14,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 public class NicheMongo {
     @Id
-    private String id;
     private String name;
 }

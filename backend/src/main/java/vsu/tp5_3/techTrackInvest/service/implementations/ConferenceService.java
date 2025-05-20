@@ -38,7 +38,6 @@ public class ConferenceService {
     private final UserRepository userRepository;
     private final StepService stepService;
     private final ConferenceMongoToDisplayedMapper conferenceMongoToDisplayedMapper;
-    private final EntityManager entityManager;
     // удаление отображаемых и создание рандомных
 
     // допилить, чтобы было получение по нише

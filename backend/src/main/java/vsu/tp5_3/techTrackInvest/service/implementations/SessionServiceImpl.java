@@ -72,7 +72,7 @@ public class SessionServiceImpl implements SessionService {
         for (NicheMongo n : nicheMongos) {
             Expertise e = new Expertise();
             e.setValue(10);
-            e.setResourceId(n.getId());
+            e.setResourceId(n.getName());
             e.setStep(step);
             expertiseList.add(e);
         }
@@ -83,30 +83,20 @@ public class SessionServiceImpl implements SessionService {
 
 
         List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>();
-        List<CurrentDisplayedConference> niche1C = conferenceService.getRandomConferencesByNiche(2, "niche-1", session);
-        List<CurrentDisplayedConference> niche2C = conferenceService.getRandomConferencesByNiche(2, "niche-2", session);
-        List<CurrentDisplayedConference> niche3C = conferenceService.getRandomConferencesByNiche(2, "niche-3", session);
-        List<CurrentDisplayedConference> niche4C = conferenceService.getRandomConferencesByNiche(2, "niche-4", session);
-        currentDisplayedConferences.addAll(niche1C);
-        currentDisplayedConferences.addAll(niche2C);
-        currentDisplayedConferences.addAll(niche3C);
-        currentDisplayedConferences.addAll(niche4C);
+        for (NicheMongo mongoNiche : nicheMongos) {
+            var randomConferences = conferenceService.
+                    getRandomConferencesByNiche(2, mongoNiche.getName(), session);
+            currentDisplayedConferences.addAll(randomConferences);
+        }
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
 
         List<CurrentDisplayedStartup> currentDisplayedStartups = new ArrayList<>();
-        List<CurrentDisplayedStartup> niche1S = getRandomStartupsIntoNiche(4, "niche-1", session)
-                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        List<CurrentDisplayedStartup> niche2S = getRandomStartupsIntoNiche(4, "niche-2", session)
-                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        List<CurrentDisplayedStartup> niche3S = getRandomStartupsIntoNiche(4, "niche-3", session)
-                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        List<CurrentDisplayedStartup> niche4S = getRandomStartupsIntoNiche(4, "niche-4", session)
-                .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();;
-        currentDisplayedStartups.addAll(niche1S);
-        currentDisplayedStartups.addAll(niche2S);
-        currentDisplayedStartups.addAll(niche3S);
-        currentDisplayedStartups.addAll(niche4S);
+        for (NicheMongo mongoNiche : nicheMongos) {
+            var randomStartupsList = getRandomStartupsIntoNiche(4, mongoNiche.getName())
+                    .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
+            currentDisplayedStartups.addAll(randomStartupsList);
+        }
         session.setCurrentDisplayedStartups(currentDisplayedStartups);
 
 
@@ -119,19 +109,9 @@ public class SessionServiceImpl implements SessionService {
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
     }
 
-    //вообще мы же должны получать определённое количество конференций(4 с каждой категории). Первый раз по 4, потом
-    //если сходил на какую-то то вместое неё одну. Тоже самое относится и к стартапам.
-
     @NeedTest
-    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId, Session session) {
-        /*Pageable pageable = PageRequest.of(0, count);
-        return conferenceMongoRepository.findByNicheId(nicheId, pageable);*/
-        return conferenceMongoRepository.findAll();
-    }
-
-    @NeedTest
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId, Session session) {
-        Pageable pageable = PageRequest.of(0, count);
+    @Override
+    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
 
         return startupMongoRepository.findRandomStartupsByNiche(nicheId, count);
 
@@ -145,19 +125,8 @@ public class SessionServiceImpl implements SessionService {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         user.getSessions().clear();
-        //sessionRepository.deleteByAppUser(user);
         return Optional.of(new FinishDto(id));
 
-    }
-
-    @Override
-    public List<ConferenceMongo> getRandomConferencesIntoNiche(int count, String nicheId) {
-        return List.of();
-    }
-
-    @Override
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
-        return List.of();
     }
 
     public CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session) {

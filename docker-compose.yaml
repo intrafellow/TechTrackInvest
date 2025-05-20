@@ -1,0 +1,73 @@
+services:
+  backend:
+    build: ./backend/
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-appdb}
+      DB_USERNAME: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      MONGO_URI: mongodb://root:example@mongo:27017/techTrackInvestMongo?authSource=admin&retryWrites=true&w=majority
+      EMAIL_PASS: begy rvvu yxei myxw
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
+    networks:
+      - db-network
+    depends_on:
+      - postgres
+      - mongo
+      
+
+  frontend:
+    build:
+      context: ./front/
+      args:
+        - REACT_APP_API_URL=http://localhost
+        - NGINX_CONFIG_NAME=nginx.dev.conf
+    ports:
+      - "80:80"      
+    networks:
+      - db-network
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: ${POSTGRES_DB:-appdb}
+    networks:
+      - db-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: techTrackInvestMongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    command: mongod --bind_ip_all --wiredTigerCacheSizeGB 1.5
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+
+networks:
+  db-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  postgres_data:
+  

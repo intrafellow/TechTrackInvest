@@ -21,7 +21,6 @@ import java.util.Comparator;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StepService {
-    private final int STEP_MAX = 5;
     private final UserRepository userRepository;
     // я тут поменял логику, чтобы убавлялось значение доступных очков действий поля в сессии stepCount
     //обновлять значения текущего степа, нам придётся в огромном количестве других мест кода, поэтому есть резон сделать

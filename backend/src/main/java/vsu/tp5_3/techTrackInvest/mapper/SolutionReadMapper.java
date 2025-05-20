@@ -13,7 +13,8 @@ public class SolutionReadMapper implements Mapper<Solution, SolutionReadDto>{
                 object.getId(),
                 object.getTitle(),
                 object.getDescription(),
-                object.getEffect()
+                object.getEffect(),
+                object.getUserEffect()
         );
     }
 }

@@ -6,10 +6,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.CrisisReadDto;
+import vsu.tp5_3.techTrackInvest.dto.SolutionReadDto;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
-import vsu.tp5_3.techTrackInvest.entities.mongo.CrisisMongo;
-import vsu.tp5_3.techTrackInvest.entities.mongo.Effect;
-import vsu.tp5_3.techTrackInvest.entities.mongo.Solution;
+import vsu.tp5_3.techTrackInvest.entities.mongo.*;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.CrisisReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.CurrentCrisisMapper;
@@ -21,6 +20,7 @@ import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @Component
@@ -30,8 +30,6 @@ public class CrisisServiceImpl implements CrisisService {
     private final UserRepository userRepository;
     private final CrisisMongoRepository crisisMongoRepository;
     private final CurrentCrisisRepository currentCrisisRepository;
-    private final SolutionMongoRepository solutionMongoRepository;
-    private final StartupRepository startupRepository;
     private final CrisisReadMapper crisisReadMapper;
     private final CurrentCrisisMapper currentCrisisMapper;
     private final EntityManager entityManager;
@@ -65,8 +63,9 @@ public class CrisisServiceImpl implements CrisisService {
 
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get().getSessions().getLast();
         CrisisMongo crisisMongo = crisisMongoRepository.findById(session.getCurrentCrisis().getCrisisId()).get();
-        Solution solution = solutionMongoRepository.findById(solutionId).orElseThrow();
+        Solution solution = crisisMongo.getPossibleSolutions().stream().filter(s -> s.getId().equals(solutionId)).findFirst().orElseThrow();
         Effect effect = solution.getEffect();
+        UserEffect userEffect = solution.getUserEffect();
         List<Startup> startups = session.getStartups();
         for (Startup startup : startups) {
             for (String nId : crisisMongo.getNichesId()) {
@@ -79,6 +78,21 @@ public class CrisisServiceImpl implements CrisisService {
                 }
             }
         }
+        Step step = session.getSteps().getLast();
+        step.setCash(step.getCash() + userEffect.getMoneyChange());
+        step.setReputation(step.getReputation() + userEffect.getReputationChange());
+        List<ExpertiseChange> expertiseChanges = userEffect.getExpertise();
+        List<Expertise> newExpertise = new ArrayList<>(step.getExpertiseList());
+        for (ExpertiseChange ec : expertiseChanges) {
+            for (Expertise e : newExpertise) {
+                if (e.getResourceId().equals(ec.getNicheId())) {
+                    e.setValue(e.getValue() + ec.getChange());
+                }
+                e.setStep(step);
+            }
+        }
+        step.getExpertiseList().clear();
+        step.getExpertiseList().addAll(newExpertise);
         //я не вижу здесь обнуления текущего кризиса. Оно было в методе получения, но там оставлять это как то странно
         //поэтому допишу здесь
         session.setCurrentCrisis(null);

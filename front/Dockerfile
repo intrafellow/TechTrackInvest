@@ -23,8 +23,10 @@ RUN yarn build
 # Этап продакшена
 FROM nginx:alpine
 
+ARG NGINX_CONFIG_NAME
+ENV NGINX_CONFIG_NAME=${NGINX_CONFIG_NAME}
 # Копирование конфигурации nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/${NGINX_CONFIG_NAME} /etc/nginx/conf.d/default.conf
 
 # Копирование собранного приложения из этапа сборки
 COPY --from=builder /app/build /usr/share/nginx/html

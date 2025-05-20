@@ -28,12 +28,9 @@ import java.util.List;
 @RequestMapping("/api/v1/debug")
 @RequiredArgsConstructor
 public class DebugController {
-
     private final ConferenceMongoRepository conferenceMongoRepository;
-    private final ConferenceService conferenceService;
     private final StartupMongoRepository startupMongoRepository;
     private final StartupService startupService;
-    private final UserRepository userRepository;
 
     @GetMapping("/conferences")
     public ResponseEntity<List<ConferenceMongo>> getAllConferences() {

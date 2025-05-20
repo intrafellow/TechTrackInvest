@@ -1,6 +1,5 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
@@ -23,9 +21,7 @@ import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
-import vsu.tp5_3.techTrackInvest.utils.JwtTokenUtils;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -37,10 +33,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserReadMapper userReadMapper;
     private final PasswordEncoder passwordEncoder;
     private final NicheMongoRepository nicheMongoRepository;
-    private final NicheService nicheService;
     private final UserProfileMapper userProfileMapper;
-    private final JwtTokenUtils jwtTokenUtils;
-    private final EntityManager entityManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -115,12 +108,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Step currentStep =  session.getSteps().stream()
                 .max(Comparator.comparing(Step::getSequenceNumber)).get();
         List<Expertise> currentPlayerExpertise = currentStep.getExpertiseList();
-        Map<String, Integer> resutlExpertise = new HashMap<>();
+        Map<String, Integer> resultExpertise = new HashMap<>();
         //сравниваем resource id эксперитзы, которые хранятся в постресе с id из монго, чтобы получить названия категорий
         for (Expertise expertise : currentPlayerExpertise) {
-            resutlExpertise.put(nicheService.getNicheName(expertise.getResourceId()), expertise.getValue());
+            resultExpertise.put(expertise.getResourceId(), expertise.getValue());
         }
-        return Optional.of(new ExpertiseDto(resutlExpertise));
+        return Optional.of(new ExpertiseDto(resultExpertise));
     }
 
     public Optional<AppUser> findByEmail(String email) {

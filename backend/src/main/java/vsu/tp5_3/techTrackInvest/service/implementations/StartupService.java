@@ -28,7 +28,6 @@ import java.util.*;
 public class StartupService {
     private final StartupRepository startupRepository;
     private final StartupMongoRepository startupMongoRepository;
-    private final NicheService nicheService;
     private final CurrentDisplayedStartupRepository currentDisplayedStartupRepository;
     private final SessionRepository sessionRepository;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
@@ -88,10 +87,6 @@ public class StartupService {
             session.getStartups().forEach(startup -> usedStartupIds.add(startup.getResId()));
 
             List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
-
-//            PageRequest pageRequest = PageRequest.of(0, startupsCount);
-//            List<StartupMongo> retrievedStartups = startupMongoRepository.findAllByNicheAndIdNotIn(nicheId,
-//                    new ArrayList<>(usedStartupIds), pageRequest);
             List<StartupMongo> retrievedStartups = startupMongoRepository.findRandomStartupsByNicheAndExcludedIds(nicheId,
                     new ArrayList<>(usedStartupIds), startupsCount);
             if (retrievedStartups.isEmpty()) {
@@ -195,7 +190,7 @@ public class StartupService {
 
 
         return new StepActionDto<>(true, new StartupReadDto(startupBuyDTO.getResourceId(),
-                nicheService.getNicheName(startup.getNicheId()), startup.getName(), startup.getDescription()),
+                startup.getNicheId(), startup.getName(), startup.getDescription()),
                 "", session.getStepCount());
 
     }

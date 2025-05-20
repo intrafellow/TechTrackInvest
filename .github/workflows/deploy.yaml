@@ -57,6 +57,7 @@ jobs:
           push: true
           build-args: |
             REACT_APP_API_URL=https://techtrackinvest.ru
+            NGINX_CONFIG_NAME=nginx.prod.conf
           tags: |
             ghcr.io/patersss/tecktrackinvestfrontend:latest
             ghcr.io/patersss/tecktrackinvestfrontend:${{ github.sha }}
