@@ -347,8 +347,14 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     setDialogOpen(prev => ({ ...prev, [type]: false }));
   };
 
-  const calculatedMonth = getCurrentMonth(sessionData.stepCount);
+  const calculatedMonth = getCurrentMonth(sessionData.monthId);
   const displayMonth = currentMonth ?? calculatedMonth;
+
+  // Добавляем проверку на валидность месяца
+  const getMonthName = (month: number): string => {
+    const validMonth = month % 12;
+    return MONTHS[validMonth] || 'Неизвестный месяц';
+  };
 
   const getTrendIcon = (current: number, previous: number) => {
     if (previous === undefined) return null;
@@ -544,7 +550,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
                 }
               }}
             >
-              {loading ? '...' : MONTHS[displayMonth]}
+              {loading ? '...' : getMonthName(displayMonth)}
             </Typography>
             <Typography
               sx={{
@@ -557,7 +563,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
                 }
               }}
             >
-              {loading ? '...' : MONTHS[displayMonth].slice(0, 3)}
+              {loading ? '...' : getMonthName(displayMonth).slice(0, 3)}
             </Typography>
           </Box>
           <Box
@@ -603,8 +609,8 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
   );
 };
 
-function getCurrentMonth(stepCount: number): number {
-  return stepCount % 12;
+function getCurrentMonth(monthId: number): number {
+  return monthId % 12;
 }
 
 export default Header;
