@@ -11,7 +11,6 @@ import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.exceptions.LastStepNotFoundException;
-import vsu.tp5_3.techTrackInvest.exceptions.SessionNotFoundException;
 import vsu.tp5_3.techTrackInvest.exceptions.UserNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.*;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
@@ -155,7 +154,7 @@ public class StartupService {
     @Transactional
     public StepActionDto<StartupReadDto> buyStartup(StartupBuyDTO startupBuyDTO) {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(SessionNotFoundException::new).getSessions().getLast();
+                .orElseThrow(UserNotFoundException::new).getSessions().getLast();
         Step currentStep = session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).orElseThrow(
                 () -> new LastStepNotFoundException("Не смогли получить последний ход игрока")
         );

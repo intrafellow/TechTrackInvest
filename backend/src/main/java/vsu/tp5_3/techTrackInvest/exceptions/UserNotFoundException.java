@@ -1,7 +1,7 @@
 package vsu.tp5_3.techTrackInvest.exceptions;
 
 public class UserNotFoundException extends RuntimeException{
-    public UserNotFoundException(String message) {
-        super(message);
+    public UserNotFoundException() {
+        super("Пользователь не был найден. Проверьте jwt токен");
     }
 }
