@@ -15,10 +15,5 @@ import java.util.Optional;
 public interface SessionService {
     Optional<SessionReadDto> creteSession();
     Optional<FinishDto> finishSession();
-    List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId);
-    CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session);
-    CurrentDisplayedStartup convertToDisplayedStartup(StartupMongo mongoStartup, Session session);
-    Session getCurrentSession();
-
     Optional<SessionReadDto> loadSession();
 }

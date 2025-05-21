@@ -20,6 +20,7 @@ import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.*;
 
@@ -39,6 +40,7 @@ public class StartupService {
     private final StartupMongoToBoughtStartupMapper startupMongoToBoughtStartupMapper;
     private final SessionService sessionService;
     private final StartupStatisticsMapper startupStatisticsMapper;
+    private final UserService userService;
 
     @Tested
     //нужен чтобы получать все доступные стартапы для покупки по определённой категории(в ui есть такой выбор)
@@ -52,7 +54,7 @@ public class StartupService {
     public StartupListDto getAllAvailableStartups() {
         //получить все купленные стартапы
         //получить все, что может сейчас купить
-        Session session = sessionService.getCurrentSession();
+        Session session = userService.getUserDBSession();
         List<Startup> allBoughtStartups = session.getStartups();
         List<CurrentDisplayedStartup> allReadyToBuyStartups = session.getCurrentDisplayedStartups();
 
@@ -226,7 +228,7 @@ public class StartupService {
 
     @NeedTest
     public StartupStatisticsDTO getStartupStatistics(String resourceId) {
-        Startup startup = sessionService.getCurrentSession().getStartups().stream()
+        Startup startup = userService.getUserDBSession().getStartups().stream()
                 .filter(st -> st.getResId().equals(resourceId)).findFirst().orElseThrow();
 
         return startupStatisticsMapper.map(startup);
