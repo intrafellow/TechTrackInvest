@@ -35,7 +35,6 @@ public class SessionServiceImpl implements SessionService {
     private final SessionReadMapper sessionReadMapper;
     private final NicheMongoRepository nicheMongoRepository;
     private final StartupMongoRepository startupMongoRepository;
-    private final ConferenceService conferenceService;
     private final ConferenceProvider conferenceProvider;
 
 
@@ -97,14 +96,6 @@ public class SessionServiceImpl implements SessionService {
         session.setCrisisHistory(new ArrayList<>());
 
         return Optional.ofNullable(sessionReadMapper.map(sessionRepository.save(session)));
-    }
-
-    @NeedTest
-    @Override
-    public List<StartupMongo> getRandomStartupsIntoNiche(int count, String nicheId) {
-
-        return startupMongoRepository.findRandomStartupsByNiche(nicheId, count);
-
     }
 
     @Override
