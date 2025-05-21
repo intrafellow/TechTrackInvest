@@ -40,7 +40,6 @@ public class ContractService {
     }
 
     public int getFinalContractPrice(int rollResult, int minPrice, int maxPrice, int suggestedPrice) {
-//        return (int) (maxPrice - ((double) (rollResult - 1) / 19) * (maxPrice - minPrice));
         if (suggestedPrice > maxPrice || suggestedPrice < minPrice) {
             throw new IllegalArgumentException("Suggested price cannot be greater than max price");
         }
@@ -95,6 +94,7 @@ public class ContractService {
 
     }
 
+    //нужен ли вообще этот метод, если нейронка будет возвращать уже готовый результат
     public Pair<Integer, Integer> getEffectsFromContract(int rollResult, Contract contract) {
         int teamEffect = contract.getTeamEffect();
         int reputationEffect = contract.getReputationEffect();

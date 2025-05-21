@@ -2,7 +2,6 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,9 @@ import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.exceptions.LastStepNotFoundException;
+import vsu.tp5_3.techTrackInvest.exceptions.SessionNotFoundException;
+import vsu.tp5_3.techTrackInvest.exceptions.UserNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.*;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
@@ -153,8 +155,10 @@ public class StartupService {
     @Transactional
     public StepActionDto<StartupReadDto> buyStartup(StartupBuyDTO startupBuyDTO) {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
-        Step currentStep = session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).get();
+                .orElseThrow(SessionNotFoundException::new).getSessions().getLast();
+        Step currentStep = session.getSteps().stream().max(Comparator.comparing(Step::getSequenceNumber)).orElseThrow(
+                () -> new LastStepNotFoundException("Не смогли получить последний ход игрока")
+        );
         int playerCash = currentStep.getCash();
 
         if (playerCash < startupBuyDTO.getFinalPrice()) {
@@ -171,6 +175,8 @@ public class StartupService {
         startup.setSession(session);
         startupRepository.save(startup);
 
+
+        //TODO тут явно есть какой-то баг. Выбираю стартапы по интерфейсу могут пересекаться с другими сессиями
         List<CurrentDisplayedStartup> startups = currentDisplayedStartupRepository
                 .findAllByResourceId(startupBuyDTO.getResourceId());
 

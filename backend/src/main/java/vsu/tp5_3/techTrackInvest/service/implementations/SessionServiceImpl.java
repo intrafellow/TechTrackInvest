@@ -39,7 +39,6 @@ public class SessionServiceImpl implements SessionService {
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final SessionReadMapper sessionReadMapper;
-    private final ConferenceMongoRepository conferenceMongoRepository;
     private final NicheMongoRepository nicheMongoRepository;
     private final StartupMongoRepository startupMongoRepository;
     private final ConferenceService conferenceService;
@@ -129,6 +128,7 @@ public class SessionServiceImpl implements SessionService {
 
     }
 
+    //вынести в мапперы по-хорошему
     public CurrentDisplayedConference convertToDisplayedConference(ConferenceMongo mongoConf, Session session) {
         CurrentDisplayedConference displayed = new CurrentDisplayedConference();
         displayed.setResourceId(mongoConf.getId());
