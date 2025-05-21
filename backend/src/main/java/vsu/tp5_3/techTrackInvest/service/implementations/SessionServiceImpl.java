@@ -2,9 +2,6 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +13,17 @@ import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
 import vsu.tp5_3.techTrackInvest.mapper.SessionReadMapper;
-import vsu.tp5_3.techTrackInvest.repositories.mongo.ConferenceMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.SessionRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
+import vsu.tp5_3.techTrackInvest.service.interfaces.ConferenceProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +36,7 @@ public class SessionServiceImpl implements SessionService {
     private final NicheMongoRepository nicheMongoRepository;
     private final StartupMongoRepository startupMongoRepository;
     private final ConferenceService conferenceService;
+    private final ConferenceProvider conferenceProvider;
 
 
     @Override
@@ -66,32 +61,28 @@ public class SessionServiceImpl implements SessionService {
         step.setSequenceNumber(1);
 
         List<Expertise> expertiseList = new ArrayList<>();
-        List<NicheMongo> nicheMongos = nicheMongoRepository.findAll();
+        List<NicheMongo> nicheMongo = nicheMongoRepository.findAll();
+        List<String> nicheIds = nicheMongo.stream().map(NicheMongo::getName).toList();
 
-        for (NicheMongo n : nicheMongos) {
+        for (String nicheId : nicheIds) {
             Expertise e = new Expertise();
             e.setValue(10);
-            e.setResourceId(n.getName());
+            e.setResourceId(nicheId);
             e.setStep(step);
             expertiseList.add(e);
         }
-
         step.setExpertiseList(expertiseList);
         step.setSession(session);
         session.getSteps().add(step);
 
 
-        List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>();
-        for (NicheMongo mongoNiche : nicheMongos) {
-            var randomConferences = conferenceService.
-                    getRandomConferencesByNiche(2, mongoNiche.getName(), session);
-            currentDisplayedConferences.addAll(randomConferences);
-        }
+        var newRandomConferences = conferenceProvider.getRandomConferences(nicheIds, 4);
+        List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>(newRandomConferences);
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
 
         List<CurrentDisplayedStartup> currentDisplayedStartups = new ArrayList<>();
-        for (NicheMongo mongoNiche : nicheMongos) {
+        for (NicheMongo mongoNiche : nicheMongo) {
             var randomStartupsList = getRandomStartupsIntoNiche(4, mongoNiche.getName())
                     .stream().map(startupMongo -> convertToDisplayedStartup(startupMongo, session)).toList();
             currentDisplayedStartups.addAll(randomStartupsList);

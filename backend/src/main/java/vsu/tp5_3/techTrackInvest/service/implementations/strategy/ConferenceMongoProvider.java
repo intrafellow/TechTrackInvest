@@ -17,8 +17,6 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Setter
-@Getter
 public class ConferenceMongoProvider implements ConferenceProvider {
     private final UserService userService;
     private final ConferenceMongoRepository conferenceMongoRepository;
@@ -37,7 +35,7 @@ public class ConferenceMongoProvider implements ConferenceProvider {
     }
 
     private List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, String nicheId, Session session) {
-        List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
-        return conferenceMongos.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
+        List<ConferenceMongo> conferenceMongo = conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
+        return conferenceMongo.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
     }
 }
