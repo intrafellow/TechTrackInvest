@@ -3,13 +3,11 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.entities.postgre.PasswordResetToken;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.PasswordResetTokenRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.rest.controller;
+package vsu.tp5_3.techTrackInvest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

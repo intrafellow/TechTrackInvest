@@ -9,17 +9,20 @@ import vsu.tp5_3.techTrackInvest.annotation.NeedTest;
 import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
-import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
+import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
+import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
+import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
 import vsu.tp5_3.techTrackInvest.exceptions.LastStepNotFoundException;
 import vsu.tp5_3.techTrackInvest.exceptions.UserNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.*;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.StartupMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.SessionRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
-import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
+import vsu.tp5_3.techTrackInvest.service.implementations.strategy.StartupMongoProvider;
+import vsu.tp5_3.techTrackInvest.service.interfaces.StartupProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.*;
@@ -31,16 +34,16 @@ public class StartupService {
     private final StartupRepository startupRepository;
     private final StartupMongoRepository startupMongoRepository;
     private final CurrentDisplayedStartupRepository currentDisplayedStartupRepository;
-    private final SessionRepository sessionRepository;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
     private final StartupReadMapper startupReadMapper;
     private final UserRepository userRepository;
     private final StepService stepService;
     private final StartupExpertiseMapper startupExpertiseMapper;
     private final StartupMongoToBoughtStartupMapper startupMongoToBoughtStartupMapper;
-    private final SessionService sessionService;
     private final StartupStatisticsMapper startupStatisticsMapper;
     private final UserService userService;
+    private final StartupMongoToDisplayedStartupMapper startupMongoToDisplayedStartupMapper;
+    private final StartupProvider startupProvider;
 
     @Tested
     //нужен чтобы получать все доступные стартапы для покупки по определённой категории(в ui есть такой выбор)
@@ -74,47 +77,40 @@ public class StartupService {
     @Tested
     @Transactional
     //метод который отвечает за обновление n-го количества стартапов из какой-то ниши для покупки
-        public void updateDisplayedStartups(int startupsCount, String nicheId) {
-            //получаем сессию и купленные/предлагаемых стартапы именно из неё
-            //Собираем все id купленных стартапов из определённой ниши
-            //Собираем все id показываемых стартапов из определённой ниши
-            //формируем set из этих значений
-            //делаем запрос к монго, чтобы она нашла n-ое количество уникальных стартапов
+    public List<CurrentDisplayedStartup> updateDisplayedStartups(int startupsPerNiche, List<String> nicheIds) {
+        //получаем сессию и купленные/предлагаемых стартапы именно из неё
+        //Собираем все id купленных стартапов из определённой ниши
+        //формируем set из этих значений
+        //делаем запрос к монго, чтобы она нашла n-ое количество уникальных стартапов
+        //возвращаем лист со стартапами для нового хода
 
-            Set<String> usedStartupIds = new HashSet<>();
+        Set<String> usedStartupIds = new HashSet<>();
 
-            Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                    .get().getSessions().getLast();
+        Session session = userService.getUserDBSession();
 
-            session.getCurrentDisplayedStartups().forEach(startup -> usedStartupIds.add(startup.getResourceId()));
-            session.getStartups().forEach(startup -> usedStartupIds.add(startup.getResId()));
+        session.getStartups().forEach(startup -> usedStartupIds.add(startup.getResId()));
 
-            List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
-            List<StartupMongo> retrievedStartups = startupMongoRepository.findRandomStartupsByNicheAndExcludedIds(nicheId,
-                    new ArrayList<>(usedStartupIds), startupsCount);
-            if (retrievedStartups.isEmpty()) {
-                throw new EntityNotFoundException("No startup found for id " + nicheId);
+        List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();
+        if (startupProvider instanceof StartupMongoProvider) {
+            for (String nicheId : nicheIds) {
+                List<StartupMongo> retrievedStartups;
+                retrievedStartups = startupMongoRepository.findRandomStartupsByNicheAndExcludedIds(nicheId,
+                        new ArrayList<>(usedStartupIds), startupsPerNiche);
+
+                resultNewStartups.addAll(retrievedStartups.stream().map(mongoStartup -> {
+                    var postgresStartup = startupMongoToDisplayedStartupMapper.map(mongoStartup);
+                    postgresStartup.setSession(session);
+                    return postgresStartup;
+                }).toList());
             }
-            //заполнили новую сущность, привязали к сессии, добавили в список новых стартапов
-            for (StartupMongo startup : retrievedStartups) {
-                CurrentDisplayedStartup currentDisplayedStartup = new CurrentDisplayedStartup();
-                currentDisplayedStartup.setNicheId(startup.getNiche());
-                currentDisplayedStartup.setResourceId(startup.getId());
-                currentDisplayedStartup.setName(startup.getName());
-                currentDisplayedStartup.setDescription(startup.getDescription());
-                currentDisplayedStartup.setPrice(startup.getPrice());
-                currentDisplayedStartup.setSession(session);
-                resultNewStartups.add(currentDisplayedStartup);
-            }
-            //нам нужно удалить все старые стартапы, которые раньше предлагались к покупке
-            session.getCurrentDisplayedStartups().clear();
-            //добавляем новых
-            session.getCurrentDisplayedStartups().addAll(resultNewStartups);
-            //нужно сохранить сессию
-            sessionRepository.save(session);
+        } else {
+            var startupsFromAI = startupProvider.getRandomStartups(nicheIds, 4, session);
+            resultNewStartups.addAll(startupsFromAI);
         }
 
-    //Метод, который отвечает за экспертизу
+        return resultNewStartups;
+    }
+
     @Transactional
     public StepActionDto<StartupExpertiseDTO> getExpertise(String resourceId, int expertisePrice) {
         StepValidationResult validationResult = stepService.validateStep();
@@ -193,7 +189,6 @@ public class StartupService {
 
 
         currentDisplayedStartupRepository.delete(boughtStartup);
-
 
 
         return new StepActionDto<>(true, new StartupReadDto(startupBuyDTO.getResourceId(),

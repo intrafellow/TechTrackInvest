@@ -2,19 +2,18 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.CrisisReadDto;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.*;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.exceptions.CrisisNotFoundException;
 import vsu.tp5_3.techTrackInvest.exceptions.CrisisSolutionsNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.CrisisReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.CurrentCrisisMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.CrisisMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentCrisisRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisService;
@@ -65,7 +64,8 @@ public class CrisisServiceImpl implements CrisisService {
         stepService.executeStep();
 
         Session session = userService.getUserDBSession();
-        CrisisMongo crisisMongo = crisisMongoRepository.findById(session.getCurrentCrisis().getCrisisId()).get();
+        CrisisMongo crisisMongo = crisisMongoRepository.findById(session.getCurrentCrisis().getCrisisId())
+                .orElseThrow(CrisisNotFoundException::new);
         Solution solution = crisisMongo.getPossibleSolutions().stream().filter(s -> s.getId().equals(solutionId))
                 .findFirst().orElseThrow(
                         () -> new CrisisSolutionsNotFoundException("Не нашли решение кризиса с id " + solutionId));

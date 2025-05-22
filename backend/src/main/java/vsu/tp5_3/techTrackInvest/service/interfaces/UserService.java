@@ -7,7 +7,6 @@ import vsu.tp5_3.techTrackInvest.dto.MoneyDto;
 import vsu.tp5_3.techTrackInvest.dto.ReputationDto;
 import vsu.tp5_3.techTrackInvest.dto.UserProfileDto;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
-import vsu.tp5_3.techTrackInvest.mapper.ConferenceMongoToDisplayedMapper;
 
 import java.util.Optional;
 

@@ -73,11 +73,11 @@ public class SessionServiceImpl implements SessionService {
         session.getSteps().add(step);
 
 
-        var newRandomConferences = conferenceProvider.getRandomConferences(nicheIds, 4);
+        var newRandomConferences = conferenceProvider.getRandomConferences(nicheIds, 4, session);
         List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>(newRandomConferences);
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
-        var newRandomStartups = startupProvider.getRandomStartups(nicheIds, 4);
+        var newRandomStartups = startupProvider.getRandomStartups(nicheIds, 4, session);
         List<CurrentDisplayedStartup> currentDisplayedStartups = new ArrayList<>(newRandomStartups);
         session.setCurrentDisplayedStartups(currentDisplayedStartups);
 

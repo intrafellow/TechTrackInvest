@@ -1,6 +1,5 @@
 package vsu.tp5_3.techTrackInvest.repositories.mongo;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;

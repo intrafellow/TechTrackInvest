@@ -20,8 +20,7 @@ public class StartupMongoProvider implements StartupProvider {
     private final StartupMongoToDisplayedStartupMapper startupMongoToDisplayedStartupMapper;
 
     @Override
-    public List<CurrentDisplayedStartup> getRandomStartups(List<String> nicheIds, int countPerNiche) {
-        Session session = userService.getUserDBSession();
+    public List<CurrentDisplayedStartup> getRandomStartups(List<String> nicheIds, int countPerNiche, Session session) {
         List<CurrentDisplayedStartup> startups = new ArrayList<>();
 
         for (String nicheId : nicheIds) {

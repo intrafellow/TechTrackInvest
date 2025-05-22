@@ -13,15 +13,9 @@ import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.Contract;
 import vsu.tp5_3.techTrackInvest.entities.postgre.AppUser;
 import vsu.tp5_3.techTrackInvest.entities.postgre.CurrentDisplayedStartup;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
-import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
 import vsu.tp5_3.techTrackInvest.mapper.ContractReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.ContractMongoRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedStartupRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
-import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
-
-import java.util.Comparator;
 
 @Service
 @Transactional(readOnly = true)

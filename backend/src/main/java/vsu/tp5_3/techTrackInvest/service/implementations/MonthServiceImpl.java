@@ -1,6 +1,5 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +12,8 @@ import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
+import vsu.tp5_3.techTrackInvest.service.interfaces.ConferenceProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
-import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.util.*;
 
@@ -25,11 +24,11 @@ public class MonthServiceImpl implements MonthService {
     private final UserRepository userRepository;
     private final StartupService startupService;
     private final SessionRepository sessionRepository;
-    private final ConferenceService conferenceService;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
     private final UpdateStartupService updateStartupService;
     private final NicheMongoRepository nicheMongoRepository;
+    private final ConferenceProvider conferenceProvider;
 
     private final Integer DEFAULT_ACTION_POINTS_PER_STEP = 5;
     @Override
@@ -102,16 +101,17 @@ public class MonthServiceImpl implements MonthService {
         session.getCurrentDisplayedConferences().clear();
         session.getCurrentDisplayedStartups().clear();
 
-        List<CurrentDisplayedConference> newConferences = new ArrayList<>();
         List<String> allNichesIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
-        for (String nicheId : allNichesIds) {
-            newConferences.addAll(conferenceService.getRandomConferencesByNiche(4, nicheId, session));
-        }
+
+        var newRandomConferences = conferenceProvider.getRandomConferences(allNichesIds, 4, session);
+        List<CurrentDisplayedConference> newConferences = new ArrayList<>(newRandomConferences);
         session.getCurrentDisplayedConferences().addAll(newConferences);
 
-        for (String nicheId : allNichesIds) {
-            startupService.updateDisplayedStartups(4, nicheId);
-        }
+
+        var newRandomStartups = startupService.updateDisplayedStartups(4, allNichesIds);
+        List<CurrentDisplayedStartup> newStartups = new ArrayList<>(newRandomStartups);
+        session.getCurrentDisplayedStartups().addAll(newStartups);
+
 
         session.setMonthCount(session.getMonthCount() + 1);
         session = sessionRepository.save(session);

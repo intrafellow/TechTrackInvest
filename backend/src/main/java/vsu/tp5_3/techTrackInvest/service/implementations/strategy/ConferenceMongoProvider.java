@@ -16,13 +16,11 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ConferenceMongoProvider implements ConferenceProvider {
-    private final UserService userService;
     private final ConferenceMongoRepository conferenceMongoRepository;
     private final ConferenceMongoToDisplayedConferenceMapper conferenceMongoToDisplayedConferenceMapper;
 
     @Override
-    public List<CurrentDisplayedConference> getRandomConferences(List<String> nicheIds, int countPerNiche) {
-        Session session = userService.getUserDBSession();
+    public List<CurrentDisplayedConference> getRandomConferences(List<String> nicheIds, int countPerNiche, Session session) {
         List<CurrentDisplayedConference> conferences = new ArrayList<>();
 
         for (String nicheId : nicheIds) {
