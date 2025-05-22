@@ -16,6 +16,9 @@ from transformers import pipeline, Pipeline
 from src.models import (
     StartupProfile,
     Stage,
+    Niche,
+    GenerateStartupRequest,
+    GenerateStartupsRequest,
 )
 
 logger = logging.getLogger("services.startup_generator")
@@ -25,14 +28,14 @@ logger = logging.getLogger("services.startup_generator")
 # ---------------------------------------------------------------------------
 
 NICHES = {
-    "1": "IT",
-    "2": "GreenTech",
-    "3": "MedTech",
-    "4": "SpaceTech"
+    "1": Niche.IT,
+    "2": Niche.GREEN_TECH,
+    "3": Niche.MED_TECH,
+    "4": Niche.SPACE_TECH
 }
 
 NICHE_EXAMPLES = {
-    "IT": {
+    Niche.IT: {
         "id": "startup-IT-23",
         "name": "CloudTech Solutions",
         "description": "Платформа для управления облачной инфраструктурой",
@@ -45,10 +48,10 @@ NICHE_EXAMPLES = {
         "product": 85,
         "reputation": 75,
         "level": 3,
-        "stage": "MARKET",
-        "niche": "IT"
+        "stage": Stage.MARKET,
+        "niche": Niche.IT
     },
-    "GreenTech": {
+    Niche.GREEN_TECH: {
         "id": "startup-GreenTech-22",
         "name": "EcoTech Innovations",
         "description": "Система мониторинга экологических показателей",
@@ -61,10 +64,10 @@ NICHE_EXAMPLES = {
         "product": 70,
         "reputation": 80,
         "level": 2,
-        "stage": "MVP",
-        "niche": "GreenTech"
+        "stage": Stage.MVP,
+        "niche": Niche.GREEN_TECH
     },
-    "MedTech": {
+    Niche.MED_TECH: {
         "id": "startup-MedTech-54",
         "name": "HealthTech Systems",
         "description": "Платформа для телемедицинских консультаций",
@@ -77,10 +80,10 @@ NICHE_EXAMPLES = {
         "product": 90,
         "reputation": 85,
         "level": 4,
-        "stage": "SCALE",
-        "niche": "MedTech"
+        "stage": Stage.SCALE,
+        "niche": Niche.MED_TECH
     },
-    "SpaceTech": {
+    Niche.SPACE_TECH: {
         "id": "startup-SpaceTech-46",
         "name": "OrbitTech Solutions",
         "description": "Система управления спутниковыми данными",
@@ -93,8 +96,8 @@ NICHE_EXAMPLES = {
         "product": 75,
         "reputation": 70,
         "level": 3,
-        "stage": "MARKET",
-        "niche": "SpaceTech"
+        "stage": Stage.MARKET,
+        "niche": Niche.SPACE_TECH
     }
 }
 
@@ -208,13 +211,24 @@ def warmup() -> None:
 # Public API
 # ---------------------------------------------------------------------------
 
-def generate_startup() -> StartupProfile:
-    """Генерирует профиль стартапа."""
+def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
+    """Генерирует профиль стартапа.
+    
+    Args:
+        request: Параметры запроса на генерацию стартапа.
+    
+    Returns:
+        StartupProfile: Сгенерированный профиль стартапа.
+    """
     pipe = _get_generator()
     
-    # Выбираем случайную нишу
-    niche_id = random.choice(list(NICHES.keys()))
-    niche_name = NICHES[niche_id]
+    # Выбираем нишу
+    if request.niche is None:
+        niche_id = random.choice(list(NICHES.keys()))
+        niche_name = NICHES[niche_id]
+    else:
+        niche_name = request.niche
+        
     startup_number = random.randint(1, 100)
     
     # Получаем список допустимых значений для stage
@@ -296,18 +310,44 @@ def generate_startup() -> StartupProfile:
             # Ищем JSON в ответе
             start = response.find("{")
             if start == -1:
+                logger.warning("JSON не найден в ответе")
                 continue
                 
-            end = response.rfind("}") + 1
-            if end == 0:
+            # Ищем конец первого JSON объекта
+            end = start + 1
+            brace_count = 1
+            while brace_count > 0 and end < len(response):
+                if response[end] == "{":
+                    brace_count += 1
+                elif response[end] == "}":
+                    brace_count -= 1
+                end += 1
+                
+            if brace_count > 0:
+                logger.warning("Неполный JSON в ответе")
                 continue
                 
             json_str = response[start:end]
-            data = json.loads(json_str)
-            
+            try:
+                data = json.loads(json_str)
+            except json.JSONDecodeError:
+                logger.warning("Ошибка парсинга JSON")
+                continue
+                
             # Если JSON вложенный, извлекаем внутренний объект
             if len(data) == 1 and isinstance(next(iter(data.values())), dict):
                 data = next(iter(data.values()))
+                # Если в извлеченном объекте есть _id, используем его
+                if "_id" in data:
+                    # Проверяем формат _id
+                    if not data["_id"].startswith(f"startup-{niche_name}-"):
+                        logger.warning(f"Исправляем формат _id с '{data['_id']}' на 'startup-{niche_name}-<number>'")
+                        # Извлекаем номер из старого _id если он есть
+                        old_number = data["_id"].split("-")[-1] if "-" in data["_id"] else str(random.randint(1, 100))
+                        data["_id"] = f"startup-{niche_name}-{old_number}"
+                else:
+                    # Генерируем _id если его нет
+                    data["_id"] = f"startup-{niche_name}-{startup_number}"
             
             # Проверяем наличие всех обязательных полей
             required_fields = [
@@ -344,18 +384,26 @@ def generate_startup() -> StartupProfile:
                 
             # Проверяем и переводим description если нужно
             if not is_russian_text(data["description"]):
+                logger.info("Переводим поле description на русский язык...")
+                original_description = data["description"]
                 data["description"] = translate_to_russian(data["description"])
                 if not is_russian_text(data["description"]):
                     logger.warning("Не удалось перевести description на русский язык")
+                    logger.warning(f"Оригинальный текст: {original_description}")
+                    logger.warning(f"Переведенный текст: {data['description']}")
                     continue
             # Очищаем текст от нежелательных символов
             data["description"] = clean_text(data["description"])
                     
             # Проверяем и переводим uniqueProductOffer если нужно
             if not is_russian_text(data["uniqueProductOffer"]):
+                logger.info("Переводим поле uniqueProductOffer на русский язык...")
+                original_offer = data["uniqueProductOffer"]
                 data["uniqueProductOffer"] = translate_to_russian(data["uniqueProductOffer"])
                 if not is_russian_text(data["uniqueProductOffer"]):
                     logger.warning("Не удалось перевести uniqueProductOffer на русский язык")
+                    logger.warning(f"Оригинальный текст: {original_offer}")
+                    logger.warning(f"Переведенный текст: {data['uniqueProductOffer']}")
                     continue
             # Очищаем текст от нежелательных символов
             data["uniqueProductOffer"] = clean_text(data["uniqueProductOffer"])
@@ -375,7 +423,7 @@ def generate_startup() -> StartupProfile:
                 continue
                 
             # Проверяем соответствие тематике для SpaceTech
-            if niche_name == "SpaceTech":
+            if niche_name == Niche.SPACE_TECH:
                 # Проверяем соответствие описания нише
                 space_tech_keywords = ["космос", "спутник", "орбита", "ракета", "космический", "астрономия", "галактика", "звезда", "планета", "навигация", "данные", "технология", "исследование", "анализ"]
                 if not any(keyword in data["description"].lower() for keyword in space_tech_keywords):
@@ -383,7 +431,7 @@ def generate_startup() -> StartupProfile:
                 
                 if not any(keyword in data["uniqueProductOffer"].lower() for keyword in space_tech_keywords):
                     logger.warning("Предупреждение: уникальное предложение может не полностью соответствовать нише SpaceTech, но продолжаем...")
-                
+            
             # Сортируем ключи в нужном порядке
             data = _sort_json_keys(data)
             
@@ -393,4 +441,34 @@ def generate_startup() -> StartupProfile:
             logger.error(f"Ошибка при генерации стартапа (попытка {attempt + 1}): {e}")
             continue
             
-    raise ValueError("Не удалось сгенерировать корректный профиль стартапа после 3 попыток") 
+    raise ValueError("Не удалось сгенерировать корректный профиль стартапа после 3 попыток")
+
+def generate_startups(request: GenerateStartupsRequest) -> list[StartupProfile]:
+    """Генерирует несколько профилей стартапов.
+    
+    Args:
+        request: Параметры запроса на генерацию стартапов.
+    
+    Returns:
+        list[StartupProfile]: Список сгенерированных профилей стартапов.
+    """
+    if request.niches is None:
+        niches = list(NICHES.values())
+    else:
+        niches = request.niches
+    
+    results = []
+    for _ in range(request.count):
+        # Выбираем случайную нишу из списка
+        niche = random.choice(niches)
+        try:
+            startup = generate_startup(GenerateStartupRequest(niche=niche))
+            results.append(startup)
+        except Exception as e:
+            logger.error(f"Ошибка при генерации стартапа для ниши {niche}: {e}")
+            continue
+            
+    if not results:
+        raise ValueError("Не удалось сгенерировать ни одного корректного профиля стартапа")
+        
+    return results 
