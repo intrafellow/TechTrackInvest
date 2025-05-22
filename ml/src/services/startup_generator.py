@@ -216,6 +216,8 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
     
     Args:
         request: Параметры запроса на генерацию стартапа.
+            niche: Ниша для генерации стартапа ("IT", "GreenTech", "MedTech", "SpaceTech").
+                  Если не указана, выбирается случайная ниша.
     
     Returns:
         StartupProfile: Сгенерированный профиль стартапа.
