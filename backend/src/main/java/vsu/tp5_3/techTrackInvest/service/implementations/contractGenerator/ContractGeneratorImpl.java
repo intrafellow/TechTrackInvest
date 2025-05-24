@@ -1,11 +1,13 @@
 package vsu.tp5_3.techTrackInvest.service.implementations.contractGenerator;
 
+import org.springframework.stereotype.Component;
 import vsu.tp5_3.techTrackInvest.entities.mongo.Contract;
 import vsu.tp5_3.techTrackInvest.entities.mongo.StartupMongo;
 import vsu.tp5_3.techTrackInvest.service.interfaces.ContractGenerator;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+@Component
 public class ContractGeneratorImpl implements ContractGenerator {
     //Будем генерить контракт. +20% -20% от цены. Рандомные значения изменения характеристик от 0 до 10
     @Override

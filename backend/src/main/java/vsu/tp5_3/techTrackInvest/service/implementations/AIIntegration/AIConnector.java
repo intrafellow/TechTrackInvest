@@ -3,6 +3,7 @@ package vsu.tp5_3.techTrackInvest.service.implementations.AIIntegration;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,6 +17,7 @@ import vsu.tp5_3.techTrackInvest.service.interfaces.AIService;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -42,11 +44,45 @@ public class AIConnector implements AIService {
 
     @Override
     public Mono<List<StartupMongo>> requestStartups(String nicheId, int quantity) {
-        return (Mono<List<StartupMongo>>) List.of();
+        return webClient.post()
+                .uri("/game/generate_startups")
+                .bodyValue(Map.of(
+                    "niche", nicheId,
+                    "quantity", quantity
+                ))
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, response -> {
+                    logger.error("Ошибка при генерации стартапов: {}", response.statusCode());
+                    return Mono.error(new RuntimeException("Ошибка при генерации стартапов: " + response.statusCode()));
+                })
+                .bodyToMono(new ParameterizedTypeReference<List<StartupMongo>>() {})
+                .doOnNext(startups -> logger.info("Получено {} стартапов для ниши {}", startups.size(), nicheId))
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+                        .maxBackoff(Duration.ofSeconds(10))
+                        .filter(throwable -> throwable instanceof WebClientResponseException.TooManyRequests))
+                .switchIfEmpty(Mono.error(new RuntimeException("Не получен ответ от ИИ при генерации стартапов")))
+                .doOnError(error -> logger.error("Ошибка при генерации стартапов: {}", error.getMessage(), error));
     }
 
     @Override
     public Mono<List<ConferenceMongo>> requestConferences(String nicheId, int quantity) {
-        return (Mono<List<ConferenceMongo>>) List.of();
+        return webClient.post()
+                .uri("/game/generate_conferences")
+                .bodyValue(Map.of(
+                    "niche", nicheId,
+                    "quantity", quantity
+                ))
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, response -> {
+                    logger.error("Ошибка при генерации конференций: {}", response.statusCode());
+                    return Mono.error(new RuntimeException("Ошибка при генерации конференций: " + response.statusCode()));
+                })
+                .bodyToMono(new ParameterizedTypeReference<List<ConferenceMongo>>() {})
+                .doOnNext(conferences -> logger.info("Получено {} конференций для ниши {}", conferences.size(), nicheId))
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+                        .maxBackoff(Duration.ofSeconds(10))
+                        .filter(throwable -> throwable instanceof WebClientResponseException.TooManyRequests))
+                .switchIfEmpty(Mono.error(new RuntimeException("Не получен ответ от ИИ при генерации конференций")))
+                .doOnError(error -> logger.error("Ошибка при генерации конференций: {}", error.getMessage(), error));
     }
 }
