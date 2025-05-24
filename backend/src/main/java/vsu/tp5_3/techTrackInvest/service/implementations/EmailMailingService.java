@@ -1,12 +1,10 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.entities.postgre.PasswordResetToken;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.PasswordResetTokenRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;

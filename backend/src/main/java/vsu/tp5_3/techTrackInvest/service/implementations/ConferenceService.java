@@ -1,9 +1,7 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +11,10 @@ import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ExpertiseChange;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
-import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
-import vsu.tp5_3.techTrackInvest.mapper.ConferenceMongoToDisplayedMapper;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.ConferenceMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.ConferenceRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedConferenceRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.ExpertiseRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
 
@@ -37,7 +32,6 @@ public class ConferenceService {
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final UserRepository userRepository;
     private final StepService stepService;
-    private final ConferenceMongoToDisplayedMapper conferenceMongoToDisplayedMapper;
     // удаление отображаемых и создание рандомных
 
     // допилить, чтобы было получение по нише
@@ -122,10 +116,7 @@ public class ConferenceService {
         return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps() - 1);
     }
 
-    public List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, String nicheId, Session session) {
-        List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
-        return conferenceMongos.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
-    }
+
 
     public List<ConferenceReadDto> findAllByNiche(String nicheId) {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())

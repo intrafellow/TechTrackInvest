@@ -6,7 +6,7 @@ import vsu.tp5_3.techTrackInvest.dto.ExpertiseDto;
 import vsu.tp5_3.techTrackInvest.dto.MoneyDto;
 import vsu.tp5_3.techTrackInvest.dto.ReputationDto;
 import vsu.tp5_3.techTrackInvest.dto.UserProfileDto;
-import vsu.tp5_3.techTrackInvest.mapper.ConferenceMongoToDisplayedMapper;
+import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 
 import java.util.Optional;
 
@@ -19,6 +19,6 @@ public interface UserService extends UserDetailsService {
     Optional<UserProfileDto> getProfile();
     Optional<UserProfileDto> changeEmail(String email);
     Optional<UserProfileDto> changeUsername(String username);
-
+    Session getUserDBSession();
     Optional<UserProfileDto> changePassword(String password);
 }

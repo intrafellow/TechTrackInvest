@@ -15,6 +15,7 @@ import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.exceptions.UserNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.UserCreateEditMapper;
 import vsu.tp5_3.techTrackInvest.mapper.UserProfileMapper;
 import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         // Получаем пользователя
 //        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 //        Session session = userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
-        Session session = getCurrentDBSession();
+        Session session = getUserDBSession();
         //суммарная стоимость стартапов
         double totalStartupsCost = session.getStartups().stream().mapToDouble(Startup::getSalePrice).sum();
 
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public Optional<ReputationDto> getReputation() {
         //получаем пользователя и находим сессию
-        Session session = getCurrentDBSession();
+        Session session = getUserDBSession();
 
         //получаем состояние репутации на последний ход
         return session.getSteps().stream()
@@ -104,7 +105,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         //получаем названия категорий из монго(it и вся хрень)
         List<NicheMongo> nicheMongoList = nicheMongoRepository.findAll();
         //теперь получаем показатели экспертизы из постгреса
-        Session session = getCurrentDBSession();
+        Session session = getUserDBSession();
         Step currentStep =  session.getSteps().stream()
                 .max(Comparator.comparing(Step::getSequenceNumber)).get();
         List<Expertise> currentPlayerExpertise = currentStep.getExpertiseList();
@@ -133,9 +134,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Tested
-    private Session getCurrentDBSession() {
+    @Override
+    public Session getUserDBSession() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email).orElseThrow().getSessions().getLast();
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new).getSessions().getLast();
     }
 
     public Optional<UserProfileDto> getProfile() {

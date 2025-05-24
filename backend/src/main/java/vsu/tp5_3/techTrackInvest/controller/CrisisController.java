@@ -1,11 +1,10 @@
-package vsu.tp5_3.techTrackInvest.rest.controller;
+package vsu.tp5_3.techTrackInvest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import vsu.tp5_3.techTrackInvest.dto.CrisisReadDto;

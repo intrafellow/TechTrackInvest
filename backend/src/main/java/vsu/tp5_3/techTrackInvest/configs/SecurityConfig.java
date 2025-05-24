@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import vsu.tp5_3.techTrackInvest.security.JwtRequestFilter;
-import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.Arrays;

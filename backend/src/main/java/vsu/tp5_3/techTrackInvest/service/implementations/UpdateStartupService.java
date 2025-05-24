@@ -8,7 +8,7 @@ import vsu.tp5_3.techTrackInvest.entities.enums.Stage;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Startup;
 import vsu.tp5_3.techTrackInvest.entities.postgre.Step;
-import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.List;
 import java.util.Random;
@@ -17,7 +17,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UpdateStartupService {
-    private final SessionService sessionService;
+    private final UserService userService;
     private final StepService stepService;
     private final GameBalanceConfig config;
     private final Random random = new Random();
@@ -33,7 +33,7 @@ public class UpdateStartupService {
         //7. Пересчитать доходы
         //8. Пересчитать стоимость стартапа
         //9. Отнять деньги. Если не хватает их, то сделать стартап "проговревшим"
-        Session session = sessionService.getCurrentSession();
+        Session session = userService.getUserDBSession();
         Step currentStep = stepService.getCurrentStep(session);
         List<Startup> allBoughtStartups = session.getStartups();
 
