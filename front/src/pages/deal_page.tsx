@@ -386,7 +386,6 @@ const DealPage: React.FC = () => {
             onAccept={handleDialogAccept}
             startupName={contractData?.startupName || ''}
             investmentAmount={finalCondition?.finalPrice || 0}
-            exitConditions="Возможность продажи доли через 5 ходов"
           />
         </Box>
       </Box>
