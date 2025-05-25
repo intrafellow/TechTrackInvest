@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.configs.GameBalanceConfig;
 import vsu.tp5_3.techTrackInvest.dto.FinishDto;
 import vsu.tp5_3.techTrackInvest.dto.SessionReadDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
@@ -26,7 +27,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SessionServiceImpl implements SessionService {
-    private static final int DEFAULT_ACTION_POINTS_PER_STEP = 5;
+    private final GameBalanceConfig gameBalanceConfig;
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final SessionReadMapper sessionReadMapper;
@@ -48,7 +49,7 @@ public class SessionServiceImpl implements SessionService {
         Session session = new Session();
         session.setAppUser(user);
         session.setMonthCount(0);
-        session.setStepCount(DEFAULT_ACTION_POINTS_PER_STEP);
+        session.setStepCount(gameBalanceConfig.getDEFAULT_ACTION_POINTS_PER_STEP());
         session.setStartDate(new Timestamp(System.currentTimeMillis()));
         session.setSteps(new ArrayList<>());
 
@@ -73,7 +74,7 @@ public class SessionServiceImpl implements SessionService {
         session.getSteps().add(step);
 
 
-        var newRandomConferences = conferenceProvider.getRandomConferences(nicheIds, 4, session);
+        var newRandomConferences = conferenceProvider.getRandomConferences(nicheIds, 3, session);
         List<CurrentDisplayedConference> currentDisplayedConferences = new ArrayList<>(newRandomConferences);
         session.setCurrentDisplayedConferences(currentDisplayedConferences);
 
@@ -108,7 +109,6 @@ public class SessionServiceImpl implements SessionService {
 
         Session session = sessionRepository.findTopByAppUserOrderByStartDateDesc(user)
                 .orElseThrow(() -> new EntityNotFoundException("Сессия для этого пользователя не создана: " + email));
-
         return Optional.ofNullable(sessionReadMapper.map(session));
     }
 }

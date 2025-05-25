@@ -80,6 +80,7 @@ public class StartupService {
     public List<CurrentDisplayedStartup> updateDisplayedStartups(int startupsPerNiche, List<String> nicheIds) {
         //получаем сессию и купленные/предлагаемых стартапы именно из неё
         //Собираем все id купленных стартапов из определённой ниши
+        //получаем id предлагаемых стартапов, чтобы не было повторений между двумя ходами подряд
         //формируем set из этих значений
         //делаем запрос к монго, чтобы она нашла n-ое количество уникальных стартапов
         //возвращаем лист со стартапами для нового хода
@@ -87,7 +88,8 @@ public class StartupService {
         Set<String> usedStartupIds = new HashSet<>();
 
         Session session = userService.getUserDBSession();
-
+        session.getCurrentDisplayedStartups()
+                .forEach(displayedStartup -> usedStartupIds.add(displayedStartup.getResourceId()));
         session.getStartups().forEach(startup -> usedStartupIds.add(startup.getResId()));
 
         List<CurrentDisplayedStartup> resultNewStartups = new ArrayList<>();

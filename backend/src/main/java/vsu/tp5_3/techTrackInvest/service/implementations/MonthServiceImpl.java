@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.configs.GameBalanceConfig;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
@@ -29,8 +30,8 @@ public class MonthServiceImpl implements MonthService {
     private final UpdateStartupService updateStartupService;
     private final NicheMongoRepository nicheMongoRepository;
     private final ConferenceProvider conferenceProvider;
-
-    private final Integer DEFAULT_ACTION_POINTS_PER_STEP = 5;
+    private final GameBalanceConfig gameBalanceConfig;
+    private final ConferenceService conferenceService;
     @Override
     @Transactional
     public Optional<MonthEndDto> endMonth() {
@@ -96,22 +97,24 @@ public class MonthServiceImpl implements MonthService {
         newStep.setSession(session);
         session.getSteps().add(newStep);
 
-        session.setStepCount(DEFAULT_ACTION_POINTS_PER_STEP);
+        session.setStepCount(gameBalanceConfig.getDEFAULT_ACTION_POINTS_PER_STEP());
 
-        session.getCurrentDisplayedConferences().clear();
-        session.getCurrentDisplayedStartups().clear();
+
 
         List<String> allNichesIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
 
-        var newRandomConferences = conferenceProvider.getRandomConferences(allNichesIds, 4, session);
+        var newRandomConferences = conferenceService.updateDisplayedConference(3,
+                allNichesIds, session);
         List<CurrentDisplayedConference> newConferences = new ArrayList<>(newRandomConferences);
-        session.getCurrentDisplayedConferences().addAll(newConferences);
 
 
         var newRandomStartups = startupService.updateDisplayedStartups(4, allNichesIds);
         List<CurrentDisplayedStartup> newStartups = new ArrayList<>(newRandomStartups);
-        session.getCurrentDisplayedStartups().addAll(newStartups);
+        session.getCurrentDisplayedConferences().clear();
+        session.getCurrentDisplayedStartups().clear();
 
+        session.getCurrentDisplayedStartups().addAll(newStartups);
+        session.getCurrentDisplayedConferences().addAll(newConferences);
 
         session.setMonthCount(session.getMonthCount() + 1);
         session = sessionRepository.save(session);
