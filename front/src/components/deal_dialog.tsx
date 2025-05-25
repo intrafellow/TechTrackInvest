@@ -15,7 +15,6 @@ interface DealDialogProps {
   onAccept: () => void;
   startupName: string;
   investmentAmount: number;
-  exitConditions: string;
 }
 
 const DealDialog: React.FC<DealDialogProps> = ({
@@ -23,8 +22,7 @@ const DealDialog: React.FC<DealDialogProps> = ({
   onClose,
   onAccept,
   startupName,
-  investmentAmount,
-  exitConditions
+  investmentAmount
 }) => {
   return (
     <Dialog
@@ -93,16 +91,6 @@ const DealDialog: React.FC<DealDialogProps> = ({
           }}
         >
           Размер инвестиции: {investmentAmount} ₽
-        </Typography>
-        <Typography
-          sx={{
-            fontFamily: 'Raleway, sans-serif',
-            color: '#49454F',
-            fontSize: '16px',
-            marginBottom: '24px'
-          }}
-        >
-          Условия выхода: {exitConditions}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
           <Button
