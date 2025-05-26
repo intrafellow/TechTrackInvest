@@ -78,7 +78,7 @@ public class CrisisServiceImpl implements CrisisService {
                     startup.setSalePrice(startup.getSalePrice() + effect.getPriceDelta());
                     startup.setExpenses(startup.getExpenses() + effect.getExpensesDelta());
                     startup.setTeam(startup.getTeam() + effect.getTeamDelta());
-                    startup.setProgress(startup.getProgress() + effect.getProductDelta());
+                    startup.setProgress(startup.getProgress() + effect.getProgressDelta());
                     startup.setReputation(startup.getReputation() + effect.getReputationDelta());
                 }
             }

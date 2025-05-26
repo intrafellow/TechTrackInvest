@@ -54,6 +54,7 @@ services:
     command: mongod --bind_ip_all --wiredTigerCacheSizeGB 1.5
     volumes:
       - mongo_data:/data/db
+      - ./backend/scripts/:/docker-entrypoint-initdb.d
     networks:
       - db-network
     healthcheck:

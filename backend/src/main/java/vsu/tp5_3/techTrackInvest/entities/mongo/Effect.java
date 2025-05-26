@@ -17,8 +17,8 @@ public class Effect {
     private Integer expensesDelta;
     @Field(name = "team")
     private Integer teamDelta;
-    @Field(name = "product")
-    private Integer productDelta;
+    @Field(name = "progress")
+    private Integer progressDelta;
     @Field(name = "reputation")
     private Integer reputationDelta;
 }
