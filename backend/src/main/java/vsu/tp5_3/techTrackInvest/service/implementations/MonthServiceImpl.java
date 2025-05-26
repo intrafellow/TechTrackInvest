@@ -15,6 +15,7 @@ import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
 import vsu.tp5_3.techTrackInvest.service.interfaces.ConferenceProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.*;
 
@@ -32,16 +33,14 @@ public class MonthServiceImpl implements MonthService {
     private final ConferenceProvider conferenceProvider;
     private final GameBalanceConfig gameBalanceConfig;
     private final ConferenceService conferenceService;
+    private final StepService stepService;
+    private final UserService userService;
     @Override
     @Transactional
     public Optional<MonthEndDto> endMonth() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-        Session session = sessionRepository.findTopByAppUserOrderByStartDateDesc(user)
-                .orElseThrow(() -> new EntityNotFoundException("Сессия не найдена"));
+        Session session = userService.getUserDBSession();
 
-        Step currentStep = session.getSteps().getLast();
+        Step currentStep = stepService.getCurrentStep(session);
         //сначала мы обновляем значения всех стартапов, после уже начинаем проверять закончилась ли игра
         //чтобы обновлённые данные предоставлялись.
         updateStartupService.updateStartupsSpecs();
@@ -89,14 +88,18 @@ public class MonthServiceImpl implements MonthService {
         Step newStep = new Step();
         newStep.setCash(currentStep.getCash());
         newStep.setReputation(currentStep.getReputation());
-        newStep.setExpertiseList(new ArrayList<>(currentStep.getExpertiseList()));
-        for (Expertise e : newStep.getExpertiseList()) {
-            e.setStep(newStep);
-        }
+        List<Expertise> newExpertises = new ArrayList<>();
+        currentStep.getExpertiseList().forEach(oldExpertise -> {
+            Expertise expertise = new Expertise();
+            expertise.setValue(oldExpertise.getValue());
+            expertise.setResourceId(oldExpertise.getResourceId());
+            expertise.setStep(newStep);
+            newExpertises.add(expertise);
+        });
+        newStep.setExpertiseList(newExpertises);
         newStep.setSequenceNumber(currentStep.getSequenceNumber() + 1);
         newStep.setSession(session);
         session.getSteps().add(newStep);
-
         session.setStepCount(gameBalanceConfig.getDEFAULT_ACTION_POINTS_PER_STEP());
 
 
