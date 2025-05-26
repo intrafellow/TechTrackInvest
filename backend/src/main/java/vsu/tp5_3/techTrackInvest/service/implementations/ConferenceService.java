@@ -1,9 +1,7 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,19 +11,15 @@ import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ExpertiseChange;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
-import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
-import vsu.tp5_3.techTrackInvest.mapper.ConferenceMongoToDisplayedMapper;
+import vsu.tp5_3.techTrackInvest.mapper.ConferenceMongoToDisplayedConferenceMapper;
 import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.ConferenceMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.ConferenceRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentDisplayedConferenceRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.ExpertiseRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -35,15 +29,14 @@ public class ConferenceService {
     private final ConferenceMongoRepository conferenceMongoRepository;
     private final CurrentDisplayedConferenceRepository currentDisplayedConferenceRepository;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
-    private final UserRepository userRepository;
     private final StepService stepService;
-    private final ConferenceMongoToDisplayedMapper conferenceMongoToDisplayedMapper;
+    private final UserService userService;
+    private final ConferenceMongoToDisplayedConferenceMapper conferenceMongoToDisplayedConferenceMapper;
     // удаление отображаемых и создание рандомных
 
     // допилить, чтобы было получение по нише
     public List<ConferenceReadDto> findAll() {
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
+        Session session = userService.getUserDBSession();
         return session.getCurrentDisplayedConferences()
                 .stream()
                 .map(conferenceReadPostgresMapper::map)
@@ -66,9 +59,8 @@ public class ConferenceService {
         }
 
         // Получение пользователя
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Session session = userService.getUserDBSession();
+        Step currentStep = stepService.getCurrentStep(session);
 
         // Получение информации о конференции
         CurrentDisplayedConference displayedConference = currentDisplayedConferenceRepository.findById(conferenceAttendDto.getId())
@@ -77,12 +69,8 @@ public class ConferenceService {
         ConferenceMongo conferenceMongo = conferenceMongoRepository.findById(displayedConference.getResourceId())
                 .orElseThrow(() -> new EntityNotFoundException("Conference details not found"));
 
-        // Получение текущего шага
-        Session session = user.getSessions().getLast();
-        Step step = session.getSteps().getLast();
-
         // Проверка денег
-        if (step.getCash() < conferenceMongo.getEnrollPrice()) {
+        if (currentStep.getCash() < conferenceMongo.getEnrollPrice()) {
             return new StepActionDto<>(false, null, "Недостаточно средств", 0);
         }
 
@@ -90,29 +78,29 @@ public class ConferenceService {
 
         // Обновление данных
         // Обновление денег
-        step.setCash(step.getCash() - conferenceMongo.getEnrollPrice());
+        currentStep.setCash(currentStep.getCash() - conferenceMongo.getEnrollPrice());
 
         // Обновление репутации
-        step.setReputation(step.getReputation() + conferenceMongo.getGainedReputation());
+        currentStep.setReputation(currentStep.getReputation() + conferenceMongo.getGainedReputation());
 
         // Безопасное обновление экспертиз
         List<ExpertiseChange> expertiseChanges = conferenceMongo.getExpertiseChanges();
-        List<Expertise> newExpertise = new ArrayList<>(step.getExpertiseList());
+        List<Expertise> newExpertise = new ArrayList<>(currentStep.getExpertiseList());
         for (ExpertiseChange ec : expertiseChanges) {
             for (Expertise e : newExpertise) {
                 if (e.getResourceId().equals(ec.getNicheId())) {
                     e.setValue(e.getValue() + ec.getChange());
                 }
-                e.setStep(step);
+                e.setStep(currentStep);
             }
         }
-        step.getExpertiseList().clear();
-        step.getExpertiseList().addAll(newExpertise);
+        currentStep.getExpertiseList().clear();
+        currentStep.getExpertiseList().addAll(newExpertise);
 
 
         // Сохранение конференции
         Conference conference = new Conference();
-        conference.setId(conferenceMongo.getId());
+        conference.setResourceConferenceId(conferenceMongo.getId());
         conference.setSession(session);
         conferenceRepository.save(conference);
 
@@ -122,18 +110,36 @@ public class ConferenceService {
         return new StepActionDto<>(true, conferenceMongo, null, validationResult.getSteps() - 1);
     }
 
-    public List<CurrentDisplayedConference> getRandomConferencesByNiche(int count, String nicheId, Session session) {
-        List<ConferenceMongo> conferenceMongos = conferenceMongoRepository.findRandomConferencesByNiche(nicheId, count);
-        return conferenceMongos.stream().map(c -> conferenceMongoToDisplayedMapper.map(c, session)).toList();
-    }
+
 
     public List<ConferenceReadDto> findAllByNiche(String nicheId) {
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast();
+        Session session = userService.getUserDBSession();
         return session.getCurrentDisplayedConferences()
                 .stream()
                 .filter(c -> c.getNicheName().equals(nicheId))
                 .map(conferenceReadPostgresMapper::map)
                 .toList();
+    }
+
+    @Transactional
+    public List<CurrentDisplayedConference> updateDisplayedConference(int conferencePerNiche,
+                                                                      List<String> nicheIds,
+                                                                      Session session) {
+        Set<String> usedConfId = new HashSet<>();
+        session.getCurrentDisplayedConferences().forEach(conf -> usedConfId.add(conf.getResourceId()));
+        session.getConferences().forEach(conference -> usedConfId.add(conference.getResourceConferenceId()));
+
+        List<CurrentDisplayedConference> newRandomConferences = new ArrayList<>();
+        for (String nicheId : nicheIds) {
+            var confs = conferenceMongoRepository.findRandomConferencesByNicheAndExcludedIds(nicheId,
+                    new ArrayList<>(usedConfId), conferencePerNiche);
+
+            newRandomConferences.addAll(confs.stream().map(mongoConf -> {
+                var postgreConf = conferenceMongoToDisplayedConferenceMapper.map(mongoConf);
+                postgreConf.setSession(session);
+                return postgreConf;
+            }).toList());
+        }
+        return newRandomConferences;
     }
 }

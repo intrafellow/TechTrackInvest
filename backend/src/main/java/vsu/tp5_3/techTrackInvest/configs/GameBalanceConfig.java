@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class GameBalanceConfig {
+    private final int DEFAULT_ACTION_POINTS_PER_STEP = 5;
+
     // Базовые значения
     private int baseRevenue = 5000;
     private int baseExpenses = 2000;

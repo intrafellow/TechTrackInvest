@@ -17,7 +17,7 @@ public class StartupExpertiseMapper implements Mapper<StartupMongo, StartupExper
                 object.getExpenses(),
                 object.getTeam(),
                 object.getBudget(),
-                object.getProduct(),
+                object.getProgress(),
                 object.getReputation(),
                 object.getLevel(),
                 object.getStage()

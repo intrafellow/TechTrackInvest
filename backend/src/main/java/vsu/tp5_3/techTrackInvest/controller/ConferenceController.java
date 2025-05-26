@@ -1,4 +1,4 @@
-package vsu.tp5_3.techTrackInvest.rest.controller;
+package vsu.tp5_3.techTrackInvest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,17 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import vsu.tp5_3.techTrackInvest.dto.AppErrorDto;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceAttendDto;
 import vsu.tp5_3.techTrackInvest.dto.ConferenceReadDto;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.ConferenceMongo;
-import vsu.tp5_3.techTrackInvest.filters.CategoryFilter;
 import vsu.tp5_3.techTrackInvest.service.implementations.ConferenceService;
-import vsu.tp5_3.techTrackInvest.service.implementations.UserServiceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 @Tag(name = "Управление конференциями", description = "Предоставляет все апи для посещения, просмотра конференций")
 @RestController

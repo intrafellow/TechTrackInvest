@@ -8,15 +8,15 @@ import vsu.tp5_3.techTrackInvest.entities.postgre.Session;
 
 @Component
 @RequiredArgsConstructor
-public class ConferenceMongoToDisplayedMapper {
-    public CurrentDisplayedConference map(ConferenceMongo object, Session session) {
+public class ConferenceMongoToDisplayedConferenceMapper implements Mapper<ConferenceMongo, CurrentDisplayedConference> {
+    @Override
+    public CurrentDisplayedConference map(ConferenceMongo object) {
         CurrentDisplayedConference conference = new CurrentDisplayedConference();
         conference.setResourceId(object.getId());
         conference.setName(object.getName());
         conference.setDescription(object.getDescription());
         conference.setEnrollPrice(object.getEnrollPrice());
         conference.setNicheName(object.getNicheId());
-        conference.setSession(session);
         return conference;
     }
 }

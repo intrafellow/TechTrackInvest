@@ -1,11 +1,11 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vsu.tp5_3.techTrackInvest.configs.GameBalanceConfig;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
@@ -13,8 +13,8 @@ import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
+import vsu.tp5_3.techTrackInvest.service.interfaces.ConferenceProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
-import vsu.tp5_3.techTrackInvest.service.interfaces.SessionService;
 
 import java.util.*;
 
@@ -25,13 +25,13 @@ public class MonthServiceImpl implements MonthService {
     private final UserRepository userRepository;
     private final StartupService startupService;
     private final SessionRepository sessionRepository;
-    private final ConferenceService conferenceService;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
     private final UpdateStartupService updateStartupService;
     private final NicheMongoRepository nicheMongoRepository;
-
-    private final Integer DEFAULT_ACTION_POINTS_PER_STEP = 5;
+    private final ConferenceProvider conferenceProvider;
+    private final GameBalanceConfig gameBalanceConfig;
+    private final ConferenceService conferenceService;
     @Override
     @Transactional
     public Optional<MonthEndDto> endMonth() {
@@ -97,21 +97,24 @@ public class MonthServiceImpl implements MonthService {
         newStep.setSession(session);
         session.getSteps().add(newStep);
 
-        session.setStepCount(DEFAULT_ACTION_POINTS_PER_STEP);
+        session.setStepCount(gameBalanceConfig.getDEFAULT_ACTION_POINTS_PER_STEP());
 
+
+
+        List<String> allNichesIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
+
+        var newRandomConferences = conferenceService.updateDisplayedConference(3,
+                allNichesIds, session);
+        List<CurrentDisplayedConference> newConferences = new ArrayList<>(newRandomConferences);
+
+
+        var newRandomStartups = startupService.updateDisplayedStartups(4, allNichesIds);
+        List<CurrentDisplayedStartup> newStartups = new ArrayList<>(newRandomStartups);
         session.getCurrentDisplayedConferences().clear();
         session.getCurrentDisplayedStartups().clear();
 
-        List<CurrentDisplayedConference> newConferences = new ArrayList<>();
-        List<String> allNichesIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
-        for (String nicheId : allNichesIds) {
-            newConferences.addAll(conferenceService.getRandomConferencesByNiche(4, nicheId, session));
-        }
+        session.getCurrentDisplayedStartups().addAll(newStartups);
         session.getCurrentDisplayedConferences().addAll(newConferences);
-
-        for (String nicheId : allNichesIds) {
-            startupService.updateDisplayedStartups(4, nicheId);
-        }
 
         session.setMonthCount(session.getMonthCount() + 1);
         session = sessionRepository.save(session);

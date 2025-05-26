@@ -2,23 +2,22 @@ package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.dto.CrisisReadDto;
-import vsu.tp5_3.techTrackInvest.dto.SolutionReadDto;
 import vsu.tp5_3.techTrackInvest.dto.StepActionDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.*;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.exceptions.CrisisNotFoundException;
+import vsu.tp5_3.techTrackInvest.exceptions.CrisisSolutionsNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.CrisisReadMapper;
 import vsu.tp5_3.techTrackInvest.mapper.CurrentCrisisMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.CrisisMongoRepository;
-import vsu.tp5_3.techTrackInvest.repositories.mongo.SolutionMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.CurrentCrisisRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.StartupRepository;
-import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.StepValidationResult;
+import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.CrisisService;
+import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +26,26 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CrisisServiceImpl implements CrisisService {
-    private final UserRepository userRepository;
     private final CrisisMongoRepository crisisMongoRepository;
     private final CurrentCrisisRepository currentCrisisRepository;
     private final CrisisReadMapper crisisReadMapper;
     private final CurrentCrisisMapper currentCrisisMapper;
     private final EntityManager entityManager;
     private final StepService stepService;
+    private final UserService userService;
+    private final CrisisProvider crisisProvider;
+
     @Override
     @Transactional
     public Optional<CrisisReadDto> getCrisis() {
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow().getSessions().getLast();
+        Session session = userService.getUserDBSession();
         if (session.getCurrentCrisis() != null) {
             currentCrisisRepository.delete(session.getCurrentCrisis());
             session.setCurrentCrisis(null);
             entityManager.flush();
         }
-        CrisisMongo crisisMongo = crisisMongoRepository.findRandomEntity();
+
+        CrisisMongo crisisMongo = crisisProvider.getRandomCrisis();
         CurrentCrisis currentCrisis = currentCrisisMapper
                 .map(crisisMongo);
         currentCrisis.setSession(session);
@@ -61,9 +63,12 @@ public class CrisisServiceImpl implements CrisisService {
 
         stepService.executeStep();
 
-        Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get().getSessions().getLast();
-        CrisisMongo crisisMongo = crisisMongoRepository.findById(session.getCurrentCrisis().getCrisisId()).get();
-        Solution solution = crisisMongo.getPossibleSolutions().stream().filter(s -> s.getId().equals(solutionId)).findFirst().orElseThrow();
+        Session session = userService.getUserDBSession();
+        CrisisMongo crisisMongo = crisisMongoRepository.findById(session.getCurrentCrisis().getCrisisId())
+                .orElseThrow(CrisisNotFoundException::new);
+        Solution solution = crisisMongo.getPossibleSolutions().stream().filter(s -> s.getId().equals(solutionId))
+                .findFirst().orElseThrow(
+                        () -> new CrisisSolutionsNotFoundException("Не нашли решение кризиса с id " + solutionId));
         Effect effect = solution.getEffect();
         UserEffect userEffect = solution.getUserEffect();
         List<Startup> startups = session.getStartups();
@@ -73,7 +78,7 @@ public class CrisisServiceImpl implements CrisisService {
                     startup.setSalePrice(startup.getSalePrice() + effect.getPriceDelta());
                     startup.setExpenses(startup.getExpenses() + effect.getExpensesDelta());
                     startup.setTeam(startup.getTeam() + effect.getTeamDelta());
-                    startup.setProgress(startup.getProgress() + effect.getProductDelta());
+                    startup.setProgress(startup.getProgress() + effect.getProgressDelta());
                     startup.setReputation(startup.getReputation() + effect.getReputationDelta());
                 }
             }
@@ -93,14 +98,13 @@ public class CrisisServiceImpl implements CrisisService {
         }
         step.getExpertiseList().clear();
         step.getExpertiseList().addAll(newExpertise);
-        //я не вижу здесь обнуления текущего кризиса. Оно было в методе получения, но там оставлять это как то странно
-        //поэтому допишу здесь
+
+        //TODO проверить работает ли код. В прошлый раз всё поломал
         session.setCurrentCrisis(null);
-        //так же его нужно записать в историю кризисов, чтобы он больше не появлялся
-//        CrisisHistory crisisHistory = new CrisisHistory();
-//        crisisHistory.setSession(session);
-//        crisisHistory.setCrisisHistoryId(crisisMongo.getId());
-//        session.getCrisisHistory().add(crisisHistory);
+        CrisisHistory crisisHistory = new CrisisHistory();
+        crisisHistory.setCrisisHistoryId(crisisMongo.getId());
+        crisisHistory.setSession(session);
+        session.getCrisisHistory().add(crisisHistory);
 
         return new StepActionDto<>(true, crisisReadMapper.map(crisisMongo), null, validationResult.getSteps() - 1);
     }
