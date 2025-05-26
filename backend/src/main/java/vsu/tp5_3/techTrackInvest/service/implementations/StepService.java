@@ -39,6 +39,7 @@ public class StepService {
     }
 
 
+    @Transactional
     public void executeStep() {
         Session session = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .get().getSessions().getLast();

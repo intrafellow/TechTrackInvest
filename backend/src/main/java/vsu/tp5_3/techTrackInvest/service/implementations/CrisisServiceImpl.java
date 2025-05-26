@@ -83,7 +83,8 @@ public class CrisisServiceImpl implements CrisisService {
                 }
             }
         }
-        Step step = session.getSteps().getLast();
+
+        Step step = stepService.getCurrentStep(session);
         step.setCash(step.getCash() + userEffect.getMoneyChange());
         step.setReputation(step.getReputation() + userEffect.getReputationChange());
         List<ExpertiseChange> expertiseChanges = userEffect.getExpertise();
@@ -93,9 +94,9 @@ public class CrisisServiceImpl implements CrisisService {
                 if (e.getResourceId().equals(ec.getNicheId())) {
                     e.setValue(e.getValue() + ec.getChange());
                 }
-                e.setStep(step);
             }
         }
+        //тут ест очистка, а что если срабатывает только очистка но не добавление новой экспертизы.
         step.getExpertiseList().clear();
         step.getExpertiseList().addAll(newExpertise);
 
