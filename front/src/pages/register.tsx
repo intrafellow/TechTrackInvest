@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
 import { authAPI } from '../api/apiClient';
+import { sendYMGoal } from '../utils/metrics';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -107,6 +108,7 @@ const RegisterPage: React.FC = () => {
       setErrors(newErrors);
     } else {
       try {
+        sendYMGoal('reachGoal','registerNewAccount');
         const regRes = await authAPI.register(email, username, password);
         localStorage.setItem('token', regRes.token);
         setSuccess(true);

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, CheckCircleOutline } from '@mui/icons-material';
 import { authAPI } from '../api/apiClient';
+import { sendYMGoal } from '../utils/metrics';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
+      sendYMGoal('reachGoal','loginIntoAccount');
       const response = await authAPI.login(email, password);
       localStorage.setItem('token', response.token);
       setSuccess(true);

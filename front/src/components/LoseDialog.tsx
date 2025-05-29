@@ -6,6 +6,7 @@ import {
   Button,
   Divider
 } from '@mui/material';
+import { sendYMGoal } from '../utils/metrics';
 
 interface LoseDialogProps {
   open: boolean;
@@ -18,10 +19,15 @@ const LoseDialog: React.FC<LoseDialogProps> = ({
   onClose,
   gameResultMessage
 }) => {
+  const handleClose = () => {
+    sendYMGoal('reachGoal','gameLose');
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -63,7 +69,7 @@ const LoseDialog: React.FC<LoseDialogProps> = ({
 
         <Button
           variant="contained"
-          onClick={onClose}
+          onClick={handleClose}
           sx={{
             width: '100%',
             backgroundColor: '#F44336', // Красный цвет для кнопки
