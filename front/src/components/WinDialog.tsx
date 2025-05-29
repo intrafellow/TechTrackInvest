@@ -6,6 +6,7 @@ import {
   Button,
   Divider
 } from '@mui/material';
+import { sendYMGoal } from '../utils/metrics';
 
 interface WinDialogProps {
   open: boolean;
@@ -20,10 +21,15 @@ const WinDialog: React.FC<WinDialogProps> = ({
   gameResultMessage,
   totalEarnings
 }) => {
+  const handleClose = () => {
+    sendYMGoal('reachGoal','gameWin');
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -79,7 +85,7 @@ const WinDialog: React.FC<WinDialogProps> = ({
 
         <Button
           variant="contained"
-          onClick={onClose}
+          onClick={handleClose}
           sx={{
             width: '100%',
             backgroundColor: '#4CAF50', // Зеленый цвет для кнопки

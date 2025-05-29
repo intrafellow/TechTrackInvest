@@ -15,6 +15,15 @@ import {
 import boyAvatar from '../icons/boy.png';
 import logo from '../icons/logo.png';
 import { sessionAPI, userAPI } from '../api/apiClient';
+import { sendYMGoal } from '../utils/metrics';
+
+declare global {
+  interface Window {
+    ym?: (...args: any[]) => void;
+  }
+}
+
+export {};
 
 interface UserProfile {
   email: string;
@@ -50,6 +59,7 @@ const ProfilePage: React.FC = () => {
 
   const handleStartNewGame = async () => {
     try {
+      sendYMGoal('reachGoal','StartGameClick');
       await sessionAPI.start();
       navigate('/game_field');
     } catch (error) {
@@ -60,6 +70,7 @@ const ProfilePage: React.FC = () => {
 
   const handleContinueGame = async () => {
     try {
+      sendYMGoal('reachGoal','loadGame');
       await sessionAPI.load();
       navigate('/game_field');
     } catch (error) {

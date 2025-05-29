@@ -13,6 +13,7 @@ import ChangeEmailPage from './pages/change_email';
 import ChangeUsernamePage from './pages/change_username';
 import DealPage from './pages/deal_page';
 import ProtectedRoute from './components/ProtectedRoute';
+import RouteChangeTracker from './components/RouteChangeTracker';
 import theme from './theme';
 
 const NotFoundPage: React.FC = () => (
@@ -34,6 +35,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+        <RouteChangeTracker ymId={102267648} />
         <Routes>
           <Route path="/" element={<FirstPage />} />
           <Route path="/login" element={<LoginPage />} />
