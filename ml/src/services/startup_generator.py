@@ -408,8 +408,8 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
             # Сортируем ключи в нужном порядке
             data = _sort_json_keys(data)
             
-            # Добавляем пустой id
-            data["id"] = ""
+            # Добавляем пустой _id
+            data["_id"] = ""
             
             return StartupProfile(**data)
             
