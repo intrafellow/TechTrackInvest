@@ -36,7 +36,6 @@ NICHES = {
 
 NICHE_EXAMPLES = {
     Niche.IT: {
-        "id": "startup-IT-23",
         "name": "CloudTech Solutions",
         "description": "Платформа для управления облачной инфраструктурой",
         "offer": "Система автоматизации и оптимизации облачных вычислений",
@@ -52,7 +51,6 @@ NICHE_EXAMPLES = {
         "niche": Niche.IT
     },
     Niche.GREEN_TECH: {
-        "id": "startup-GreenTech-22",
         "name": "EcoTech Innovations",
         "description": "Система мониторинга экологических показателей",
         "offer": "Комплексное решение для управления экологическими проектами",
@@ -68,7 +66,6 @@ NICHE_EXAMPLES = {
         "niche": Niche.GREEN_TECH
     },
     Niche.MED_TECH: {
-        "id": "startup-MedTech-54",
         "name": "HealthTech Systems",
         "description": "Платформа для телемедицинских консультаций",
         "offer": "Система удаленного мониторинга состояния здоровья",
@@ -84,7 +81,6 @@ NICHE_EXAMPLES = {
         "niche": Niche.MED_TECH
     },
     Niche.SPACE_TECH: {
-        "id": "startup-SpaceTech-46",
         "name": "OrbitTech Solutions",
         "description": "Система управления спутниковыми данными",
         "offer": "Платформа для анализа космических данных",
@@ -169,7 +165,6 @@ def translate_to_russian(text: str) -> str:
 def _sort_json_keys(data: dict) -> dict:
     """Сортирует ключи JSON в нужном порядке."""
     key_order = [
-        "_id",
         "name",
         "description",
         "price",
@@ -248,7 +243,6 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
         "6) Создавать уникальные и интересные описания\n\n"
         "Сгенерируй профиль технологического стартапа в формате JSON. ВАЖНО: все поля обязательны!\n"
         "Поля JSON:\n"
-        "- _id: уникальный идентификатор в формате 'startup-{niche_name}-{number}'\n"
         "- name: название стартапа на английском языке, соответствующее нише {niche_name}\n"
         "- description: краткое описание на русском языке, соответствующее нише {niche_name}\n"
         "- price: стоимость в рублях (целое число)\n"
@@ -272,17 +266,16 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
         "7) Поле stage должно быть строго одним из значений: {valid_stages}\n"
         "8) Все текстовые поля должны соответствовать нише {niche_name}\n"
         "9) Поле niche должно быть СТРОГО равно '{niche_name}', другие ниши НЕДОПУСТИМЫ\n"
-        "10) Поле _id должно начинаться с 'startup-{niche_name}-'\n"
-        "11) НЕ используйте английский язык в полях description и uniqueProductOffer\n"
-        "12) НЕ копируйте примеры из NICHE_EXAMPLES, создавайте уникальный контент\n"
-        "13) НЕ используйте другие ниши кроме {niche_name}\n"
-        "14) Создавайте АБСОЛЮТНО УНИКАЛЬНЫЙ контент, не используйте примеры как шаблон\n"
-        "15) В полях description и uniqueProductOffer ЗАПРЕЩЕНО использовать английский язык\n"
-        "16) В полях description и uniqueProductOffer ОБЯЗАТЕЛЬНО используйте ТОЛЬКО русский язык\n"
-        "17) В полях description и uniqueProductOffer НЕДОПУСТИМО использовать латинские буквы\n"
-        "18) В полях description и uniqueProductOffer ЗАПРЕЩЕНО использовать иероглифы и другие не-кириллические символы\n"
-        "19) В полях description и uniqueProductOffer ДОПУСТИМЫ ТОЛЬКО русские буквы, цифры и знаки препинания\n"
-        "20) В полях description и uniqueProductOffer НЕДОПУСТИМО использовать транслитерацию\n\n"
+        "10) НЕ используйте английский язык в полях description и uniqueProductOffer\n"
+        "11) НЕ копируйте примеры из NICHE_EXAMPLES, создавайте уникальный контент\n"
+        "12) НЕ используйте другие ниши кроме {niche_name}\n"
+        "13) Создавайте АБСОЛЮТНО УНИКАЛЬНЫЙ контент, не используйте примеры как шаблон\n"
+        "14) В полях description и uniqueProductOffer ЗАПРЕЩЕНО использовать английский язык\n"
+        "15) В полях description и uniqueProductOffer ОБЯЗАТЕЛЬНО используйте ТОЛЬКО русский язык\n"
+        "16) В полях description и uniqueProductOffer НЕДОПУСТИМО использовать латинские буквы\n"
+        "17) В полях description и uniqueProductOffer ЗАПРЕЩЕНО использовать иероглифы и другие не-кириллические символы\n"
+        "18) В полях description и uniqueProductOffer ДОПУСТИМЫ ТОЛЬКО русские буквы, цифры и знаки препинания\n"
+        "19) В полях description и uniqueProductOffer НЕДОПУСТИМО использовать транслитерацию\n\n"
         "Примеры для ниши {niche_name} (НЕ КОПИРУЙТЕ ИХ, они только для понимания формата):\n"
         "- name: {examples[name]}\n"
         "- description: {examples[description]}\n"
@@ -339,21 +332,10 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
             # Если JSON вложенный, извлекаем внутренний объект
             if len(data) == 1 and isinstance(next(iter(data.values())), dict):
                 data = next(iter(data.values()))
-                # Если в извлеченном объекте есть _id, используем его
-                if "_id" in data:
-                    # Проверяем формат _id
-                    if not data["_id"].startswith(f"startup-{niche_name}-"):
-                        logger.warning(f"Исправляем формат _id с '{data['_id']}' на 'startup-{niche_name}-<number>'")
-                        # Извлекаем номер из старого _id если он есть
-                        old_number = data["_id"].split("-")[-1] if "-" in data["_id"] else str(random.randint(1, 100))
-                        data["_id"] = f"startup-{niche_name}-{old_number}"
-                else:
-                    # Генерируем _id если его нет
-                    data["_id"] = f"startup-{niche_name}-{startup_number}"
             
             # Проверяем наличие всех обязательных полей
             required_fields = [
-                "_id", "name", "description", "price", "uniqueProductOffer",
+                "name", "description", "price", "uniqueProductOffer",
                 "lastMonthRevenue", "expenses", "team", "budget", "product",
                 "reputation", "level", "stage", "niche"
             ]
@@ -361,17 +343,6 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
             if missing_fields:
                 logger.warning(f"Отсутствуют обязательные поля: {missing_fields}")
                 continue
-                
-            # Проверяем формат _id
-            if "_id" in data:
-                if not data["_id"].startswith(f"startup-{niche_name}-"):
-                    logger.warning(f"Исправляем формат _id с '{data['_id']}' на 'startup-{niche_name}-<number>'")
-                    # Извлекаем номер из старого _id если он есть
-                    old_number = data["_id"].split("-")[-1] if "-" in data["_id"] else str(random.randint(1, 100))
-                    data["_id"] = f"startup-{niche_name}-{old_number}"
-            else:
-                # Генерируем _id если его нет
-                data["_id"] = f"startup-{niche_name}-{startup_number}"
                 
             # Проверяем значение stage
             if data["stage"].upper() not in valid_stages:
@@ -436,6 +407,9 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
             
             # Сортируем ключи в нужном порядке
             data = _sort_json_keys(data)
+            
+            # Добавляем пустой id
+            data["id"] = ""
             
             return StartupProfile(**data)
             

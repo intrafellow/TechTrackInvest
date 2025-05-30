@@ -390,6 +390,12 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 if not any(keyword in data["description"].lower() for keyword in keywords):
                     logger.warning(f"Предупреждение: описание может не полностью соответствовать нише {niche_name}, но продолжаем...")
             
+            # Сортируем ключи в нужном порядке
+            data = _sort_json_keys(data)
+            
+            # Добавляем пустой id
+            data["id"] = ""
+            
             return ConferenceProfile(**data)
             
         except Exception as e:

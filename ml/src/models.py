@@ -112,7 +112,7 @@ class GenerateConferencesRequest(BaseModel):
 
 class StartupProfile(BaseModel):
     """Профиль стартапа."""
-    id: str  # В формате 'startup-{niche}-{number}'
+    id: Optional[str] = ""  # Опциональный идентификатор
     name: str  # На английском языке
     description: str  # На русском языке
     price: int
@@ -134,7 +134,7 @@ class Solution(BaseModel):
 
 class CrisisProfile(BaseModel):
     """Профиль кризиса."""
-    id: str
+    id: Optional[str] = ""  # Опциональный идентификатор
     name: str
     description: str
     type: CrisisType  # Тип кризиса: глобальный или локальный
@@ -144,6 +144,7 @@ class CrisisProfile(BaseModel):
 
 class ConferenceProfile(BaseModel):
     """Профиль конференции."""
+    id: Optional[str] = ""  # Опциональный идентификатор
     name: str
     description: str
     nicheId: str
