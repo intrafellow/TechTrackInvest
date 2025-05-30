@@ -1,7 +1,7 @@
-"""src/services/conference_generator.py
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Сервис для генерации технологических конференций с использованием LLM.
-"""
+# src/services/conference_generator.py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Сервис для генерации технологических конференций с использованием LLM.
+
 from __future__ import annotations
 
 import logging
@@ -10,14 +10,15 @@ import random
 import json
 from uuid import uuid4
 from deep_translator import GoogleTranslator
-import re
 
 import torch
 from transformers import pipeline, Pipeline
+import regex as re
 
 from src.models import ConferenceProfile, GenerateConferencesRequest, GenerateConferenceRequest
 
 logger = logging.getLogger("services.conference_generator")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -30,66 +31,33 @@ NICHES = {
     "4": "SpaceTech"
 }
 
-# Кэш для хранения уже сгенерированных названий
-_generated_names = set()
-
-def _is_name_unique(name: str) -> bool:
-    """Проверяет, не было ли уже сгенерировано такое название."""
-    if name in _generated_names:
-        return False
-    _generated_names.add(name)
-    return True
-
-def _clear_name_cache():
-    """Очищает кэш сгенерированных названий."""
-    _generated_names.clear()
-
 # ---------------------------------------------------------------------------
 # Helper functions
 # ---------------------------------------------------------------------------
 
 def is_russian_text(text: str) -> bool:
-    """Проверяет, является ли текст преимущественно русским."""
-    # Подсчитываем количество русских букв
     russian_chars = sum(1 for c in text if ord('а') <= ord(c.lower()) <= ord('я'))
-    # Подсчитываем общее количество букв
     total_chars = sum(1 for c in text if c.isalpha())
-    # Если нет букв вообще, считаем что это не текст
     if total_chars == 0:
         return False
-    # Если более 70% букв - русские, считаем что текст на русском
     return (russian_chars / total_chars) > 0.7
 
 def clean_text(text: str) -> str:
-    """Очищает текст от нежелательных символов."""
-    # Разрешенные знаки препинания
     allowed_punctuation = '.,!?;:()[]{}«»""-–— '
-    
-    # Оставляем только русские буквы, цифры и разрешенные знаки препинания
     cleaned = ''.join(c for c in text if (
-        ord('а') <= ord(c.lower()) <= ord('я') or  # русские буквы
-        c.isdigit() or  # цифры
-        c in allowed_punctuation  # разрешенные знаки препинания
+        ord('а') <= ord(c.lower()) <= ord('я') or
+        c.isdigit() or
+        c in allowed_punctuation
     ))
-    
-    # Убираем множественные пробелы
-    cleaned = ' '.join(cleaned.split())
-    
-    return cleaned
+    return ' '.join(cleaned.split())
 
 def translate_to_russian(text: str) -> str:
-    """Переводит текст на русский язык используя Google Translate."""
     try:
-        # Если текст уже преимущественно на русском, возвращаем его как есть
         if is_russian_text(text):
             return text
-            
-        # Разбиваем текст на предложения для лучшего перевода
         sentences = text.split('.')
         translated_sentences = []
-        
         translator = GoogleTranslator(source='auto', target='ru')
-        
         for sentence in sentences:
             if sentence.strip():
                 try:
@@ -98,16 +66,66 @@ def translate_to_russian(text: str) -> str:
                 except Exception as e:
                     logger.error(f"Ошибка при переводе предложения: {e}")
                     translated_sentences.append(sentence.strip())
-        
-        # Собираем текст обратно
         result = '. '.join(translated_sentences)
         if result and not result.endswith('.'):
             result += '.'
-            
         return result
     except Exception as e:
         logger.error(f"Ошибка при переводе: {e}")
         return text
+
+def extract_json_from_response(response: str) -> dict | None:
+    """Извлекает JSON-блок из строки и удаляет висячие запятые."""
+    # Находим первый полный JSON-блок
+    start = response.find("{")
+    if start == -1:
+        return None
+        
+    # Ищем парную закрывающую скобку
+    stack = 1
+    pos = start + 1
+    while stack > 0 and pos < len(response):
+        if response[pos] == "{":
+            stack += 1
+        elif response[pos] == "}":
+            stack -= 1
+        pos += 1
+        
+    if stack != 0:
+        logger.error("Незавершенный JSON-блок")
+        return None
+        
+    json_str = response[start:pos]
+    
+    # Удаляем незавершенные поля (содержащие переносы строк)
+    json_str = re.sub(r',\s*"[^"]+"\s*:\s*"[^"]*$', '', json_str)
+    json_str = re.sub(r',\s*"[^"]+"\s*:\s*\{[^}]*$', '', json_str)
+    
+    # Удаляем запятые перед закрывающими скобками
+    cleaned_json = re.sub(r",(\s*[}\]])", r"\1", json_str)
+    
+    try:
+        data = json.loads(cleaned_json)
+        
+        # Преобразуем числовые идентификаторы ниш в текстовые названия
+        if "nicheId" in data:
+            niche_id = str(data["nicheId"])
+            if niche_id in NICHES:
+                data["nicheId"] = NICHES[niche_id]
+        
+        if "expertise" in data and isinstance(data["expertise"], list):
+            for item in data["expertise"]:
+                if "nicheId" in item:
+                    niche_id = str(item["nicheId"])
+                    if niche_id in NICHES:
+                        item["nicheId"] = NICHES[niche_id]
+        
+        return data
+    except json.JSONDecodeError as e:
+        logger.error(f"Ошибка парсинга JSON: {e}")
+        logger.error("Проблемный блок:")
+        logger.error(cleaned_json)
+        return None
 
 # ---------------------------------------------------------------------------
 # LLM initialisation (lazy singleton)
@@ -117,7 +135,6 @@ _MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
 
 @lru_cache(maxsize=1)
 def _get_generator() -> Pipeline:
-    """Загрузить text‑generation pipeline один раз за процесс."""
     logger.info("Loading LLM: %s", _MODEL_NAME)
     return pipeline(
         "text-generation",
@@ -127,7 +144,6 @@ def _get_generator() -> Pipeline:
     )
 
 def warmup() -> None:
-    """Форсированная инициализация LLM при старте FastAPI."""
     _get_generator()
 
 # ---------------------------------------------------------------------------
@@ -135,29 +151,10 @@ def warmup() -> None:
 # ---------------------------------------------------------------------------
 
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
-    """Генерирует технологическую конференцию.
-    
-    Args:
-        request: Параметры запроса на генерацию конференции.
-            niche: Ниша для генерации конференции ("IT", "GreenTech", "MedTech", "SpaceTech").
-                  Если не указана, выбирается случайная ниша.
-    
-    Returns:
-        ConferenceProfile: Сгенерированный профиль конференции.
-    """
     pipe = _get_generator()
-    
-    # Выбираем нишу
-    if request.niche is None:
-        niche_id = random.choice(list(NICHES.keys()))
-        niche_name = NICHES[niche_id]
-    else:
-        niche_name = request.niche
-        # Находим ID ниши по имени
-        niche_id = next((k for k, v in NICHES.items() if v == niche_name), None)
-        if niche_id is None:
-            raise ValueError(f"Неизвестная ниша: {niche_name}")
-    
+    niche_id = random.choice(list(NICHES.keys()))
+    niche_name = NICHES[niche_id]
+
     prompt = (
         "Привет! Ты — опытный сценарист-аналитик, моделирующий реалистичные и увлекательные технологические конференции. "
         "Ты отлично понимаешь, как выглядят настоящие мероприятия, полезные для стартапов, — с интересными названиями, "
@@ -205,9 +202,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "20) НЕДОПУСТИМО пропускать какие-либо поля\n"
         "21) НЕДОПУСТИМО генерировать JSON без поля expertise\n"
         "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertise\n"
-        "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertise\n"
-        "24) НЕДОПУСТИМО использовать шаблонные названия\n"
-        "25) НЕДОПУСТИМО повторять названия из предыдущих генераций\n\n"
+        "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertise\n\n"
         "Примеры стиля названий для каждой ниши (используйте их ТОЛЬКО для понимания стиля, НЕ копируйте):\n"
         "IT:\n"
         "- Quantum Nexus Conference\n"
@@ -247,176 +242,147 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "- IT Summit\n"
         "- MedTech Forum\n"
         "- SpaceTech Conference\n"
+		"- SpaceTech Forum\n"
+		"- SpaceTech Summit\n"
+		"- IT Conference\n"
+		"- IT Summit\n"
+		"- IT Forum\n"
+		"- MedTech Conference\n"
+		"- MedTech Summit\n"
+		"- MedTech Forum\n"
+		"- GreenTech Conference\n"
         "и т.п. Такие названия будут отклонены!\n\n"
         "JSON:"
     ).format(niche_id=niche_id, niche_name=niche_name)
-    
-    for attempt in range(3):  # Максимум 3 попытки
+
+    for attempt in range(3):
         try:
-            response = pipe(prompt, max_new_tokens=500, do_sample=True, temperature=0.7)[0]["generated_text"]
+            response = pipe(prompt, max_new_tokens=800, do_sample=True, temperature=0.9, top_p=0.95, top_k=50)[0]["generated_text"]
             
-            # Ищем JSON в ответе
-            start = response.find("{")
-            if start == -1:
-                logger.warning("JSON не найден в ответе")
+            data = extract_json_from_response(response)
+            if not data:
+                logger.warning("Не удалось извлечь JSON из ответа")
+                logger.warning("Генерируем новый JSON...")
                 continue
                 
-            # Ищем конец первого JSON объекта
-            end = start + 1
-            brace_count = 1
-            while brace_count > 0 and end < len(response):
-                if response[end] == "{":
-                    brace_count += 1
-                elif response[end] == "}":
-                    brace_count -= 1
-                end += 1
-                
-            if brace_count > 0:
-                logger.warning("Неполный JSON в ответе")
-                continue
-                
-            json_str = response[start:end]
-            
-            # Удаляем незавершенные поля (содержащие переносы строк)
-            json_str = re.sub(r',\s*"[^"]+"\s*:\s*"[^"]*$', '', json_str)
-            json_str = re.sub(r',\s*"[^"]+"\s*:\s*\{[^}]*$', '', json_str)
-            
-            # Удаляем запятые перед закрывающими скобками
-            json_str = re.sub(r",(\s*[}\]])", r"\1", json_str)
-            
-            try:
-                data = json.loads(json_str)
-            except json.JSONDecodeError as e:
-                logger.error(f"Ошибка парсинга JSON: {e}")
-                logger.error("Проблемный блок:")
-                logger.error(json_str)
-                continue
-            
-            # Если JSON вложенный, извлекаем внутренний объект
+            print("\n=== Сырой JSON ===")
+            print(response)
+            print("\n=== Распарсенный JSON ===")
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+
             if len(data) == 1 and isinstance(next(iter(data.values())), dict):
                 data = next(iter(data.values()))
-            
-            # Проверяем наличие всех обязательных полей
-            required_fields = [
-                "name", "description", "nicheId", "enrollPrice",
-                "gainedReputation", "expertise"
-            ]
+
+            required_fields = ["name", "description", "nicheId", "enrollPrice", "gainedReputation", "expertise"]
             missing_fields = [field for field in required_fields if field not in data]
             if missing_fields:
                 logger.warning(f"Отсутствуют обязательные поля: {missing_fields}")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
-            # Проверяем значение nicheId
+
             if data["nicheId"] != NICHES[niche_id]:
                 logger.warning(f"Несоответствие nicheId: получено '{data['nicheId']}', ожидалось '{NICHES[niche_id]}'")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
-            # Проверяем значение enrollPrice
+
             if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
-                logger.warning(f"Недопустимое значение enrollPrice: {data['enrollPrice']}")
+                logger.warning("Неверный enrollPrice")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
-            # Проверяем значение gainedReputation
+
             if not isinstance(data["gainedReputation"], int) or not (1 <= data["gainedReputation"] <= 10):
-                logger.warning(f"Недопустимое значение gainedReputation: {data['gainedReputation']}")
+                logger.warning("Неверный gainedReputation")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
-            # Проверяем expertise
+
             if not isinstance(data["expertise"], list) or not data["expertise"]:
                 logger.warning("expertise пуст или не список")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
+
             expertise = data["expertise"]
             if len(expertise) != 1:
                 logger.warning("expertise должен содержать ровно один элемент")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
+
             expertise_item = expertise[0]
             if not isinstance(expertise_item, dict):
                 logger.warning("элемент expertise должен быть объектом")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
+
             if "nicheId" not in expertise_item or "change" not in expertise_item:
                 logger.warning("элемент expertise должен содержать поля nicheId и change")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
+
             if expertise_item["nicheId"] != NICHES[niche_id]:
-                logger.warning(f"Несоответствие nicheId в expertise: получено '{expertise_item['nicheId']}', ожидалось '{NICHES[niche_id]}'")
+                logger.warning("nicheId в expertise не соответствует требуемому")
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
+
             if not isinstance(expertise_item["change"], int) or not (1 <= expertise_item["change"] <= 10):
                 logger.warning("change в expertise должен быть числом от 1 до 10")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
-            # Проверяем уникальность названия
-            if not _is_name_unique(data["name"]):
-                logger.warning(f"Название '{data['name']}' уже было сгенерировано ранее")
-                logger.warning("Генерируем новый JSON...")
-                continue
-
-            # Проверяем и переводим description если нужно
             if not is_russian_text(data["description"]):
-                logger.info("Переводим поле description на русский язык...")
-                original_description = data["description"]
                 data["description"] = translate_to_russian(data["description"])
-                if not is_russian_text(data["description"]):
-                    logger.warning("Не удалось перевести description на русский язык")
-                    logger.warning(f"Оригинальный текст: {original_description}")
-                    logger.warning(f"Переведенный текст: {data['description']}")
-                    continue
-            # Очищаем текст от нежелательных символов
             data["description"] = clean_text(data["description"])
-            
-            # Проверяем соответствие тематике для каждой ниши
-            niche_keywords = {
-                "IT": ["технология", "программирование", "разработка", "софт", "аппарат", "информация", "данные", "система", "интернет", "цифровой", "компьютер", "сеть", "безопасность", "искусственный интеллект", "машинное обучение"],
-                "GreenTech": ["экология", "зеленый", "устойчивый", "возобновляемый", "энергия", "природа", "окружающая среда", "климат", "чистый", "энергоэффективность", "переработка", "отходы", "био", "экологичный"],
-                "MedTech": ["медицина", "здоровье", "диагностика", "лечение", "пациент", "врач", "клиника", "анализ", "исследование", "терапия", "профилактика", "реабилитация", "биомедицина", "генетика"],
-                "SpaceTech": ["космос", "спутник", "орбита", "ракета", "космический", "астрономия", "галактика", "звезда", "планета", "навигация", "данные", "технология", "исследование", "анализ"]
-            }
-            
-            if niche_name in niche_keywords:
-                keywords = niche_keywords[niche_name]
-                if not any(keyword in data["description"].lower() for keyword in keywords):
-                    logger.warning(f"Предупреждение: описание может не полностью соответствовать нише {niche_name}, но продолжаем...")
-            
+
             return ConferenceProfile(**data)
-            
+
         except Exception as e:
-            logger.error(f"Ошибка при генерации конференции (попытка {attempt + 1}): {e}")
+            logger.error(f"Ошибка генерации конференции (попытка {attempt + 1}): {e}")
             continue
-            
+
     raise ValueError("Не удалось сгенерировать корректный профиль конференции после 3 попыток")
 
 def generate_conferences(request: GenerateConferencesRequest) -> list[ConferenceProfile]:
-    """Генерирует несколько профилей конференций.
-    
-    Args:
-        request: Параметры запроса на генерацию конференций.
-    
-    Returns:
-        list[ConferenceProfile]: Список сгенерированных профилей конференций.
-    """
+    niches = list(NICHES.values()) if request.niches is None else request.niches
     results = []
-    for _ in range(request.quantity):
+    for _ in range(request.count):
         try:
-            conference = generate_conference(GenerateConferenceRequest(niche=request.niche))
+            conference = generate_conference(request)
             results.append(conference)
         except Exception as e:
-            logger.error(f"Ошибка при генерации конференции для ниши {request.niche}: {e}")
+            logger.error(f"Ошибка при генерации конференции: {e}")
             continue
-            
     if not results:
         raise ValueError("Не удалось сгенерировать ни одного корректного профиля конференции")
-        
-    return results 
+    return results
+
+def test_generate_it_conferences():
+    """Тестовая генерация 3-х IT конференций."""
+    print("\n=== Начинаем генерацию 3-х IT конференций ===")
+    results = []
+    
+    for i in range(3):
+        print(f"\nГенерация конференции {i+1}/3...")
+        try:
+            # Создаем запрос с явным указанием ниши IT
+            request = GenerateConferenceRequest(niche="IT")
+            conference = generate_conference(request)
+            results.append(conference)
+            print(f"\nУспешно сгенерирована конференция {i+1}:")
+            print(json.dumps(conference.dict(), ensure_ascii=False, indent=2))
+        except Exception as e:
+            print(f"Ошибка при генерации конференции {i+1}: {e}")
+            i -= 1  # Повторяем попытку
+            continue
+    
+    print("\n=== Результаты генерации ===")
+    for i, conf in enumerate(results, 1):
+        print(f"\nКонференция {i}:")
+        print(json.dumps(conf.dict(), ensure_ascii=False, indent=2))
+    
+    return results
+
+if __name__ == "__main__":
+    print("Начинаем генерацию конференции...")
+    try:
+        # Тестовая генерация 3-х IT конференций
+        test_generate_it_conferences()
+    except Exception as e:
+        print(f"Ошибка: {e}")

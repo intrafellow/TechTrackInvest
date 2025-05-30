@@ -18,9 +18,11 @@ from src.models import (
     CrisisProfile,
     ConferenceProfile,
     GenerateStartupRequest,
-    GenerateStartupsRequest
+    GenerateStartupsRequest,
+    GenerateConferenceRequest,
+    GenerateConferencesRequest
 )
-from src.services import startup_generator, llm_service
+from src.services import startup_generator, conference_generator, llm_service
 
 logger = logging.getLogger("routers.game")
 
@@ -67,9 +69,29 @@ async def generate_crisis():
         raise HTTPException(500, f"Ошибка генерации кризиса: {exc}") from exc
 
 @router.post("/generate_conference", response_model=ConferenceProfile)
-async def generate_conference():
-    """Генерирует конференцию."""
+async def generate_conference(request: GenerateConferenceRequest):
+    """Генерирует профиль конференции.
+    
+    Args:
+        request: Параметры запроса на генерацию конференции.
+            niche: Ниша для генерации конференции ("IT", "GreenTech", "MedTech", "SpaceTech").
+                  Если не указана, выбирается случайная ниша.
+    """
     try:
-        return llm_service.generate_conference()
+        return conference_generator.generate_conference(request)
     except Exception as exc:
         raise HTTPException(500, f"Ошибка генерации конференции: {exc}") from exc
+
+@router.post("/generate_conferences", response_model=list[ConferenceProfile])
+async def generate_conferences(request: GenerateConferencesRequest):
+    """Генерирует несколько профилей конференций.
+    
+    Args:
+        request: Параметры запроса на генерацию конференций.
+            count: Количество конференций для генерации (от 1 до 10).
+            niches: Список ниш для генерации. Если не указан, используются все доступные ниши.
+    """
+    try:
+        return conference_generator.generate_conferences(request)
+    except Exception as exc:
+        raise HTTPException(500, f"Ошибка генерации конференций: {exc}") from exc

@@ -86,6 +86,26 @@ class GenerateStartupsRequest(BaseModel):
         description="Список ниш для генерации. Если не указан, используются все доступные ниши."
     )
 
+class GenerateConferenceRequest(BaseModel):
+    """Запрос на генерацию одной конференции."""
+    niche: Optional[str] = Field(
+        default=None,
+        description="Ниша для генерации конференции. Если не указана, выбирается случайная ниша."
+    )
+
+class GenerateConferencesRequest(BaseModel):
+    """Запрос на генерацию нескольких конференций."""
+    quantity: int = Field(
+        default=1,
+        ge=1,
+        le=10,
+        description="Количество конференций для генерации (от 1 до 10)"
+    )
+    niche: Optional[str] = Field(
+        default=None,
+        description="Ниша для генерации. Если не указана, выбирается случайная ниша."
+    )
+
 # ---------------------------------------------------------------------------
 # Response models
 # ---------------------------------------------------------------------------
@@ -124,10 +144,9 @@ class CrisisProfile(BaseModel):
 
 class ConferenceProfile(BaseModel):
     """Профиль конференции."""
-    id: str
     name: str
     description: str
     nicheId: str
     enrollPrice: int
     gainedReputation: int
-    expertiseChanges: List[dict]  # Упрощаем структуру изменений экспертизы 
+    expertise: List[dict]  # Список изменений экспертизы в формате {"nicheId": str, "change": int} 
