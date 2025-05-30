@@ -13,7 +13,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI().servers(
-                List.of(new Server().url("http://localhost:8080"))
+                List.of(new Server().url("https://techtrackinvest.ru"))
         ).info(new Info().title("Tech track invest game").version("0.0.1"));
     }
 }
