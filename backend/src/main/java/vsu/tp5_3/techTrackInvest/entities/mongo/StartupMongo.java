@@ -26,7 +26,7 @@ public class StartupMongo {
     private Integer expenses;
     private Integer team;
     private Integer budget;
-    private Integer progress;
+    private Integer product;
     private Integer reputation;
     private Integer level;
     private Stage stage;
