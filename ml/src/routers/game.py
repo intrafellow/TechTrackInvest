@@ -5,7 +5,7 @@ FastAPI‑роутер: методы генерации контента для 
 * POST `/game/generate_startup`   — сгенерировать профиль стартапа
 * POST `/game/generate_startups`  — сгенерировать несколько профилей стартапов
 * POST `/game/generate_crisis`    — сгенерировать кризис
-* POST `/game/generate_conference` — сгенерировать конференцию
+* POST `/game/generate_conferences` — сгенерировать конференцию
 """
 from __future__ import annotations
 
