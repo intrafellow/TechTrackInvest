@@ -150,6 +150,13 @@ def warmup() -> None:
 # Public API
 # ---------------------------------------------------------------------------
 
+def _fix_enroll_price(data: dict) -> dict:
+    """Исправляет значение enrollPrice, если оно некорректное."""
+    if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
+        # Генерируем случайное значение в допустимом диапазоне
+        data["enrollPrice"] = random.randint(1000, 9000)
+    return data
+
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
     pipe = _get_generator()
     niche_name = random.choice(list(NICHES.values()))
@@ -170,10 +177,11 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "  * НЕ использовать названия из примеров\n"
         "- description: Оригинальное описание конференции на русском языке\n"
         "- nicheId: Должно быть \"{niche_name}\"\n"
+		"- nicheId: Должно ОБЯЗАТЕЛЬНО НАЗЫВАТЬСЯ nicheId\n"
         "- enrollPrice: ОБЯЗАТЕЛЬНО Целое число от 1000 до 9000\n"
         "- gainedReputation: Целое число от 1 до 10\n"
         "- expertise: Массив с одним объектом, содержащим:\n"
-        "  * nicheId (КЛЮЧ ДОЛЖЕН НАЗЫВАТЬСЯ nicheId, И НИКАК ИНАЧЕ): Должно быть \"{niche_name}\"\n"
+        "  * nicheId (КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId, И НИКАК ИНАЧЕ): Должно быть \"{niche_name}\"\n"
         "  * change: Целое число от 1 до 10\n\n"
         "КРИТИЧЕСКИ ВАЖНО:\n"
         "1) Все поля обязательны, нельзя пропускать ни одного поля\n"
@@ -199,6 +207,8 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "21) НЕДОПУСТИМО генерировать JSON без поля expertise\n"
         "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertise\n"
         "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertise\n\n"
+		"24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
+		"25) НЕДОПУСТИМО генерировать JSON с масиивом expertise, в котором нет либо nicheIde, либо change\n"
         "JSON:"
     ).format(niche_name=niche_name)
 
@@ -234,8 +244,8 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
 
             if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
                 logger.warning("Неверный enrollPrice")
-                logger.warning("Генерируем новый JSON...")
-                continue
+                data = _fix_enroll_price(data)
+                logger.info(f"Исправлено значение enrollPrice на: {data['enrollPrice']}")
 
             if not isinstance(data["gainedReputation"], int) or not (1 <= data["gainedReputation"] <= 10):
                 logger.warning("Неверный gainedReputation")

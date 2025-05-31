@@ -134,6 +134,13 @@ def warmup() -> None:
 # Public API
 # ---------------------------------------------------------------------------
 
+def _fix_enroll_price(data: dict) -> dict:
+    """Исправляет значение enrollPrice, если оно некорректное."""
+    if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
+        # Генерируем случайное значение в допустимом диапазоне
+        data["enrollPrice"] = random.randint(1000, 9000)
+    return data
+
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
     """Генерирует технологическую конференцию.
     
@@ -193,6 +200,8 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "21) НЕДОПУСТИМО генерировать JSON без поля expertise\n"
         "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertise\n"
         "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertise\n\n"
+		"24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
+		"25) НЕДОПУСТИМО генерировать JSON с масиивом expertise, в котором нет либо nicheIde, либо change\n"
         "JSON:"
     ).format(niche_name=niche_name)
     
@@ -261,8 +270,8 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             # Проверяем значение enrollPrice
             if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
                 logger.warning(f"Недопустимое значение enrollPrice: {data['enrollPrice']}")
-                logger.warning("Генерируем новый JSON...")
-                continue
+                data = _fix_enroll_price(data)
+                logger.info(f"Исправлено значение enrollPrice на: {data['enrollPrice']}")
                 
             # Проверяем значение gainedReputation
             if not isinstance(data["gainedReputation"], int) or not (1 <= data["gainedReputation"] <= 10):
