@@ -152,8 +152,7 @@ def warmup() -> None:
 
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
     pipe = _get_generator()
-    niche_id = random.choice(list(NICHES.keys()))
-    niche_name = NICHES[niche_id]
+    niche_name = random.choice(list(NICHES.values()))
 
     prompt = (
         "Привет! Ты — опытный сценарист-аналитик, моделирующий реалистичные и увлекательные технологические конференции. "
@@ -170,11 +169,11 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "  * НЕ использовать шаблонные названия\n"
         "  * НЕ использовать названия из примеров\n"
         "- description: Оригинальное описание конференции на русском языке\n"
-        "- nicheId: Должно быть \"{niche_id}\"\n"
+        "- nicheId: Должно быть \"{niche_name}\"\n"
         "- enrollPrice: ОБЯЗАТЕЛЬНО Целое число от 1000 до 9000\n"
         "- gainedReputation: Целое число от 1 до 10\n"
         "- expertise: Массив с одним объектом, содержащим:\n"
-        "  * nicheId (КЛЮЧ ДОЛЖЕН НАЗЫВАТЬСЯ nicheId, И НИКАК ИНАЧЕ): Должно быть \"{niche_id}\"\n"
+        "  * nicheId (КЛЮЧ ДОЛЖЕН НАЗЫВАТЬСЯ nicheId, И НИКАК ИНАЧЕ): Должно быть \"{niche_name}\"\n"
         "  * change: Целое число от 1 до 10\n\n"
         "КРИТИЧЕСКИ ВАЖНО:\n"
         "1) Все поля обязательны, нельзя пропускать ни одного поля\n"
@@ -183,7 +182,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "4) Поле description ОБЯЗАТЕЛЬНО должно быть на русском языке\n"
         "5) Используйте ТОЛЬКО кириллицу для русских текстов\n"
         "6) Проверьте, что все поля присутствуют в JSON перед отправкой\n"
-        "7) Поле nicheId должно быть СТРОГО равно \"{niche_id}\"\n"
+        "7) Поле nicheId должно быть СТРОГО равно \"{niche_name}\"\n"
         "8) Все текстовые поля должны соответствовать нише {niche_name}\n"
         "9) В поле description ЗАПРЕЩЕНО использовать английский язык\n"
         "10) В поле description ОБЯЗАТЕЛЬНО используйте ТОЛЬКО русский язык\n"
@@ -192,7 +191,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "13) В поле description ДОПУСТИМЫ ТОЛЬКО русские буквы, цифры и знаки препинания\n"
         "14) В поле description НЕДОПУСТИМО использовать транслитерацию\n"
         "15) Массив expertise ОБЯЗАТЕЛЬНО должен содержать ровно один объект\n"
-        "16) В объекте expertise поле nicheId должно быть СТРОГО равно \"{niche_id}\"\n"
+        "16) В объекте expertise поле nicheId должно быть СТРОГО равно \"{niche_name}\"\n"
         "17) В объекте expertise поле change должно быть целым числом от 1 до 10\n"
         "18) enrollPrice ОБЯЗАНО быть целым числом от 1000 до 9000\n"
         "19) НЕДОПУСТИМО генерировать неполный JSON\n"
@@ -201,7 +200,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertise\n"
         "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertise\n\n"
         "JSON:"
-    ).format(niche_id=niche_id, niche_name=niche_name)
+    ).format(niche_name=niche_name)
 
     for attempt in range(3):
         try:
@@ -228,8 +227,8 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 logger.warning("Генерируем новый JSON...")
                 continue
 
-            if data["nicheId"] != NICHES[niche_id]:
-                logger.warning(f"Несоответствие nicheId: получено '{data['nicheId']}', ожидалось '{NICHES[niche_id]}'")
+            if data["nicheId"] != niche_name:
+                logger.warning(f"Несоответствие nicheId: получено '{data['nicheId']}', ожидалось '{niche_name}'")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
@@ -265,7 +264,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 logger.warning("Генерируем новый JSON...")
                 continue
 
-            if expertise_item["nicheId"] != NICHES[niche_id]:
+            if expertise_item["nicheId"] != niche_name:
                 logger.warning("nicheId в expertise не соответствует требуемому")
                 logger.warning("Генерируем новый JSON...")
                 continue
