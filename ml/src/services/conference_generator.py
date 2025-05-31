@@ -209,6 +209,10 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         try:
             response = pipe(prompt, max_new_tokens=500, do_sample=True, temperature=0.8)[0]["generated_text"]
             
+            # Логируем сырой ответ от модели
+            logger.info("Сырой ответ от модели:")
+            logger.info(response)
+            
             # Ищем JSON в ответе
             start = response.find("{")
             if start == -1:
@@ -231,6 +235,10 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 
             json_str = response[start:end]
             
+            # Логируем извлеченный JSON
+            logger.info("Извлеченный JSON:")
+            logger.info(json_str)
+            
             # Удаляем незавершенные поля (содержащие переносы строк)
             json_str = re.sub(r',\s*"[^"]+"\s*:\s*"[^"]*$', '', json_str)
             json_str = re.sub(r',\s*"[^"]+"\s*:\s*\{[^}]*$', '', json_str)
@@ -240,6 +248,9 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             
             try:
                 data = json.loads(json_str)
+                # Логируем распарсенный JSON
+                logger.info("Распарсенный JSON:")
+                logger.info(json.dumps(data, ensure_ascii=False, indent=2))
             except json.JSONDecodeError as e:
                 logger.error(f"Ошибка парсинга JSON: {e}")
                 logger.error("Проблемный блок:")
@@ -258,12 +269,16 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             missing_fields = [field for field in required_fields if field not in data]
             if missing_fields:
                 logger.warning(f"Отсутствуют обязательные поля: {missing_fields}")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             # Проверяем значение nicheId
             if data["nicheId"] != niche_name:
                 logger.warning(f"Несоответствие nicheId: получено '{data['nicheId']}', ожидалось '{niche_name}'")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
@@ -276,29 +291,39 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             # Проверяем значение gainedReputation
             if not isinstance(data["gainedReputation"], int) or not (1 <= data["gainedReputation"] <= 10):
                 logger.warning(f"Недопустимое значение gainedReputation: {data['gainedReputation']}")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             # Проверяем expertise
             if not isinstance(data["expertise"], list) or not data["expertise"]:
                 logger.warning("expertise пуст или не список")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             expertise = data["expertise"]
             if len(expertise) != 1:
                 logger.warning("expertise должен содержать ровно один элемент")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             expertise_item = expertise[0]
             if not isinstance(expertise_item, dict):
                 logger.warning("элемент expertise должен быть объектом")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             if "nicheId" not in expertise_item or "change" not in expertise_item:
                 logger.warning("элемент expertise должен содержать поля nicheId и change")
+                logger.warning("Текущий JSON:")
+                logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
