@@ -28,14 +28,14 @@ logger = logging.getLogger("services.startup_generator")
 # ---------------------------------------------------------------------------
 
 NICHES = {
-    "1": Niche.IT,
-    "2": Niche.GREEN_TECH,
-    "3": Niche.MED_TECH,
-    "4": Niche.SPACE_TECH
+    "1": "IT",
+    "2": "GreenTech",
+    "3": "MedTech",
+    "4": "SpaceTech"
 }
 
 NICHE_EXAMPLES = {
-    Niche.IT: {
+    "IT": {
         "name": "CloudTech Solutions",
         "description": "Платформа для управления облачной инфраструктурой",
         "offer": "Система автоматизации и оптимизации облачных вычислений",
@@ -48,9 +48,9 @@ NICHE_EXAMPLES = {
         "reputation": 75,
         "level": 3,
         "stage": Stage.MARKET,
-        "niche": Niche.IT
+        "niche": "IT"
     },
-    Niche.GREEN_TECH: {
+    "GreenTech": {
         "name": "EcoTech Innovations",
         "description": "Система мониторинга экологических показателей",
         "offer": "Комплексное решение для управления экологическими проектами",
@@ -63,9 +63,9 @@ NICHE_EXAMPLES = {
         "reputation": 80,
         "level": 2,
         "stage": Stage.MVP,
-        "niche": Niche.GREEN_TECH
+        "niche": "GreenTech"
     },
-    Niche.MED_TECH: {
+    "MedTech": {
         "name": "HealthTech Systems",
         "description": "Платформа для телемедицинских консультаций",
         "offer": "Система удаленного мониторинга состояния здоровья",
@@ -78,9 +78,9 @@ NICHE_EXAMPLES = {
         "reputation": 85,
         "level": 4,
         "stage": Stage.SCALE,
-        "niche": Niche.MED_TECH
+        "niche": "MedTech"
     },
-    Niche.SPACE_TECH: {
+    "SpaceTech": {
         "name": "OrbitTech Solutions",
         "description": "Система управления спутниковыми данными",
         "offer": "Платформа для анализа космических данных",
@@ -93,7 +93,7 @@ NICHE_EXAMPLES = {
         "reputation": 70,
         "level": 3,
         "stage": Stage.MARKET,
-        "niche": Niche.SPACE_TECH
+        "niche": "SpaceTech"
     }
 }
 
@@ -396,7 +396,7 @@ def generate_startup(request: GenerateStartupRequest) -> StartupProfile:
                 continue
                 
             # Проверяем соответствие тематике для SpaceTech
-            if niche_name == Niche.SPACE_TECH:
+            if niche_name == "SpaceTech":
                 # Проверяем соответствие описания нише
                 space_tech_keywords = ["космос", "спутник", "орбита", "ракета", "космический", "астрономия", "галактика", "звезда", "планета", "навигация", "данные", "технология", "исследование", "анализ"]
                 if not any(keyword in data["description"].lower() for keyword in space_tech_keywords):
@@ -428,20 +428,13 @@ def generate_startups(request: GenerateStartupsRequest) -> list[StartupProfile]:
     Returns:
         list[StartupProfile]: Список сгенерированных профилей стартапов.
     """
-    if request.niches is None:
-        niches = list(NICHES.values())
-    else:
-        niches = request.niches
-    
     results = []
-    for _ in range(request.count):
-        # Выбираем случайную нишу из списка
-        niche = random.choice(niches)
+    for _ in range(request.quantity):
         try:
-            startup = generate_startup(GenerateStartupRequest(niche=niche))
+            startup = generate_startup(GenerateStartupRequest(niche=request.niche))
             results.append(startup)
         except Exception as e:
-            logger.error(f"Ошибка при генерации стартапа для ниши {niche}: {e}")
+            logger.error(f"Ошибка при генерации стартапа для ниши {request.niche}: {e}")
             continue
             
     if not results:

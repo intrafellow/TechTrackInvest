@@ -68,22 +68,22 @@ class Niche(str, Enum):
 
 class GenerateStartupRequest(BaseModel):
     """Запрос на генерацию одного стартапа."""
-    niche: Optional[Niche] = Field(
+    niche: Optional[str] = Field(
         default=None,
         description="Ниша для генерации стартапа. Если не указана, выбирается случайная ниша."
     )
 
 class GenerateStartupsRequest(BaseModel):
     """Запрос на генерацию нескольких стартапов."""
-    count: int = Field(
+    quantity: int = Field(
         default=1,
         ge=1,
         le=10,
         description="Количество стартапов для генерации (от 1 до 10)"
     )
-    niches: Optional[List[Niche]] = Field(
+    niche: Optional[str] = Field(
         default=None,
-        description="Список ниш для генерации. Если не указан, используются все доступные ниши."
+        description="Ниша для генерации. Если не указана, выбирается случайная ниша."
     )
 
 class GenerateConferenceRequest(BaseModel):
@@ -125,7 +125,7 @@ class StartupProfile(BaseModel):
     reputation: int
     level: int
     stage: Stage
-    niche: Niche  # Одна из: "IT", "SpaceTech", "GreenTech", "MedTech"
+    niche: str  # Одна из: "IT", "SpaceTech", "GreenTech", "MedTech"
 
 class Solution(BaseModel):
     """Решение кризиса."""

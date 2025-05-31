@@ -52,8 +52,11 @@ async def generate_startups(request: GenerateStartupsRequest):
     
     Args:
         request: Параметры запроса на генерацию стартапов.
-            count: Количество стартапов для генерации (от 1 до 10).
-            niches: Список ниш для генерации. Если не указан, используются все доступные ниши.
+            quantity: Количество стартапов для генерации (от 1 до 10).
+            niche: Ниша для генерации. Если не указана, выбирается случайная ниша.
+    
+    Returns:
+        list[StartupProfile]: Список сгенерированных профилей стартапов.
     """
     try:
         return startup_generator.generate_startups(request)
