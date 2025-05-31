@@ -137,8 +137,11 @@ def warmup() -> None:
 def _fix_enroll_price(data: dict) -> dict:
     """Исправляет значение enrollPrice, если оно некорректное."""
     if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
+        # Создаем копию данных, чтобы не изменять оригинальный словарь
+        fixed_data = data.copy()
         # Генерируем случайное значение в допустимом диапазоне
-        data["enrollPrice"] = random.randint(1000, 9000)
+        fixed_data["enrollPrice"] = random.randint(1000, 9000)
+        return fixed_data
     return data
 
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
@@ -285,8 +288,17 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             # Проверяем значение enrollPrice
             if not isinstance(data["enrollPrice"], int) or not (1000 <= data["enrollPrice"] <= 9000):
                 logger.warning(f"Недопустимое значение enrollPrice: {data['enrollPrice']}")
+                original_data = data.copy()  # Сохраняем копию оригинальных данных
                 data = _fix_enroll_price(data)
-                logger.info(f"Исправлено значение enrollPrice на: {data['enrollPrice']}")
+                logger.info(f"Исправлено значение enrollPrice с {original_data['enrollPrice']} на: {data['enrollPrice']}")
+                # Проверяем, что все поля сохранились
+                if not all(field in data for field in required_fields):
+                    logger.error("Потеряны поля при исправлении enrollPrice!")
+                    logger.error("Оригинальные данные:")
+                    logger.error(json.dumps(original_data, ensure_ascii=False, indent=2))
+                    logger.error("Исправленные данные:")
+                    logger.error(json.dumps(data, ensure_ascii=False, indent=2))
+                    continue
                 
             # Проверяем значение gainedReputation
             if not isinstance(data["gainedReputation"], int) or not (1 <= data["gainedReputation"] <= 10):
