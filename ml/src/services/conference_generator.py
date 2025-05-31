@@ -144,6 +144,42 @@ def _fix_enroll_price(data: dict) -> dict:
         return fixed_data
     return data
 
+def _normalize_keys(data: dict) -> dict:
+    """Нормализует ключи в данных, исправляя возможные опечатки."""
+    normalized = {}
+    key_mapping = {
+        "nicenId": "nicheId",
+        "nid": "nicheId",
+        "niche": "nicheId",
+        "expertise": "expertiseChanges"
+    }
+    
+    for key, value in data.items():
+        # Если ключ нужно заменить
+        if key in key_mapping:
+            normalized[key_mapping[key]] = value
+        else:
+            normalized[key] = value
+            
+    return normalized
+
+def _normalize_expertise_keys(expertise_item: dict) -> dict:
+    """Нормализует ключи в объекте expertise."""
+    normalized = {}
+    key_mapping = {
+        "nicenId": "nicheId",
+        "nid": "nicheId",
+        "niche": "nicheId"
+    }
+    
+    for key, value in expertise_item.items():
+        if key in key_mapping:
+            normalized[key_mapping[key]] = value
+        else:
+            normalized[key] = value
+            
+    return normalized
+
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
     """Генерирует технологическую конференцию.
     
@@ -176,7 +212,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "- nicheId: Должно быть \"{niche_name}\"\n"
         "- enrollPrice: ОБЯЗАТЕЛЬНО Целое число от 1000 до 9000\n"
         "- gainedReputation: Целое число от 1 до 10\n"
-        "- expertise: Массив с одним объектом, содержащим:\n"
+        "- expertiseChanges: Массив с одним объектом, содержащим:\n"
         "  * nicheId (КЛЮЧ ДОЛЖЕН НАЗЫВАТЬСЯ nicheId, И НИКАК ИНАЧЕ): Должно быть \"{niche_name}\"\n"
         "  * change: Целое число от 1 до 10\n\n"
         "КРИТИЧЕСКИ ВАЖНО:\n"
@@ -194,17 +230,17 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "12) В поле description ЗАПРЕЩЕНО использовать иероглифы и другие не-кириллические символы\n"
         "13) В поле description ДОПУСТИМЫ ТОЛЬКО русские буквы, цифры и знаки препинания\n"
         "14) В поле description НЕДОПУСТИМО использовать транслитерацию\n"
-        "15) Массив expertise ОБЯЗАТЕЛЬНО должен содержать ровно один объект\n"
-        "16) В объекте expertise поле nicheId должно быть СТРОГО равно \"{niche_name}\"\n"
-        "17) В объекте expertise поле change должно быть целым числом от 1 до 10\n"
+        "15) Массив expertiseChanges ОБЯЗАТЕЛЬНО должен содержать ровно один объект\n"
+        "16) В объекте expertiseChanges поле nicheId должно быть СТРОГО равно \"{niche_name}\"\n"
+        "17) В объекте expertiseChanges поле change должно быть целым числом от 1 до 10\n"
         "18) enrollPrice ОБЯЗАНО быть целым числом от 1000 до 9000\n"
         "19) НЕДОПУСТИМО генерировать неполный JSON\n"
         "20) НЕДОПУСТИМО пропускать какие-либо поля\n"
-        "21) НЕДОПУСТИМО генерировать JSON без поля expertise\n"
-        "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertise\n"
-        "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertise\n\n"
+        "21) НЕДОПУСТИМО генерировать JSON без поля expertiseChanges\n"
+        "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertiseChanges\n"
+        "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertiseChanges\n\n"
 		"24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
-		"25) НЕДОПУСТИМО генерировать JSON с масиивом expertise, в котором нет либо nicheIde, либо change\n"
+		"25) НЕДОПУСТИМО генерировать JSON с масиивом expertiseChanges, в котором нет либо nicheIde, либо change\n"
         "JSON:"
     ).format(niche_name=niche_name)
     
@@ -267,8 +303,12 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             # Проверяем наличие всех обязательных полей
             required_fields = [
                 "name", "description", "nicheId", "enrollPrice",
-                "gainedReputation", "expertise"
+                "gainedReputation", "expertiseChanges"
             ]
+            
+            # Нормализуем ключи в данных
+            data = _normalize_keys(data)
+            
             missing_fields = [field for field in required_fields if field not in data]
             if missing_fields:
                 logger.warning(f"Отсутствуют обязательные поля: {missing_fields}")
@@ -308,17 +348,17 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
-            # Проверяем expertise
-            if not isinstance(data["expertise"], list) or not data["expertise"]:
-                logger.warning("expertise пуст или не список")
+            # Проверяем expertiseChanges
+            if not isinstance(data["expertiseChanges"], list) or not data["expertiseChanges"]:
+                logger.warning("expertiseChanges пуст или не список")
                 logger.warning("Текущий JSON:")
                 logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
-            expertise = data["expertise"]
+            expertise = data["expertiseChanges"]
             if len(expertise) != 1:
-                logger.warning("expertise должен содержать ровно один элемент")
+                logger.warning("expertiseChanges должен содержать ровно один элемент")
                 logger.warning("Текущий JSON:")
                 logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
@@ -326,26 +366,31 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 
             expertise_item = expertise[0]
             if not isinstance(expertise_item, dict):
-                logger.warning("элемент expertise должен быть объектом")
+                logger.warning("элемент expertiseChanges должен быть объектом")
                 logger.warning("Текущий JSON:")
                 logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
+            # Нормализуем ключи в объекте expertise
+            expertise_item = _normalize_expertise_keys(expertise_item)
+            expertise[0] = expertise_item
+            data["expertiseChanges"] = expertise
+                
             if "nicheId" not in expertise_item or "change" not in expertise_item:
-                logger.warning("элемент expertise должен содержать поля nicheId и change")
+                logger.warning("элемент expertiseChanges должен содержать поля nicheId и change")
                 logger.warning("Текущий JSON:")
                 logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             if expertise_item["nicheId"] != niche_name:
-                logger.warning(f"Несоответствие nicheId в expertise: получено '{expertise_item['nicheId']}', ожидалось '{niche_name}'")
+                logger.warning(f"Несоответствие nicheId в expertiseChanges: получено '{expertise_item['nicheId']}', ожидалось '{niche_name}'")
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
             if not isinstance(expertise_item["change"], int) or not (1 <= expertise_item["change"] <= 10):
-                logger.warning("change в expertise должен быть числом от 1 до 10")
+                logger.warning("change в expertiseChanges должен быть числом от 1 до 10")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
