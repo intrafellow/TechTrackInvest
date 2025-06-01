@@ -167,7 +167,7 @@ def _normalize_keys(data: dict) -> dict:
     return normalized
 
 def _normalize_expertise_keys(expertise_item: dict) -> dict:
-    """Нормализует ключи в объекте expertise.
+    """Нормализует ключи в объекте expertiseChanges.
     Просто заменяет неправильные ключи на правильные, не перегенерируя JSON."""
     normalized = {}
     key_mapping = {
@@ -179,7 +179,7 @@ def _normalize_expertise_keys(expertise_item: dict) -> dict:
     
     for key, value in expertise_item.items():
         if key in key_mapping:
-            logger.info(f"Нормализация ключа в объекте expertise: {key} -> {key_mapping[key]}")
+            logger.info(f"Нормализация ключа в объекте expertiseChanges: {key} -> {key_mapping[key]}")
             normalized[key_mapping[key]] = value
         else:
             normalized[key] = value
@@ -273,8 +273,8 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "21) НЕДОПУСТИМО генерировать JSON без поля expertiseChanges\n"
         "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertiseChanges\n"
         "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertiseChanges\n\n"
-		"24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
-		"25) НЕДОПУСТИМО генерировать JSON с масиивом expertiseChanges, в котором нет либо nicheIde, либо change\n"
+        "24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
+        "25) НЕДОПУСТИМО генерировать JSON с массивом expertiseChanges, в котором нет либо nicheId, либо change\n"
         "JSON:"
     ).format(niche_name=niche_name)
     
