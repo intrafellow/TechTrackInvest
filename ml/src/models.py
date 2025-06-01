@@ -150,4 +150,4 @@ class ConferenceProfile(BaseModel):
     nicheId: str
     enrollPrice: int
     gainedReputation: int
-    expertise: List[dict]  # Список изменений экспертизы в формате {"nicheId": str, "change": int} 
+    expertiseChanges: List[dict]  # Список изменений экспертизы в формате {"nicheId": str, "change": int} 

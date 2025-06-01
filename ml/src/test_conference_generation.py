@@ -113,8 +113,8 @@ def extract_json_from_response(response: str) -> dict | None:
             if niche_id in NICHES:
                 data["nicheId"] = NICHES[niche_id]
         
-        if "expertise" in data and isinstance(data["expertise"], list):
-            for item in data["expertise"]:
+        if "expertiseChanges" in data and isinstance(data["expertiseChanges"], list):
+            for item in data["expertiseChanges"]:
                 if "nicheId" in item:
                     niche_id = str(item["nicheId"])
                     if niche_id in NICHES:
@@ -200,7 +200,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "14) В поле description НЕДОПУСТИМО использовать транслитерацию\n"
         "15) Массив expertiseChanges ОБЯЗАТЕЛЬНО должен содержать ровно один объект\n"
         "16) В объекте expertiseChanges поле nicheId должно быть СТРОГО равно \"{niche_name}\"\n"
-        "17) В объекте expertise поле change должно быть целым числом от 1 до 10\n"
+        "17) В объекте expertiseChanges поле change должно быть целым числом от 1 до 10\n"
         "18) enrollPrice ОБЯЗАНО быть целым числом от 1000 до 9000\n"
         "19) НЕДОПУСТИМО генерировать неполный JSON\n"
         "20) НЕДОПУСТИМО пропускать какие-либо поля\n"
@@ -208,7 +208,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
         "22) НЕДОПУСТИМО генерировать JSON с пустым массивом expertiseChanges\n"
         "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertiseChanges\n\n"
 		"24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
-		"25) НЕДОПУСТИМО генерировать JSON с масиивом expertise, в котором нет либо nicheIde, либо change\n"
+		"25) НЕДОПУСТИМО генерировать JSON с массивом expertiseChanges, в котором нет либо nicheId, либо change\n"
         "JSON:"
     ).format(niche_name=niche_name)
 
@@ -230,7 +230,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             if len(data) == 1 and isinstance(next(iter(data.values())), dict):
                 data = next(iter(data.values()))
 
-            required_fields = ["name", "description", "nicheId", "enrollPrice", "gainedReputation", "expertise"]
+            required_fields = ["name", "description", "nicheId", "enrollPrice", "gainedReputation", "expertiseChanges"]
             missing_fields = [field for field in required_fields if field not in data]
             if missing_fields:
                 logger.warning(f"Отсутствуют обязательные поля: {missing_fields}")
@@ -252,35 +252,35 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 logger.warning("Генерируем новый JSON...")
                 continue
 
-            if not isinstance(data["expertise"], list) or not data["expertise"]:
-                logger.warning("expertise пуст или не список")
+            if not isinstance(data["expertiseChanges"], list) or not data["expertiseChanges"]:
+                logger.warning("expertiseChanges пуст или не список")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
-            expertise = data["expertise"]
+            expertise = data["expertiseChanges"]
             if len(expertise) != 1:
-                logger.warning("expertise должен содержать ровно один элемент")
+                logger.warning("expertiseChanges должен содержать ровно один элемент")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
             expertise_item = expertise[0]
             if not isinstance(expertise_item, dict):
-                logger.warning("элемент expertise должен быть объектом")
+                logger.warning("элемент expertiseChanges должен быть объектом")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
             if "nicheId" not in expertise_item or "change" not in expertise_item:
-                logger.warning("элемент expertise должен содержать поля nicheId и change")
+                logger.warning("элемент expertiseChanges должен содержать поля nicheId и change")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
             if expertise_item["nicheId"] != niche_name:
-                logger.warning("nicheId в expertise не соответствует требуемому")
+                logger.warning("nicheId в expertiseChanges не соответствует требуемому")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
             if not isinstance(expertise_item["change"], int) or not (1 <= expertise_item["change"] <= 10):
-                logger.warning("change в expertise должен быть числом от 1 до 10")
+                logger.warning("change в expertiseChanges должен быть числом от 1 до 10")
                 logger.warning("Генерируем новый JSON...")
                 continue
 
