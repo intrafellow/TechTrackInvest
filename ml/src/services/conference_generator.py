@@ -145,15 +145,14 @@ def _fix_enroll_price(data: dict) -> dict:
     return data
 
 def _normalize_keys(data: dict) -> dict:
-    """Нормализует ключи в данных, исправляя возможные опечатки.
-    Просто заменяет неправильные ключи на правильные, не перегенерируя JSON."""
+    """Нормализует ключи в данных, исправляя возможные опечатки."""
     normalized = {}
     key_mapping = {
+        "expertise": "expertiseChanges",
         "nicenId": "nicheId",
         "nid": "nicheId",
         "niche": "nicheId",
-        "id": "nicheId",
-        "expertise": "expertiseChanges"
+        "id": "nicheId"
     }
     
     for key, value in data.items():
@@ -277,6 +276,7 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             "23) НЕДОПУСТИМО генерировать JSON с неполным объектом в expertiseChanges\n\n"
             "24) НЕДОПУСТИМО генерировать JSON с ключом id, nicenId и тд, КЛЮЧ ОБЯЗАН НАЗЫВАТЬСЯ nicheId\n"
             "25) НЕДОПУСТИМО генерировать JSON с массивом expertiseChanges, в котором нет либо nicheId, либо change\n"
+            "26) КЛЮЧ ДОЛЖЕН НАЗЫВАТЬСЯ ТОЧНО expertiseChanges, НЕ expertise\n"
             "JSON:"
         ).format(niche_name=niche_name)
         
