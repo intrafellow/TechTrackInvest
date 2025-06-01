@@ -145,18 +145,21 @@ def _fix_enroll_price(data: dict) -> dict:
     return data
 
 def _normalize_keys(data: dict) -> dict:
-    """Нормализует ключи в данных, исправляя возможные опечатки."""
+    """Нормализует ключи в данных, исправляя возможные опечатки.
+    Просто заменяет неправильные ключи на правильные, не перегенерируя JSON."""
     normalized = {}
     key_mapping = {
         "nicenId": "nicheId",
         "nid": "nicheId",
         "niche": "nicheId",
+        "id": "nicheId",
         "expertise": "expertiseChanges"
     }
     
     for key, value in data.items():
         # Если ключ нужно заменить
         if key in key_mapping:
+            logger.info(f"Нормализация ключа в основном JSON: {key} -> {key_mapping[key]}")
             normalized[key_mapping[key]] = value
         else:
             normalized[key] = value
@@ -164,21 +167,52 @@ def _normalize_keys(data: dict) -> dict:
     return normalized
 
 def _normalize_expertise_keys(expertise_item: dict) -> dict:
-    """Нормализует ключи в объекте expertise."""
+    """Нормализует ключи в объекте expertise.
+    Просто заменяет неправильные ключи на правильные, не перегенерируя JSON."""
     normalized = {}
     key_mapping = {
         "nicenId": "nicheId",
         "nid": "nicheId",
-        "niche": "nicheId"
+        "niche": "nicheId",
+        "id": "nicheId"
     }
     
     for key, value in expertise_item.items():
         if key in key_mapping:
+            logger.info(f"Нормализация ключа в объекте expertise: {key} -> {key_mapping[key]}")
             normalized[key_mapping[key]] = value
         else:
             normalized[key] = value
             
     return normalized
+
+def _sort_json_keys(data: dict) -> dict:
+    """Сортирует ключи в JSON в нужном порядке."""
+    ordered_keys = [
+        "id",
+        "name",
+        "description",
+        "nicheId",
+        "enrollPrice",
+        "gainedReputation",
+        "expertiseChanges"
+    ]
+    
+    # Создаем новый словарь с отсортированными ключами
+    return {key: data[key] for key in ordered_keys if key in data}
+
+def _normalize_expertise_array(expertise_array: list) -> list:
+    """Нормализует ключи во всех объектах массива expertiseChanges.
+    Просто заменяет неправильные ключи на правильные, не перегенерируя JSON."""
+    normalized_array = []
+    for i, item in enumerate(expertise_array):
+        if isinstance(item, dict):
+            logger.info(f"Нормализация объекта {i} в массиве expertiseChanges")
+            normalized_item = _normalize_expertise_keys(item)
+            normalized_array.append(normalized_item)
+        else:
+            normalized_array.append(item)
+    return normalized_array
 
 def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile:
     """Генерирует технологическую конференцию.
@@ -307,7 +341,10 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
             ]
             
             # Нормализуем ключи в данных
+            logger.info("Начало нормализации ключей в основном JSON")
             data = _normalize_keys(data)
+            logger.info("JSON после нормализации ключей:")
+            logger.info(json.dumps(data, ensure_ascii=False, indent=2))
             
             missing_fields = [field for field in required_fields if field not in data]
             if missing_fields:
@@ -356,6 +393,12 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 logger.warning("Генерируем новый JSON...")
                 continue
                 
+            # Нормализуем ключи во всех объектах массива expertiseChanges
+            logger.info("Начало нормализации ключей в массиве expertiseChanges")
+            data["expertiseChanges"] = _normalize_expertise_array(data["expertiseChanges"])
+            logger.info("expertiseChanges после нормализации:")
+            logger.info(json.dumps(data["expertiseChanges"], ensure_ascii=False, indent=2))
+            
             expertise = data["expertiseChanges"]
             if len(expertise) != 1:
                 logger.warning("expertiseChanges должен содержать ровно один элемент")
@@ -371,11 +414,6 @@ def generate_conference(request: GenerateConferenceRequest) -> ConferenceProfile
                 logger.warning(json.dumps(data, ensure_ascii=False, indent=2))
                 logger.warning("Генерируем новый JSON...")
                 continue
-                
-            # Нормализуем ключи в объекте expertise
-            expertise_item = _normalize_expertise_keys(expertise_item)
-            expertise[0] = expertise_item
-            data["expertiseChanges"] = expertise
                 
             if "nicheId" not in expertise_item or "change" not in expertise_item:
                 logger.warning("элемент expertiseChanges должен содержать поля nicheId и change")
