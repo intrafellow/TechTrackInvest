@@ -518,3 +518,58 @@ def generate_conferences(request: GenerateConferencesRequest) -> list[Conference
         raise ValueError("Не удалось сгенерировать ни одного корректного профиля конференции")
         
     return results 
+
+def extract_json_from_response(response: str) -> dict | None:
+    """Извлекает JSON-блок из строки и удаляет висячие запятые."""
+    # Находим первый полный JSON-блок
+    start = response.find("{")
+    if start == -1:
+        return None
+        
+    # Ищем парную закрывающую скобку
+    stack = 1
+    pos = start + 1
+    while stack > 0 and pos < len(response):
+        if response[pos] == "{":
+            stack += 1
+        elif response[pos] == "}":
+            stack -= 1
+        pos += 1
+        
+    if stack != 0:
+        logger.error("Незавершенный JSON-блок")
+        return None
+        
+    json_str = response[start:pos]
+    
+    # Удаляем незавершенные поля (содержащие переносы строк)
+    json_str = re.sub(r',\s*"[^"]+"\s*:\s*"[^"]*$', '', json_str)
+    json_str = re.sub(r',\s*"[^"]+"\s*:\s*\{[^}]*$', '', json_str)
+    
+    # Удаляем запятые перед закрывающими скобками
+    cleaned_json = re.sub(r",(\s*[}\]])", r"\1", json_str)
+    
+    try:
+        data = json.loads(cleaned_json)
+        
+        # Преобразуем числовые идентификаторы ниш в текстовые названия
+        if "nicheId" in data:
+            niche_id = str(data["nicheId"])
+            if niche_id in NICHES:
+                data["nicheId"] = NICHES[niche_id]
+        
+        # Нормализуем ключи в основном объекте
+        data = _normalize_keys(data)
+        
+        # Нормализуем ключи в массиве expertiseChanges
+        if "expertiseChanges" in data and isinstance(data["expertiseChanges"], list):
+            for i, item in enumerate(data["expertiseChanges"]):
+                if isinstance(item, dict):
+                    data["expertiseChanges"][i] = _normalize_keys(item)
+        
+        return data
+    except json.JSONDecodeError as e:
+        logger.error(f"Ошибка парсинга JSON: {e}")
+        logger.error("Проблемный блок:")
+        logger.error(cleaned_json)
+        return None 
