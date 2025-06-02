@@ -573,10 +573,6 @@ const FirstMonthPage: React.FC = () => {
         localStorage.setItem('visitedEvents', JSON.stringify(updated));
         return updated;
       });
-
-      // Открываем диалог статистики
-      setStatsTab('expertise');
-      setStatsDialogOpen(true);
     } catch (error) {
       console.error('Ошибка при получении данных экспертизы:', error);
     }
