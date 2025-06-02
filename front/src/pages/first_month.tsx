@@ -541,6 +541,7 @@ const FirstMonthPage: React.FC = () => {
     try {
       // Получаем текущие данные экспертизы из API
       const expertiseData = await userAPI.getExpertise();
+      const reputationData = await userAPI.getReputation();
       
       // Сохраняем текущие значения как предыдущие
       setPrevStats({
@@ -552,7 +553,8 @@ const FirstMonthPage: React.FC = () => {
       setUserStats((prev: any) => {
         const updated = {
           ...prev,
-          expertise: { ...prev.expertise }
+          expertise: { ...prev.expertise },
+          reputation: reputationData.reputation
         };
         
         // Добавляем изменения экспертизы из API к текущим значениям
@@ -571,6 +573,10 @@ const FirstMonthPage: React.FC = () => {
         localStorage.setItem('visitedEvents', JSON.stringify(updated));
         return updated;
       });
+
+      // Открываем диалог статистики
+      setStatsTab('expertise');
+      setStatsDialogOpen(true);
     } catch (error) {
       console.error('Ошибка при получении данных экспертизы:', error);
     }
