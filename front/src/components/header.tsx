@@ -226,10 +226,10 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
   useEffect(() => {
     const handleBalanceUpdate = (event: CustomEvent) => {
       const { cash, total, investment } = event.detail;
-      // Сохраняем текущие значения как предыдущие
-      setPreviousStatsData(statsData);
-      
-      // Обновляем текущие данные
+      setPreviousStatsData(prev => ({
+        ...prev,
+        money: statsData.money
+      }));
       setStatsData(prev => ({
         ...prev,
         money: {
@@ -242,6 +242,11 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
 
     const handleStatsUpdate = (event: CustomEvent) => {
       const { reputation, expertise } = event.detail;
+      setPreviousStatsData(prev => ({
+        ...prev,
+        reputation: statsData.reputation,
+        expertise: statsData.expertise
+      }));
       setStatsData(prev => ({
         ...prev,
         reputation: prev.reputation + (reputation || 0),
@@ -329,10 +334,6 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
   }, [previousStatsData]);
 
   const handleStatClick = (type: string) => {
-    setPreviousStatsData(prev => ({
-      ...prev,
-      [type]: (type === 'money' ? statsData.money : type === 'reputation' ? statsData.reputation : statsData.expertise)
-    }));
     setDialogOpen(prev => ({ ...prev, [type]: true }));
   };
   const handleDialogClose = (type: string) => {
