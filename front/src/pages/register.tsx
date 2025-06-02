@@ -117,7 +117,11 @@ const RegisterPage: React.FC = () => {
         }, 2000);
       } catch (error: any) {
         if (error.response?.status === 409) {
-          setErrors({ username: 'Пользователь с таким email уже зарегистрирован.' });
+          if (error.response.data?.message?.includes('email')) {
+            setErrors({ email: 'Пользователь с таким email уже зарегистрирован.' });
+          } else {
+            setErrors({ username: 'Пользователь с таким ником уже существует.' });
+          }
         } else if (error.response?.status === 500) {
           setErrors({ username: 'Ошибка сервера. Попробуйте позже.' });
         } else if (error.response?.data?.message) {

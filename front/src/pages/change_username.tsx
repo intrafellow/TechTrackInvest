@@ -46,7 +46,9 @@ const ChangeUsernamePage: React.FC = () => {
       setSuccess(true);
       setTimeout(() => navigate('/profile'), 2000);
     } catch (error: any) {
-      if (error.response?.data?.message) {
+      if (error.response?.status === 409) {
+        setErrors({ username: 'Пользователь с таким ником уже существует' });
+      } else if (error.response?.data?.message) {
         setErrors({ username: error.response.data.message });
       } else {
         setErrors({ username: error.message });
