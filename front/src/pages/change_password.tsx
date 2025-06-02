@@ -28,7 +28,12 @@ const ChangePasswordPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const isPasswordValid = (value: string) => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value);
+  const isPasswordValid = (value: string) => {
+    const hasLowerCase = /[a-z]/.test(value);
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    return value.length >= 6 && hasLowerCase && hasUpperCase && hasNumber;
+  };
 
   const handleChange = (field: string, value: string) => {
     if (field === 'newPassword') setNewPassword(value);
@@ -47,7 +52,7 @@ const ChangePasswordPage: React.FC = () => {
 
     try {
       if (!newPassword) throw new Error('Введите новый пароль.');
-      if (!isPasswordValid(newPassword)) throw new Error('Пароль должен содержать минимум 8 символов, включая буквы и цифры.');
+      if (!isPasswordValid(newPassword)) throw new Error('Пароль должен содержать минимум 6 символов, включая заглавные и строчные буквы, цифры.');
       if (newPassword !== confirmPassword) throw new Error('Пароли не совпадают.');
       
       await userAPI.updatePassword(newPassword);
@@ -92,7 +97,17 @@ const ChangePasswordPage: React.FC = () => {
     '&.Mui-focused': { color: '#000000' },
     '@media (min-width:900px) and (max-width:1025px)': {
       fontSize: '1.7vh',
-      height: '5.8vh'
+      height: '5.8vh',
+      '& .MuiInputBase-input::placeholder': {
+        fontSize: '1.2vh'
+      }
+    },
+    '& .MuiInputBase-input::placeholder': {
+      fontSize: '1.4vh',
+      opacity: 0.7,
+      '@media (max-width: 600px)': {
+        fontSize: '1.2vh'
+      }
     }
   };
 
@@ -179,6 +194,7 @@ const ChangePasswordPage: React.FC = () => {
               type={showNewPassword ? 'text' : 'password'}
               value={newPassword}
               onChange={(e) => handleChange('newPassword', e.target.value)}
+              placeholder="Минимум 6 символов, включая заглавные и строчные буквы, цифры"
               sx={commonInputStyle}
               endAdornment={
                 <InputAdornment position="end">
@@ -200,6 +216,7 @@ const ChangePasswordPage: React.FC = () => {
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => handleChange('confirmPassword', e.target.value)}
+              placeholder="Повторите новый пароль"
               sx={commonInputStyle}
               endAdornment={
                 <InputAdornment position="end">

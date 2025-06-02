@@ -129,6 +129,7 @@ const ResetPasswordPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={form.newPassword}
                   onChange={(e) => handleChange('newPassword', e.target.value)}
+                  placeholder="Минимум 6 символов, включая заглавные и строчные буквы, цифры"
                   endAdornment={<InputAdornment position="end"><IconButton onClick={togglePasswordVisibility} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>}
                   sx={commonInputStyle}
                 />
@@ -140,6 +141,7 @@ const ResetPasswordPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={form.confirmPassword}
                   onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                  placeholder="Повторите новый пароль"
                   endAdornment={<InputAdornment position="end"><IconButton onClick={togglePasswordVisibility} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>}
                   sx={commonInputStyle}
                 />

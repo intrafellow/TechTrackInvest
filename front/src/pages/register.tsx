@@ -152,7 +152,21 @@ const RegisterPage: React.FC = () => {
     '& .MuiOutlinedInput-notchedOutline': { borderColor: '#000' },
     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#000' },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#000' },
-    '&.Mui-focused': { color: '#000' }
+    '&.Mui-focused': { color: '#000' },
+    '@media (min-width:900px) and (max-width:1025px)': {
+      fontSize: '1.7vh',
+      height: '5.8vh',
+      '& .MuiInputBase-input::placeholder': {
+        fontSize: '1.2vh'
+      }
+    },
+    '& .MuiInputBase-input::placeholder': {
+      fontSize: '1.4vh',
+      opacity: 0.7,
+      '@media (max-width: 600px)': {
+        fontSize: '1.2vh'
+      }
+    }
   };
 
   const errorStyle = { color: '#B00020', fontWeight: 500 };
@@ -246,6 +260,7 @@ const RegisterPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => handleChange('password', e.target.value)}
+                  placeholder="Минимум 6 символов, включая заглавные и строчные буквы, цифры"
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton onClick={togglePasswordVisibility} edge="end">
@@ -264,6 +279,7 @@ const RegisterPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                  placeholder="Повторите пароль"
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton onClick={togglePasswordVisibility} edge="end">
