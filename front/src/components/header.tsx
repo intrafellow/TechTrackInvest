@@ -241,14 +241,20 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     };
 
     const handleStatsUpdate = (event: CustomEvent) => {
-      const { reputation, expertise, stepsLeft } = event.detail;
-      // Создаём новый объект экспертности для корректной перерисовки
+      const { reputation, expertise } = event.detail;
       setStatsData(prev => ({
         ...prev,
-        expertise: { ...expertise },
-        reputation: reputation,
+        reputation: prev.reputation + (reputation || 0),
+        expertise: {
+          ...prev.expertise,
+          ...Object.fromEntries(
+            Object.entries(expertise || {}).map(([key, value]) => [
+              key,
+              (prev.expertise[key] || 0) + Number(value)
+            ])
+          )
+        }
       }));
-      // ... остальной код (если есть)
     };
 
     // Функция для получения названия ниши по ID
