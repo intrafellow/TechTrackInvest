@@ -31,13 +31,16 @@ const RegisterPage: React.FC = () => {
   const isUsernameValid = (value: string) => /^[a-zA-Z0-9]+$/.test(value);
 
   const isFormValid = () => {
-    return (
-      email.trim() &&
-      username.trim() &&
-      password.trim() &&
-      confirmPassword.trim() &&
-      Object.keys(errors).length === 0
-    );
+    if (!email.trim() || !username.trim() || !password.trim() || !confirmPassword.trim()) {
+      return false;
+    }
+    if (Object.keys(errors).length > 0) {
+      return false;
+    }
+    if (password !== confirmPassword) {
+      return false;
+    }
+    return true;
   };
 
   const handleChange = (field: string, value: string) => {
@@ -54,6 +57,27 @@ const RegisterPage: React.FC = () => {
       return updated;
     });
     setSuccess(false);
+
+    // Проверка паролей в реальном времени
+    if (field === 'password' || field === 'confirmPassword') {
+      if (field === 'password' && confirmPassword && value !== confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Пароли не совпадают' }));
+      } else if (field === 'confirmPassword' && password && value !== password) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Пароли не совпадают' }));
+      } else if (field === 'password' && confirmPassword && value === confirmPassword) {
+        setErrors(prev => {
+          const updated = { ...prev };
+          delete updated.confirmPassword;
+          return updated;
+        });
+      } else if (field === 'confirmPassword' && password && value === password) {
+        setErrors(prev => {
+          const updated = { ...prev };
+          delete updated.confirmPassword;
+          return updated;
+        });
+      }
+    }
   };
 
   const handleSendToken = async () => {

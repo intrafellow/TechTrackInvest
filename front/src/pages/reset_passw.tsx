@@ -34,6 +34,27 @@ const ResetPasswordPage: React.FC = () => {
       return updated;
     });
     setSuccess(false);
+
+    // Проверка паролей в реальном времени
+    if (field === 'newPassword' || field === 'confirmPassword') {
+      if (field === 'newPassword' && form.confirmPassword && value !== form.confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Пароли не совпадают' }));
+      } else if (field === 'confirmPassword' && form.newPassword && value !== form.newPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Пароли не совпадают' }));
+      } else if (field === 'newPassword' && form.confirmPassword && value === form.confirmPassword) {
+        setErrors(prev => {
+          const updated = { ...prev };
+          delete updated.confirmPassword;
+          return updated;
+        });
+      } else if (field === 'confirmPassword' && form.newPassword && value === form.newPassword) {
+        setErrors(prev => {
+          const updated = { ...prev };
+          delete updated.confirmPassword;
+          return updated;
+        });
+      }
+    }
   };
 
   const handleNextStep = async () => {

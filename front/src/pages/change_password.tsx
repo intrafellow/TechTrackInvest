@@ -44,6 +44,27 @@ const ChangePasswordPage: React.FC = () => {
       return updated;
     });
     setSuccess(false);
+
+    // Проверка паролей в реальном времени
+    if (field === 'newPassword' || field === 'confirmPassword') {
+      if (field === 'newPassword' && confirmPassword && value !== confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Пароли не совпадают' }));
+      } else if (field === 'confirmPassword' && newPassword && value !== newPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Пароли не совпадают' }));
+      } else if (field === 'newPassword' && confirmPassword && value === confirmPassword) {
+        setErrors(prev => {
+          const updated = { ...prev };
+          delete updated.confirmPassword;
+          return updated;
+        });
+      } else if (field === 'confirmPassword' && newPassword && value === newPassword) {
+        setErrors(prev => {
+          const updated = { ...prev };
+          delete updated.confirmPassword;
+          return updated;
+        });
+      }
+    }
   };
 
   const handleSubmit = async () => {
