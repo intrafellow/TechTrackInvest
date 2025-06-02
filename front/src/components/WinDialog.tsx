@@ -7,6 +7,7 @@ import {
   Divider
 } from '@mui/material';
 import { sendYMGoal } from '../utils/metrics';
+import { useNavigate } from 'react-router-dom';
 
 interface WinDialogProps {
   open: boolean;
@@ -21,9 +22,12 @@ const WinDialog: React.FC<WinDialogProps> = ({
   gameResultMessage,
   totalEarnings
 }) => {
+  const navigate = useNavigate();
+
   const handleClose = () => {
     sendYMGoal('reachGoal','gameWin');
     onClose();
+    navigate('/profile');
   };
 
   return (

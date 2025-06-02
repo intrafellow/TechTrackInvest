@@ -7,6 +7,7 @@ import {
   Divider
 } from '@mui/material';
 import { sendYMGoal } from '../utils/metrics';
+import { useNavigate } from 'react-router-dom';
 
 interface LoseDialogProps {
   open: boolean;
@@ -19,9 +20,12 @@ const LoseDialog: React.FC<LoseDialogProps> = ({
   onClose,
   gameResultMessage
 }) => {
+  const navigate = useNavigate();
+
   const handleClose = () => {
     sendYMGoal('reachGoal','gameLose');
     onClose();
+    navigate('/profile');
   };
 
   return (
