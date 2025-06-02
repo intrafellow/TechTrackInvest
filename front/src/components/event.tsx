@@ -14,6 +14,7 @@ import {
   Divider
 } from '@mui/material';
 import { conferenceAPI, userAPI, sessionAPI } from '../api/apiClient';
+import { trackEventVisit } from '../utils/metrics';
 
 interface Event {
   id: number;
@@ -136,6 +137,7 @@ const EventCard: React.FC<{ event: Event; onVisit?: (eventId: number) => void; v
         setSuccess(true);
         setDialogOpen(false);
         onVisit?.(event.id);
+        trackEventVisit(event.id.toString());
         
         // Обновляем данные события из ответа API
         setCurrentEvent(prev => ({

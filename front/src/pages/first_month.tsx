@@ -12,6 +12,7 @@ import EndTurnDialog from '../components/end_turn_dialog';
 import CrisisDialog from '../components/crisis_dialog';
 import StatsDialog from '../components/stats_dialog';
 import TutorialDialog from '../components/TutorialDialog';
+import { trackExpertiseOrder, trackEventVisit } from '../utils/metrics';
 
 const NICHE_MAP: { [key: string]: { id: string; name: string } } = {
   'IT': { id: 'IT', name: 'IT' },
@@ -469,8 +470,9 @@ const FirstMonthPage: React.FC = () => {
 
   const handleTypeChange = (type: 'startups' | 'events') => {
     setContentType(type);
-    // Сбрасываем фильтр при смене типа
-    setSelected('');
+    if (type === 'events') {
+      trackEventVisit('menu_click');
+    }
   };
 
   const handleChange = (event: any) => {
@@ -536,46 +538,10 @@ const FirstMonthPage: React.FC = () => {
   };
 
   const handleVisitEvent = async (eventId: number) => {
-    const event = (events.length > 0 ? events : demoEvents).find((e: Event) => e.id === eventId);
-    if (!event) return;
-    
-    try {
-      // Получаем текущие данные экспертизы из API
-      const expertiseData = await userAPI.getExpertise();
-      const reputationData = await userAPI.getReputation();
-      
-      // Сохраняем текущие значения как предыдущие
-      setPrevStats({
-        ...userStats,
-        expertise: { ...userStats.expertise }
-      });
-      
-      // Обновляем статистику, добавляя изменения к текущим значениям
-      setUserStats((prev: any) => {
-        const updated = {
-          ...prev,
-          expertise: { ...prev.expertise },
-          reputation: reputationData.reputation
-        };
-        
-        // Добавляем изменения экспертизы из API к текущим значениям
-        if (expertiseData.map) {
-          Object.entries(expertiseData.map).forEach(([nicheId, value]) => {
-            updated.expertise[nicheId] = (updated.expertise[nicheId] || 0) + (value as number);
-          });
-        }
-        
-        localStorage.setItem('userStats', JSON.stringify(updated));
-        return updated;
-      });
-      
-      setVisitedEvents((prev: number[]) => {
-        const updated = [...prev, eventId];
-        localStorage.setItem('visitedEvents', JSON.stringify(updated));
-        return updated;
-      });
-    } catch (error) {
-      console.error('Ошибка при получении данных экспертизы:', error);
+    if (!visitedEvents.includes(eventId)) {
+      setVisitedEvents(prev => [...prev, eventId]);
+      localStorage.setItem('visitedEvents', JSON.stringify([...visitedEvents, eventId]));
+      trackEventVisit(eventId.toString());
     }
   };
 

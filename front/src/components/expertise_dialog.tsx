@@ -8,6 +8,7 @@ import {
   Button,
   Box
 } from '@mui/material';
+import { trackExpertiseOrder } from '../utils/metrics';
 
 interface StartupExpertise {
   name: string;
@@ -45,10 +46,22 @@ const ExpertiseDialog: React.FC<ExpertiseDialogProps> = ({
   expertiseData,
   startupPrice
 }) => {
+  const handleOrder = () => {
+    trackExpertiseOrder();
+    onOrder();
+  };
+
+  const handleClose = () => {
+    if (!ordered) {
+      trackExpertiseOrder('dialog_close');
+    }
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -91,7 +104,7 @@ const ExpertiseDialog: React.FC<ExpertiseDialogProps> = ({
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
               <Button
                 variant="contained"
-                onClick={onOrder}
+                onClick={handleOrder}
                 disabled={loading || !startupPrice}
                 sx={{
                   backgroundColor: '#E8DEF8',

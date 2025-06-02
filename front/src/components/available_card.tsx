@@ -7,6 +7,7 @@ import space from '../icons/Space.png';
 import { startupsAPI, contractAPI, monthAPI } from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
 import ExpertiseDialog from './expertise_dialog';
+import { trackStartupPurchase } from '../utils/metrics';
 
 const NICHE_MAP: { [key: string]: { id: string; name: string; icon: string } } = {
   'IT': { id: 'IT', name: 'IT', icon: it },
@@ -106,6 +107,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
       onDealStart();
       try {
         const contractData = await contractAPI.getContract(resourceId);
+        trackStartupPurchase(startupId);
         // Обновляем очки действий после начала сделки
         try {
           const stepCountData = await monthAPI.getStepCount();
@@ -115,6 +117,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({
       } catch (apiError) {
         // Если API недоступен, используем демо-режим
         console.log('API недоступен, используем демо-режим');
+        trackStartupPurchase(startupId);
         navigate(`/deal/${startupId}`, { 
           state: { 
             isDemo: true,

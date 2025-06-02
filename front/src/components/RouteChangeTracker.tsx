@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { trackPageTime } from '../utils/metrics';
 
 declare global {
   interface Window {
@@ -19,6 +20,11 @@ const RouteChangeTracker: React.FC<RouteChangeTrackerProps> = ({ ymId }) => {
       window.ym(ymId, 'hit', location.pathname + location.search);
     }
   }, [location, ymId]);
+
+  useEffect(() => {
+    const trackTime = trackPageTime();
+    return () => trackTime();
+  }, [location.pathname]);
 
   return null;
 };

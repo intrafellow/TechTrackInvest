@@ -3,6 +3,7 @@ import { Box, Typography, Button } from '@mui/material';
 import mic from '../icons/mic.png';
 import start from '../icons/start.png';
 import time from '../icons/time.png';
+import { trackEventVisit } from '../utils/metrics';
 
 const navItems = [
   { label: 'Стартапы', icon: start },
@@ -39,6 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onTypeChange, onEndTurn, disabled = f
       onTypeChange('startups');
     } else if (label === 'Мероприятия') {
       onTypeChange('events');
+      trackEventVisit('menu_click');
     }
   };
 
