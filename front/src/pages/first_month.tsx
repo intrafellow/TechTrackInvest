@@ -482,42 +482,47 @@ const FirstMonthPage: React.FC = () => {
     try {
       const response = await crisisAPI.submitSolution(solutionId);
       if (response.success) {
-        // После успешного решения кризиса получаем актуальные данные пользователя
-        const [moneyData, reputationData, expertiseData] = await Promise.all([
-          userAPI.getMoney(),
-          userAPI.getReputation(),
-          userAPI.getExpertise()
-        ]);
-
-        // Обновляем userStats реальными значениями
-        setUserStats((prev: UserStats) => ({
-          ...prev,
-          money: moneyData || { cash: 0, investment: 0, total: 0 },
-          reputation: reputationData.reputation,
-          expertise: expertiseData.map || {}
-        }));
-
+        // Находим выбранное решение и userEffect
+        const selectedSolution = currentCrisis?.possibleSolutions.find((s: CrisisSolution) => s.id === solutionId);
+        const userEffect = response.userEffect || selectedSolution?.effect || {};
+        // Сохраняем previousData до применения изменений
+        setPrevStats({ ...userStats, expertise: { ...userStats.expertise } });
+        // Применяем только дельты userEffect
+        setUserStats((prev: UserStats) => {
+          // Экспертность
+          let newExpertise = { ...prev.expertise };
+          if (userEffect.expertise && Array.isArray(userEffect.expertise)) {
+            userEffect.expertise.forEach((e: any) => {
+              const key = e.nicheId || e.niche || e.name;
+              if (key) newExpertise[key] = (newExpertise[key] || 0) + (e.change || 0);
+            });
+          }
+          // Репутация
+          let newReputation = prev.reputation;
+          if (userEffect.reputationChange !== undefined) {
+            newReputation += userEffect.reputationChange;
+          } else if (userEffect.reputationDelta !== undefined) {
+            newReputation += userEffect.reputationDelta;
+          }
+          // Финансы (оставляем как есть, если нужно — аналогично)
+          return {
+            ...prev,
+            expertise: newExpertise,
+            reputation: newReputation
+          };
+        });
         // Синхронизируем previousStatsData со statsData после решения кризиса
         window.dispatchEvent(new CustomEvent('syncPreviousStats'));
-
         // Обновляем очки действий из ответа API
         setStepCount(response.steps);
         window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
           detail: { stepsLeft: response.steps } 
         }));
-
-        // Отправляем события для обновления хедера с реальными значениями
-        window.dispatchEvent(new CustomEvent('balanceUpdate', { 
-          detail: { 
-            cash: moneyData.cash,
-            investment: moneyData.investment,
-            total: moneyData.total
-          }
-        }));
+        // Отправляем события для обновления хедера
         window.dispatchEvent(new CustomEvent('statsUpdate', { 
           detail: { 
-            reputation: reputationData.reputation,
-            expertise: expertiseData.map || {},
+            reputation: userEffect.reputationChange || userEffect.reputationDelta || 0,
+            expertise: (userEffect.expertise || []).reduce((acc: any, e: any) => { acc[e.nicheId || e.niche || e.name] = e.change; return acc; }, {}),
             stepsLeft: response.steps
           }
         }));
