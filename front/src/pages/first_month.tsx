@@ -518,17 +518,12 @@ const FirstMonthPage: React.FC = () => {
         });
         window.dispatchEvent(new CustomEvent('syncPreviousStats'));
         setStepCount(response.steps);
-        window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
-          detail: { stepsLeft: response.steps } 
-        }));
-        setPendingCrisisStatsUpdate(true);
+        
+        // Обновляем страницу после решения кризиса
+        window.location.reload();
       }
-    } catch (error: unknown) {
-      console.error('Ошибка при отправке решения:', error);
-    } finally {
-      setCurrentCrisis(null);
-      setCrisisDialogOpen(false);
-      setHasCrisisThisMonth(false);
+    } catch (error) {
+      console.error('Error submitting crisis solution:', error);
     }
   };
 

@@ -189,6 +189,14 @@ const BoughtCard: React.FC<BoughtCardProps> = ({
       if (!result.success) {
         throw new Error(result.errorMessage || 'Ошибка при продаже стартапа');
       }
+
+      // Обновляем баланс после продажи
+      try {
+        const balanceData = await userAPI.getMoney();
+        window.dispatchEvent(new CustomEvent('balanceUpdate', { detail: balanceData }));
+      } catch (err) {
+        console.error('Ошибка при обновлении баланса:', err);
+      }
       
       // Закрываем оба диалога
       setIsSellDialogOpen(false);
