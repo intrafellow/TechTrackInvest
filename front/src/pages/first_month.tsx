@@ -215,6 +215,7 @@ const FirstMonthPage: React.FC = () => {
   const [pendingStatsDialog, setPendingStatsDialog] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [pendingCrisisStatsUpdate, setPendingCrisisStatsUpdate] = useState(false);
+  const [crisisStatsJustUpdated, setCrisisStatsJustUpdated] = useState(false);
 
   // Загружаем месяц и stepCount при монтировании
   useEffect(() => {
@@ -671,28 +672,36 @@ const FirstMonthPage: React.FC = () => {
             expertise: expertiseData.map || {},
             reputation: reputationData.reputation
           });
+          setCrisisStatsJustUpdated(true);
         } catch (e) {
           // Можно обработать ошибку
         }
-        window.dispatchEvent(new CustomEvent('balanceUpdate', { 
-          detail: { 
-            cash: userStats.money.cash,
-            investment: userStats.money.investment,
-            total: userStats.money.total
-          }
-        }));
-        window.dispatchEvent(new CustomEvent('statsUpdate', { 
-          detail: { 
-            reputation: userStats.reputation,
-            expertise: userStats.expertise,
-            stepsLeft: stepCount
-          }
-        }));
         setPendingCrisisStatsUpdate(false);
       };
       fetchActualStats();
     }
-  }, [pendingCrisisStatsUpdate, stepCount]);
+  }, [pendingCrisisStatsUpdate]);
+
+  // useEffect для отправки событий только после того, как userStats обновился после кризиса
+  useEffect(() => {
+    if (crisisStatsJustUpdated) {
+      window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+        detail: { 
+          cash: userStats.money.cash,
+          investment: userStats.money.investment,
+          total: userStats.money.total
+        }
+      }));
+      window.dispatchEvent(new CustomEvent('statsUpdate', { 
+        detail: { 
+          reputation: userStats.reputation,
+          expertise: userStats.expertise,
+          stepsLeft: stepCount
+        }
+      }));
+      setCrisisStatsJustUpdated(false);
+    }
+  }, [userStats, crisisStatsJustUpdated, stepCount]);
 
   useEffect(() => {
     localStorage.setItem('userStats', JSON.stringify(userStats));
