@@ -95,11 +95,7 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
         return (
           <>
             {Object.entries(data.expertise).map(([nicheId, value]) => {
-              const previousValue = previousData?.expertise?.[nicheId];
-              const trendIcon = getTrendIcon(value, previousValue);
-              const tooltipText = getTooltipText(value, previousValue);
               const nicheName = getNicheName(nicheId);
-              
               return (
                 <Box key={nicheId} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                   <Typography
@@ -112,11 +108,6 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
                   >
                     Рейтинг вашей экспертности в {nicheName}: {value}
                   </Typography>
-                  {trendIcon && tooltipText && (
-                    <Tooltip title={tooltipText}>
-                      <span>{trendIcon}</span>
-                    </Tooltip>
-                  )}
                 </Box>
               );
             })}
@@ -198,11 +189,6 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
               >
                 Рейтинг вашей репутации: {data.reputation}
               </Typography>
-              {getTrendIcon(data.reputation, previousData?.reputation) && (
-                <Tooltip title={getTooltipText(data.reputation, previousData?.reputation)}>
-                  <span>{getTrendIcon(data.reputation, previousData?.reputation)}</span>
-                </Tooltip>
-              )}
             </Box>
           </>
         );
