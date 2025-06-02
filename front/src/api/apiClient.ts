@@ -180,7 +180,7 @@ export const startupsAPI = {
   },
 
   generate: async () => {
-    const response = await apiClient.post('/generator/startups');
+    const response = await apiClient.post('/api/v1/generator/startups');
     return response.data;
   }
 };
@@ -217,7 +217,7 @@ export const conferenceAPI = {
   },
 
   generate: async () => {
-    const response = await apiClient.post('/generator/conferences');
+    const response = await apiClient.post('/api/v1/generator/conferences');
     return response.data;
   }
 };
