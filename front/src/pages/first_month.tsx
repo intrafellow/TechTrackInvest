@@ -486,36 +486,48 @@ const FirstMonthPage: React.FC = () => {
         const selectedSolution = currentCrisis?.possibleSolutions.find((s: CrisisSolution) => s.id === solutionId);
         // userEffect может быть массивом или объектом
         const userEffects = Array.isArray(response.userEffect) ? response.userEffect : [response.userEffect || selectedSolution?.effect || {}];
+        
+        // Формируем дельты для событий
+        let expertiseDelta: any = {};
+        let reputationDelta = 0;
+        let moneyDelta = 0;
+        
+        userEffects.forEach((effect: any) => {
+          // Экспертность по нишам
+          if (effect.expertise && Array.isArray(effect.expertise)) {
+            effect.expertise.forEach((e: any) => {
+              const key = e.nicheId;
+              if (key) expertiseDelta[key] = (expertiseDelta[key] || 0) + (e.change || 0);
+            });
+          }
+          // Репутация
+          if (effect.reputationChange !== undefined) {
+            reputationDelta += effect.reputationChange;
+          }
+          // Финансы
+          if (effect.moneyChange !== undefined) {
+            moneyDelta += effect.moneyChange;
+          }
+        });
+
         // Сохраняем previousData до применения изменений
         setPrevStats({ ...userStats, expertise: { ...userStats.expertise } });
+        
         // Применяем все дельты userEffect
         setUserStats((prev: UserStats) => {
           let newExpertise = { ...prev.expertise };
-          let newReputation = prev.reputation;
-          let newMoney = { ...prev.money };
-          userEffects.forEach((effect: any) => {
-            // Экспертность по нишам
-            if (effect.expertise && Array.isArray(effect.expertise)) {
-              effect.expertise.forEach((e: any) => {
-                const key = e.nicheId || e.niche || e.name;
-                if (key) newExpertise[key] = (newExpertise[key] || 0) + (e.change || 0);
-              });
-            }
-            // Репутация
-            if (effect.reputationChange !== undefined) {
-              newReputation += effect.reputationChange;
-            } else if (effect.reputationDelta !== undefined) {
-              newReputation += effect.reputationDelta;
-            }
-            // Финансы
-            if (effect.moneyChange !== undefined) {
-              newMoney.cash = (newMoney.cash || 0) + effect.moneyChange;
-              newMoney.total = (newMoney.total || 0) + effect.moneyChange;
-            } else if (effect.priceDelta !== undefined) {
-              newMoney.cash = (newMoney.cash || 0) + effect.priceDelta;
-              newMoney.total = (newMoney.total || 0) + effect.priceDelta;
-            }
+          let newReputation = prev.reputation + reputationDelta;
+          let newMoney = { 
+            ...prev.money,
+            cash: (prev.money.cash || 0) + moneyDelta,
+            total: (prev.money.total || 0) + moneyDelta
+          };
+
+          // Применяем изменения экспертизы
+          Object.entries(expertiseDelta).forEach(([key, value]) => {
+            newExpertise[key] = (newExpertise[key] || 0) + (value as number);
           });
+
           return {
             ...prev,
             expertise: newExpertise,
@@ -523,44 +535,36 @@ const FirstMonthPage: React.FC = () => {
             money: newMoney
           };
         });
+
         // Синхронизируем previousStatsData со statsData после решения кризиса
         window.dispatchEvent(new CustomEvent('syncPreviousStats'));
+        
         // Обновляем очки действий из ответа API
         setStepCount(response.steps);
         window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
           detail: { stepsLeft: response.steps } 
         }));
-        // Формируем дельты для событий
-        let expertiseDelta: any = {};
-        let reputationDelta = 0;
-        let moneyDelta = 0;
-        userEffects.forEach((effect: any) => {
-          if (effect.expertise && Array.isArray(effect.expertise)) {
-            effect.expertise.forEach((e: any) => {
-              const key = e.nicheId || e.niche || e.name;
-              if (key) expertiseDelta[key] = (expertiseDelta[key] || 0) + (e.change || 0);
-            });
-          }
-          if (effect.reputationChange !== undefined) reputationDelta += effect.reputationChange;
-          else if (effect.reputationDelta !== undefined) reputationDelta += effect.reputationDelta;
-          if (effect.moneyChange !== undefined) moneyDelta += effect.moneyChange;
-          else if (effect.priceDelta !== undefined) moneyDelta += effect.priceDelta;
+
+        // Отправляем события для обновления стрелок с актуальными значениями
+        setUserStats((prev: UserStats) => {
+          window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+            detail: { 
+              cash: prev.money.cash,
+              investment: prev.money.investment,
+              total: prev.money.total
+            }
+          }));
+          
+          window.dispatchEvent(new CustomEvent('statsUpdate', { 
+            detail: { 
+              reputation: prev.reputation,
+              expertise: prev.expertise,
+              stepsLeft: response.steps
+            }
+          }));
+          
+          return prev;
         });
-        // Отправляем события для обновления стрелок
-        window.dispatchEvent(new CustomEvent('balanceUpdate', { 
-          detail: { 
-            cash: userStats.money.cash + moneyDelta,
-            investment: userStats.money.investment,
-            total: userStats.money.total + moneyDelta
-          }
-        }));
-        window.dispatchEvent(new CustomEvent('statsUpdate', { 
-          detail: { 
-            reputation: reputationDelta,
-            expertise: expertiseDelta,
-            stepsLeft: response.steps
-          }
-        }));
       }
     } catch (error: unknown) {
       console.error('Ошибка при отправке решения:', error);
