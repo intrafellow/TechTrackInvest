@@ -177,6 +177,11 @@ export const startupsAPI = {
   getExpertiseInfo: async (resourceId: string) => {
     const response = await apiClient.get(`/api/v1/startups/${resourceId}/expertise/`);
     return response.data;
+  },
+
+  generate: async () => {
+    const response = await apiClient.post('/generator/startups');
+    return response.data;
   }
 };
 
@@ -208,6 +213,11 @@ export const conferenceAPI = {
 
   getConferenceStats: async (conferenceId: number) => {
     const response = await apiClient.get(`/api/v1/conference/${conferenceId}/stats`);
+    return response.data;
+  },
+
+  generate: async () => {
+    const response = await apiClient.post('/generator/conferences');
     return response.data;
   }
 };
