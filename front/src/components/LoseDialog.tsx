@@ -23,7 +23,7 @@ const LoseDialog: React.FC<LoseDialogProps> = ({
   const navigate = useNavigate();
 
   const handleClose = () => {
-    sendYMGoal('reachGoal','gameLose');
+    sendYMGoal('gameLose');
     onClose();
     navigate('/profile');
   };

@@ -58,7 +58,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      sendYMGoal('reachGoal','loginIntoAccount');
+      sendYMGoal('loginIntoAccount');
       const response = await authAPI.login(email, password);
       localStorage.setItem('token', response.token);
       setSuccess(true);

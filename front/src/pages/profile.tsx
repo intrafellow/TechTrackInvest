@@ -59,7 +59,7 @@ const ProfilePage: React.FC = () => {
 
   const handleStartNewGame = async () => {
     try {
-      sendYMGoal('reachGoal','StartGameClick');
+      sendYMGoal('StartGameClick');
       await sessionAPI.start();
       navigate('/game_field');
     } catch (error) {
@@ -70,7 +70,7 @@ const ProfilePage: React.FC = () => {
 
   const handleContinueGame = async () => {
     try {
-      sendYMGoal('reachGoal','loadGame');
+      sendYMGoal('loadGame');
       await sessionAPI.load();
       navigate('/game_field');
     } catch (error) {

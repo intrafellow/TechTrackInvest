@@ -25,7 +25,7 @@ const WinDialog: React.FC<WinDialogProps> = ({
   const navigate = useNavigate();
 
   const handleClose = () => {
-    sendYMGoal('reachGoal','gameWin');
+    sendYMGoal('gameWin');
     onClose();
     navigate('/profile');
   };

@@ -132,7 +132,7 @@ const RegisterPage: React.FC = () => {
       setErrors(newErrors);
     } else {
       try {
-        sendYMGoal('reachGoal','registerNewAccount');
+        sendYMGoal('registerNewAccount');
         const regRes = await authAPI.register(email, username, password);
         localStorage.setItem('token', regRes.token);
         setSuccess(true);
