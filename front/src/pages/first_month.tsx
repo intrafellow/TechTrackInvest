@@ -484,31 +484,43 @@ const FirstMonthPage: React.FC = () => {
       if (response.success) {
         // Находим выбранное решение и userEffect
         const selectedSolution = currentCrisis?.possibleSolutions.find((s: CrisisSolution) => s.id === solutionId);
-        const userEffect = response.userEffect || selectedSolution?.effect || {};
+        // userEffect может быть массивом или объектом
+        const userEffects = Array.isArray(response.userEffect) ? response.userEffect : [response.userEffect || selectedSolution?.effect || {}];
         // Сохраняем previousData до применения изменений
         setPrevStats({ ...userStats, expertise: { ...userStats.expertise } });
-        // Применяем только дельты userEffect
+        // Применяем все дельты userEffect
         setUserStats((prev: UserStats) => {
-          // Экспертность
           let newExpertise = { ...prev.expertise };
-          if (userEffect.expertise && Array.isArray(userEffect.expertise)) {
-            userEffect.expertise.forEach((e: any) => {
-              const key = e.nicheId || e.niche || e.name;
-              if (key) newExpertise[key] = (newExpertise[key] || 0) + (e.change || 0);
-            });
-          }
-          // Репутация
           let newReputation = prev.reputation;
-          if (userEffect.reputationChange !== undefined) {
-            newReputation += userEffect.reputationChange;
-          } else if (userEffect.reputationDelta !== undefined) {
-            newReputation += userEffect.reputationDelta;
-          }
-          // Финансы (оставляем как есть, если нужно — аналогично)
+          let newMoney = { ...prev.money };
+          userEffects.forEach((effect: any) => {
+            // Экспертность по нишам
+            if (effect.expertise && Array.isArray(effect.expertise)) {
+              effect.expertise.forEach((e: any) => {
+                const key = e.nicheId || e.niche || e.name;
+                if (key) newExpertise[key] = (newExpertise[key] || 0) + (e.change || 0);
+              });
+            }
+            // Репутация
+            if (effect.reputationChange !== undefined) {
+              newReputation += effect.reputationChange;
+            } else if (effect.reputationDelta !== undefined) {
+              newReputation += effect.reputationDelta;
+            }
+            // Финансы
+            if (effect.moneyChange !== undefined) {
+              newMoney.cash = (newMoney.cash || 0) + effect.moneyChange;
+              newMoney.total = (newMoney.total || 0) + effect.moneyChange;
+            } else if (effect.priceDelta !== undefined) {
+              newMoney.cash = (newMoney.cash || 0) + effect.priceDelta;
+              newMoney.total = (newMoney.total || 0) + effect.priceDelta;
+            }
+          });
           return {
             ...prev,
             expertise: newExpertise,
-            reputation: newReputation
+            reputation: newReputation,
+            money: newMoney
           };
         });
         // Синхронизируем previousStatsData со statsData после решения кризиса
@@ -518,11 +530,34 @@ const FirstMonthPage: React.FC = () => {
         window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
           detail: { stepsLeft: response.steps } 
         }));
-        // Отправляем события для обновления хедера
+        // Формируем дельты для событий
+        let expertiseDelta: any = {};
+        let reputationDelta = 0;
+        let moneyDelta = 0;
+        userEffects.forEach((effect: any) => {
+          if (effect.expertise && Array.isArray(effect.expertise)) {
+            effect.expertise.forEach((e: any) => {
+              const key = e.nicheId || e.niche || e.name;
+              if (key) expertiseDelta[key] = (expertiseDelta[key] || 0) + (e.change || 0);
+            });
+          }
+          if (effect.reputationChange !== undefined) reputationDelta += effect.reputationChange;
+          else if (effect.reputationDelta !== undefined) reputationDelta += effect.reputationDelta;
+          if (effect.moneyChange !== undefined) moneyDelta += effect.moneyChange;
+          else if (effect.priceDelta !== undefined) moneyDelta += effect.priceDelta;
+        });
+        // Отправляем события для обновления стрелок
+        window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+          detail: { 
+            cash: userStats.money.cash + moneyDelta,
+            investment: userStats.money.investment,
+            total: userStats.money.total + moneyDelta
+          }
+        }));
         window.dispatchEvent(new CustomEvent('statsUpdate', { 
           detail: { 
-            reputation: userEffect.reputationChange || userEffect.reputationDelta || 0,
-            expertise: (userEffect.expertise || []).reduce((acc: any, e: any) => { acc[e.nicheId || e.niche || e.name] = e.change; return acc; }, {}),
+            reputation: reputationDelta,
+            expertise: expertiseDelta,
             stepsLeft: response.steps
           }
         }));
