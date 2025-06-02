@@ -216,6 +216,7 @@ const FirstMonthPage: React.FC = () => {
   const [showTutorial, setShowTutorial] = useState(false);
   const [pendingCrisisStatsUpdate, setPendingCrisisStatsUpdate] = useState(false);
   const [crisisStatsJustUpdated, setCrisisStatsJustUpdated] = useState(false);
+  const [lastCrisisUserEffect, setLastCrisisUserEffect] = useState<any>(null);
 
   // Загружаем месяц и stepCount при монтировании
   useEffect(() => {
@@ -488,66 +489,38 @@ const FirstMonthPage: React.FC = () => {
         const selectedSolution = currentCrisis?.possibleSolutions.find((s: CrisisSolution) => s.id === solutionId);
         // userEffect может быть массивом или объектом
         const userEffects = Array.isArray(response.userEffect) ? response.userEffect : [response.userEffect || selectedSolution?.effect || {}];
+        setLastCrisisUserEffect(userEffects);
         
-        // Формируем дельты для событий
-        let expertiseDelta: any = {};
-        let reputationDelta = 0;
-        let moneyDelta = 0;
-        
-        userEffects.forEach((effect: any) => {
-          // Экспертность по нишам
-          if (effect.expertise && Array.isArray(effect.expertise)) {
-            effect.expertise.forEach((e: any) => {
-              const key = e.nicheId;
-              if (key) expertiseDelta[key] = (expertiseDelta[key] || 0) + (e.change || 0);
-            });
-          }
-          // Репутация
-          if (effect.reputationChange !== undefined) {
-            reputationDelta += effect.reputationChange;
-          }
-          // Финансы
-          if (effect.moneyChange !== undefined) {
-            moneyDelta += effect.moneyChange;
-          }
-        });
-
         // Сохраняем previousData до применения изменений
         setPrevStats({ ...userStats, expertise: { ...userStats.expertise } });
         
-        // Применяем все дельты userEffect
+        // Применяем все дельты userEffect (оставляем для плавности UI, но потом перезапишем из API)
         setUserStats((prev: UserStats) => {
           let newExpertise = { ...prev.expertise };
-          let newReputation = prev.reputation + reputationDelta;
-          let newMoney = { 
-            ...prev.money,
-            cash: (prev.money.cash || 0) + moneyDelta,
-            total: (prev.money.total || 0) + moneyDelta
-          };
-
-          // Применяем изменения экспертизы
-          Object.entries(expertiseDelta).forEach(([key, value]) => {
-            newExpertise[key] = (newExpertise[key] || 0) + (value as number);
+          let newReputation = prev.reputation;
+          userEffects.forEach((effect: any) => {
+            if (effect.expertise && Array.isArray(effect.expertise)) {
+              effect.expertise.forEach((e: any) => {
+                const key = e.nicheId;
+                if (key) newExpertise[key] = (newExpertise[key] || 0) + (e.change || 0);
+              });
+            }
+            if (effect.reputationChange !== undefined) {
+              newReputation += effect.reputationChange;
+            }
           });
-
           return {
             ...prev,
             expertise: newExpertise,
             reputation: newReputation,
-            money: newMoney
+            money: prev.money // финансы обновим позже
           };
         });
-
-        // Синхронизируем previousStatsData со statsData после решения кризиса
         window.dispatchEvent(new CustomEvent('syncPreviousStats'));
-        
-        // Обновляем очки действий из ответа API
         setStepCount(response.steps);
         window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
           detail: { stepsLeft: response.steps } 
         }));
-
-        // Устанавливаем флаг для отправки событий после обновления userStats
         setPendingCrisisStatsUpdate(true);
       }
     } catch (error: unknown) {
@@ -659,28 +632,41 @@ const FirstMonthPage: React.FC = () => {
 
   // useEffect для отправки событий и загрузки актуальных данных только после решения кризиса
   useEffect(() => {
-    if (pendingCrisisStatsUpdate) {
+    if (pendingCrisisStatsUpdate && lastCrisisUserEffect) {
       const fetchActualStats = async () => {
         try {
-          const [moneyData, expertiseData, reputationData] = await Promise.all([
-            userAPI.getMoney(),
-            userAPI.getExpertise(),
-            userAPI.getReputation()
-          ]);
+          // Получаем только финансы с сервера
+          const moneyData = await userAPI.getMoney();
+          // Применяем дельты userEffect к текущим userStats
+          let newExpertise = { ...userStats.expertise };
+          let newReputation = userStats.reputation;
+          const userEffects = Array.isArray(lastCrisisUserEffect) ? lastCrisisUserEffect : [lastCrisisUserEffect];
+          userEffects.forEach((effect: any) => {
+            if (effect.expertise && Array.isArray(effect.expertise)) {
+              effect.expertise.forEach((e: any) => {
+                const key = e.nicheId;
+                if (key) newExpertise[key] = (newExpertise[key] || 0) + (e.change || 0);
+              });
+            }
+            if (effect.reputationChange !== undefined) {
+              newReputation += effect.reputationChange;
+            }
+          });
           setUserStats({
             money: moneyData,
-            expertise: expertiseData.map || {},
-            reputation: reputationData.reputation
+            expertise: newExpertise,
+            reputation: newReputation
           });
           setCrisisStatsJustUpdated(true);
         } catch (e) {
           // Можно обработать ошибку
         }
         setPendingCrisisStatsUpdate(false);
+        setLastCrisisUserEffect(null);
       };
       fetchActualStats();
     }
-  }, [pendingCrisisStatsUpdate]);
+  }, [pendingCrisisStatsUpdate, lastCrisisUserEffect]);
 
   // useEffect для отправки событий только после того, как userStats обновился после кризиса
   useEffect(() => {
