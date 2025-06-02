@@ -214,6 +214,7 @@ const FirstMonthPage: React.FC = () => {
   });
   const [pendingStatsDialog, setPendingStatsDialog] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [pendingCrisisStatsUpdate, setPendingCrisisStatsUpdate] = useState(false);
 
   // Загружаем месяц и stepCount при монтировании
   useEffect(() => {
@@ -545,26 +546,8 @@ const FirstMonthPage: React.FC = () => {
           detail: { stepsLeft: response.steps } 
         }));
 
-        // Отправляем события для обновления стрелок с актуальными значениями
-        setUserStats((prev: UserStats) => {
-          window.dispatchEvent(new CustomEvent('balanceUpdate', { 
-            detail: { 
-              cash: prev.money.cash,
-              investment: prev.money.investment,
-              total: prev.money.total
-            }
-          }));
-          
-          window.dispatchEvent(new CustomEvent('statsUpdate', { 
-            detail: { 
-              reputation: prev.reputation,
-              expertise: prev.expertise,
-              stepsLeft: response.steps
-            }
-          }));
-          
-          return prev;
-        });
+        // Устанавливаем флаг для отправки событий после обновления userStats
+        setPendingCrisisStatsUpdate(true);
       }
     } catch (error: unknown) {
       console.error('Ошибка при отправке решения:', error);
@@ -672,6 +655,27 @@ const FirstMonthPage: React.FC = () => {
     }
     // ... возможно, другие зависимости
   }, [selected, contentType]);
+
+  // useEffect для отправки событий только после обновления userStats после кризиса
+  useEffect(() => {
+    if (pendingCrisisStatsUpdate) {
+      window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+        detail: { 
+          cash: userStats.money.cash,
+          investment: userStats.money.investment,
+          total: userStats.money.total
+        }
+      }));
+      window.dispatchEvent(new CustomEvent('statsUpdate', { 
+        detail: { 
+          reputation: userStats.reputation,
+          expertise: userStats.expertise,
+          stepsLeft: stepCount
+        }
+      }));
+      setPendingCrisisStatsUpdate(false);
+    }
+  }, [userStats, pendingCrisisStatsUpdate, stepCount]);
 
   const Field = ({ type, showDividers }: { type: 'startups' | 'events'; showDividers: boolean }) => {
     if (type === 'startups') {
