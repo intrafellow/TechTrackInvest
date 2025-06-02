@@ -545,15 +545,23 @@ const FirstMonthPage: React.FC = () => {
       // Сохраняем текущие значения как предыдущие
       setPrevStats({
         ...userStats,
-        expertise: expertiseData.map || {}
+        expertise: { ...userStats.expertise }
       });
       
-      // Обновляем статистику с правильными названиями ниш
+      // Обновляем статистику, добавляя изменения к текущим значениям
       setUserStats((prev: any) => {
         const updated = {
           ...prev,
-          expertise: expertiseData.map || {}
+          expertise: { ...prev.expertise }
         };
+        
+        // Добавляем изменения экспертизы из API к текущим значениям
+        if (expertiseData.map) {
+          Object.entries(expertiseData.map).forEach(([nicheId, value]) => {
+            updated.expertise[nicheId] = (updated.expertise[nicheId] || 0) + (value as number);
+          });
+        }
+        
         localStorage.setItem('userStats', JSON.stringify(updated));
         return updated;
       });

@@ -254,7 +254,7 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
         // Создаем новый объект экспертизы, сохраняя предыдущие значения
         const newExpertise = { ...prev.expertise };
         
-        // Обновляем значения для каждой ниши
+        // Обновляем значения для каждой ниши, добавляя изменения к текущим значениям
         Object.entries(expertise as { [key: string]: number }).forEach(([nicheId, value]) => {
           // Преобразуем ID ниши в название
           const nicheName = getNicheName(nicheId);
@@ -265,7 +265,6 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
 
         return {
           ...prev,
-          // Используем новое значение репутации только если оно больше текущего
           reputation: reputation > prev.reputation ? reputation : prev.reputation,
           expertise: newExpertise
         };
@@ -278,9 +277,8 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
       setSessionData(prev => ({
         ...prev,
         stepsLeft,
-        // Используем новое значение репутации только если оно больше текущего
         reputation: reputation > prev.reputation ? reputation : prev.reputation,
-        expertise: Object.values(expertise as { [key: string]: number }).reduce((sum: number, value: number) => sum + value, 0)
+        expertise: Object.values(statsData.expertise).reduce((sum: number, value: number) => sum + value, 0)
       }));
     };
 
