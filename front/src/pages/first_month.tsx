@@ -548,7 +548,6 @@ const FirstMonthPage: React.FC = () => {
 
         // Устанавливаем флаг для отправки событий после обновления userStats
         setPendingCrisisStatsUpdate(true);
-        loadAllData();
       }
     } catch (error: unknown) {
       console.error('Ошибка при отправке решения:', error);
