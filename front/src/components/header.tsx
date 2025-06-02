@@ -333,6 +333,20 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     localStorage.setItem('previousStatsData', JSON.stringify(previousStatsData));
   }, [previousStatsData]);
 
+  // Синхронизируем previousStatsData со statsData после завершения хода (перехода месяца)
+  useEffect(() => {
+    // Предполагаем, что EndTurnDialog управляется состоянием в родителе и его open передаётся как пропс или через глобальный стейт
+    // Если такого пропса нет, то можно ориентироваться на изменение месяца или stepCount
+    // Например, если stepCount сбрасывается до максимального значения (например, 5), это сигнал нового месяца
+    if (sessionData.stepsLeft === 5) {
+      setPreviousStatsData({
+        money: statsData.money,
+        reputation: statsData.reputation,
+        expertise: statsData.expertise
+      });
+    }
+  }, [sessionData.stepsLeft]);
+
   const handleStatClick = (type: string) => {
     setDialogOpen(prev => ({ ...prev, [type]: true }));
   };
