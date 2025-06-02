@@ -498,6 +498,9 @@ const FirstMonthPage: React.FC = () => {
             reputation: Math.max(0, prev.reputation + effect.reputationDelta)
           }));
 
+          // Синхронизируем previousStatsData со statsData после решения кризиса
+          window.dispatchEvent(new CustomEvent('syncPreviousStats'));
+
           // Обновляем очки действий из ответа API
           setStepCount(response.steps);
           

@@ -347,6 +347,20 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     }
   }, [sessionData.stepsLeft]);
 
+  useEffect(() => {
+    const handleSyncPreviousStats = () => {
+      setPreviousStatsData({
+        money: statsData.money,
+        reputation: statsData.reputation,
+        expertise: statsData.expertise
+      });
+    };
+    window.addEventListener('syncPreviousStats', handleSyncPreviousStats);
+    return () => {
+      window.removeEventListener('syncPreviousStats', handleSyncPreviousStats);
+    };
+  }, [statsData]);
+
   const handleStatClick = (type: string) => {
     setDialogOpen(prev => ({ ...prev, [type]: true }));
   };
