@@ -242,44 +242,13 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
 
     const handleStatsUpdate = (event: CustomEvent) => {
       const { reputation, expertise, stepsLeft } = event.detail;
-      console.log('Stats update event:', { reputation, expertise, stepsLeft });
-      console.log('Current stats data:', statsData);
-      console.log('Previous stats data:', previousStatsData);
-      
-      // Создаем копию текущих данных для предыдущих значений
-      const currentStatsCopy = { ...statsData };
-      
-      // Обновляем данные статистики
-      setStatsData(prev => {
-        // Создаем новый объект экспертизы, сохраняя предыдущие значения
-        const newExpertise = { ...prev.expertise };
-        
-        // Обновляем значения для каждой ниши, добавляя изменения к текущим значениям
-        Object.entries(expertise as { [key: string]: number }).forEach(([nicheId, value]) => {
-          // Преобразуем ID ниши в название
-          const nicheName = getNicheName(nicheId);
-          if (nicheName) {
-            newExpertise[nicheName] = (newExpertise[nicheName] || 0) + value;
-          }
-        });
-
-        return {
-          ...prev,
-          reputation: reputation > prev.reputation ? reputation : prev.reputation,
-          expertise: newExpertise
-        };
-      });
-
-      // После обновления текущих данных, сохраняем предыдущие
-      setPreviousStatsData(currentStatsCopy);
-
-      // Обновляем данные сессии
-      setSessionData(prev => ({
+      // Создаём новый объект экспертности для корректной перерисовки
+      setStatsData(prev => ({
         ...prev,
-        stepsLeft,
-        reputation: reputation > prev.reputation ? reputation : prev.reputation,
-        expertise: Object.values(statsData.expertise).reduce((sum: number, value: number) => sum + value, 0)
+        expertise: { ...expertise },
+        reputation: reputation,
       }));
+      // ... остальной код (если есть)
     };
 
     // Функция для получения названия ниши по ID
