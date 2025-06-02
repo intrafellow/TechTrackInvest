@@ -677,6 +677,10 @@ const FirstMonthPage: React.FC = () => {
     }
   }, [userStats, pendingCrisisStatsUpdate, stepCount]);
 
+  useEffect(() => {
+    localStorage.setItem('userStats', JSON.stringify(userStats));
+  }, [userStats]);
+
   const Field = ({ type, showDividers }: { type: 'startups' | 'events'; showDividers: boolean }) => {
     if (type === 'startups') {
       if (isMobileOrTablet) {
