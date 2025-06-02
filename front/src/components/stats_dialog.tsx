@@ -95,7 +95,9 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
         return (
           <>
             {Object.entries(data.expertise).map(([nicheId, value]) => {
-              const nicheName = getNicheName(nicheId);
+              const previousValue = previousData?.expertise?.[nicheId] || 0;
+              const trendIcon = getTrendIcon(Number(value), Number(previousValue));
+              const tooltipText = getTooltipText(Number(value), Number(previousValue));
               return (
                 <Box key={nicheId} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                   <Typography
@@ -106,8 +108,13 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
                       fontSize: { xs: '1.6vh', sm: '1.8vh', md: '2vh' },
                     }}
                   >
-                    Рейтинг вашей экспертности в {nicheName}: {value}
+                    Рейтинг вашей экспертности в {nicheId}: {value}
                   </Typography>
+                  {trendIcon && tooltipText && (
+                    <Tooltip title={tooltipText}>
+                      <span>{trendIcon}</span>
+                    </Tooltip>
+                  )}
                 </Box>
               );
             })}
@@ -176,6 +183,9 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
         if (!data.reputation || data.reputation === 0) {
           return <Typography sx={{ color: '#B00020', fontFamily: 'Raleway, sans-serif', fontWeight: 300 }}>Нет данных</Typography>;
         }
+        const previousReputation = previousData?.reputation || 0;
+        const trendIcon = getTrendIcon(Number(data.reputation), Number(previousReputation));
+        const tooltipText = getTooltipText(Number(data.reputation), Number(previousReputation));
         return (
           <>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -189,6 +199,11 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ open, onClose, type, data, pr
               >
                 Рейтинг вашей репутации: {data.reputation}
               </Typography>
+              {trendIcon && tooltipText && (
+                <Tooltip title={tooltipText}>
+                  <span>{trendIcon}</span>
+                </Tooltip>
+              )}
             </Box>
           </>
         );
