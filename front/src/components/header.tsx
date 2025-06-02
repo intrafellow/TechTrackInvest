@@ -313,7 +313,26 @@ const Header: React.FC<HeaderProps> = ({ currentMonth = 0 }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Восстанавливаем previousStatsData из localStorage при загрузке страницы
+  useEffect(() => {
+    const savedPrev = localStorage.getItem('previousStatsData');
+    if (savedPrev) {
+      try {
+        setPreviousStatsData(JSON.parse(savedPrev));
+      } catch {}
+    }
+  }, []);
+
+  // Сохраняем previousStatsData в localStorage при каждом изменении
+  useEffect(() => {
+    localStorage.setItem('previousStatsData', JSON.stringify(previousStatsData));
+  }, [previousStatsData]);
+
   const handleStatClick = (type: string) => {
+    setPreviousStatsData(prev => ({
+      ...prev,
+      [type]: (type === 'money' ? statsData.money : type === 'reputation' ? statsData.reputation : statsData.expertise)
+    }));
     setDialogOpen(prev => ({ ...prev, [type]: true }));
   };
   const handleDialogClose = (type: string) => {
