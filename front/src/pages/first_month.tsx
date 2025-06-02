@@ -548,6 +548,7 @@ const FirstMonthPage: React.FC = () => {
 
         // Устанавливаем флаг для отправки событий после обновления userStats
         setPendingCrisisStatsUpdate(true);
+        loadAllData();
       }
     } catch (error: unknown) {
       console.error('Ошибка при отправке решения:', error);
@@ -656,26 +657,43 @@ const FirstMonthPage: React.FC = () => {
     // ... возможно, другие зависимости
   }, [selected, contentType]);
 
-  // useEffect для отправки событий только после обновления userStats после кризиса
+  // useEffect для отправки событий и загрузки актуальных данных только после решения кризиса
   useEffect(() => {
     if (pendingCrisisStatsUpdate) {
-      window.dispatchEvent(new CustomEvent('balanceUpdate', { 
-        detail: { 
-          cash: userStats.money.cash,
-          investment: userStats.money.investment,
-          total: userStats.money.total
+      const fetchActualStats = async () => {
+        try {
+          const [moneyData, expertiseData, reputationData] = await Promise.all([
+            userAPI.getMoney(),
+            userAPI.getExpertise(),
+            userAPI.getReputation()
+          ]);
+          setUserStats({
+            money: moneyData,
+            expertise: expertiseData.map || {},
+            reputation: reputationData.reputation
+          });
+        } catch (e) {
+          // Можно обработать ошибку
         }
-      }));
-      window.dispatchEvent(new CustomEvent('statsUpdate', { 
-        detail: { 
-          reputation: userStats.reputation,
-          expertise: userStats.expertise,
-          stepsLeft: stepCount
-        }
-      }));
-      setPendingCrisisStatsUpdate(false);
+        window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+          detail: { 
+            cash: userStats.money.cash,
+            investment: userStats.money.investment,
+            total: userStats.money.total
+          }
+        }));
+        window.dispatchEvent(new CustomEvent('statsUpdate', { 
+          detail: { 
+            reputation: userStats.reputation,
+            expertise: userStats.expertise,
+            stepsLeft: stepCount
+          }
+        }));
+        setPendingCrisisStatsUpdate(false);
+      };
+      fetchActualStats();
     }
-  }, [userStats, pendingCrisisStatsUpdate, stepCount]);
+  }, [pendingCrisisStatsUpdate, stepCount]);
 
   useEffect(() => {
     localStorage.setItem('userStats', JSON.stringify(userStats));
