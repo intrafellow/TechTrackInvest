@@ -12,13 +12,13 @@ import java.time.Duration;
 @Configuration
 public class WebClientConfig {
     @Bean
-    public WebClient webClient(@Value("${ai.service.url:http://ai-service:8000}") String url) {
+    public WebClient webClient(@Value("${ai.service.url}") String url) {
         return WebClient.builder()
                 .baseUrl(url)
                 .defaultHeader("Content-Type", "application/json")
                 .clientConnector(new ReactorClientHttpConnector(
                         HttpClient.create()
-                                .responseTimeout(Duration.ofSeconds(15))
+                                .responseTimeout(Duration.ofMinutes(10))
                 ))
                 .build();
     }

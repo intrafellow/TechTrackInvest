@@ -39,7 +39,6 @@ public class DataGeneratorController {
             try {
                 List<String> nicheIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
                 log.info("Начало генерации стартапов для всех ниш");
-                
                 startupAIProvider.getRandomStartups(nicheIds, 4);
                 
                 log.info("Стартапы успешно сгенерированы");

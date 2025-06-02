@@ -57,7 +57,7 @@ public class SessionController {
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Невозможно создать сессию"
+                        "Невозможно загрузить сессию"
                 ));
     }
 }

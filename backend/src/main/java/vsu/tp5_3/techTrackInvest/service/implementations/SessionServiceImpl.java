@@ -10,6 +10,7 @@ import vsu.tp5_3.techTrackInvest.dto.FinishDto;
 import vsu.tp5_3.techTrackInvest.dto.SessionReadDto;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.exceptions.SessionNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.SessionReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.SessionRepository;
@@ -108,7 +109,7 @@ public class SessionServiceImpl implements SessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Юзер не найден по этой почте: " + email));
 
         Session session = sessionRepository.findTopByAppUserOrderByStartDateDesc(user)
-                .orElseThrow(() -> new EntityNotFoundException("Сессия для этого пользователя не создана: " + email));
+                .orElseThrow(() -> new SessionNotFoundException("Сессия для этого пользователя не создана: " + email));
         return Optional.ofNullable(sessionReadMapper.map(session));
     }
 }

@@ -44,11 +44,12 @@ public class AIConnector implements AIService {
 
     @Override
     public Mono<List<StartupMongo>> requestStartups(String nicheId, int quantity) {
+        logger.info("Запрашиваем {} из ниши {}", quantity, nicheId);
         return webClient.post()
                 .uri("/game/generate_startups")
                 .bodyValue(Map.of(
-                    "niche", nicheId,
-                    "quantity", quantity
+                    "quantity", quantity,
+                        "niche", nicheId
                 ))
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> {
@@ -69,8 +70,8 @@ public class AIConnector implements AIService {
         return webClient.post()
                 .uri("/game/generate_conferences")
                 .bodyValue(Map.of(
-                    "niche", nicheId,
-                    "quantity", quantity
+                    "quantity", quantity,
+                        "niche", nicheId
                 ))
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> {

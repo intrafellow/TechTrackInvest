@@ -68,22 +68,42 @@ class Niche(str, Enum):
 
 class GenerateStartupRequest(BaseModel):
     """Запрос на генерацию одного стартапа."""
-    niche: Optional[Niche] = Field(
+    niche: Optional[str] = Field(
         default=None,
         description="Ниша для генерации стартапа. Если не указана, выбирается случайная ниша."
     )
 
 class GenerateStartupsRequest(BaseModel):
     """Запрос на генерацию нескольких стартапов."""
-    count: int = Field(
+    quantity: int = Field(
         default=1,
         ge=1,
         le=10,
         description="Количество стартапов для генерации (от 1 до 10)"
     )
-    niches: Optional[List[Niche]] = Field(
+    niche: Optional[str] = Field(
         default=None,
-        description="Список ниш для генерации. Если не указан, используются все доступные ниши."
+        description="Ниша для генерации. Если не указана, выбирается случайная ниша."
+    )
+
+class GenerateConferenceRequest(BaseModel):
+    """Запрос на генерацию одной конференции."""
+    niche: Optional[str] = Field(
+        default=None,
+        description="Ниша для генерации конференции. Если не указана, выбирается случайная ниша."
+    )
+
+class GenerateConferencesRequest(BaseModel):
+    """Запрос на генерацию нескольких конференций."""
+    quantity: int = Field(
+        default=1,
+        ge=1,
+        le=10,
+        description="Количество конференций для генерации (от 1 до 10)"
+    )
+    niche: Optional[str] = Field(
+        default=None,
+        description="Ниша для генерации. Если не указана, выбирается случайная ниша."
     )
 
 # ---------------------------------------------------------------------------
@@ -92,7 +112,7 @@ class GenerateStartupsRequest(BaseModel):
 
 class StartupProfile(BaseModel):
     """Профиль стартапа."""
-    id: str  # В формате 'startup-{niche}-{number}'
+    id: Optional[str] = ""  # Опциональный идентификатор
     name: str  # На английском языке
     description: str  # На русском языке
     price: int
@@ -105,7 +125,7 @@ class StartupProfile(BaseModel):
     reputation: int
     level: int
     stage: Stage
-    niche: Niche  # Одна из: "IT", "SpaceTech", "GreenTech", "MedTech"
+    niche: str  # Одна из: "IT", "SpaceTech", "GreenTech", "MedTech"
 
 class Solution(BaseModel):
     """Решение кризиса."""
@@ -114,7 +134,7 @@ class Solution(BaseModel):
 
 class CrisisProfile(BaseModel):
     """Профиль кризиса."""
-    id: str
+    id: Optional[str] = ""  # Опциональный идентификатор
     name: str
     description: str
     type: CrisisType  # Тип кризиса: глобальный или локальный
@@ -124,10 +144,10 @@ class CrisisProfile(BaseModel):
 
 class ConferenceProfile(BaseModel):
     """Профиль конференции."""
-    id: str
+    id: Optional[str] = ""  # Опциональный идентификатор
     name: str
     description: str
     nicheId: str
     enrollPrice: int
     gainedReputation: int
-    expertiseChanges: List[dict]  # Упрощаем структуру изменений экспертизы 
+    expertiseChanges: List[dict]  # Список изменений экспертизы в формате {"nicheId": str, "change": int} 

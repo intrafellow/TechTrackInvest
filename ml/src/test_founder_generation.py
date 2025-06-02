@@ -141,22 +141,10 @@ def test_generation(prompt: str, max_attempts: int = 3) -> tuple[bool, dict | No
             # Если JSON вложенный (например, {"startup-IT-4": {...}} или {"startup": {...}}), извлекаем внутренний объект
             if len(data) == 1 and isinstance(next(iter(data.values())), dict):
                 data = next(iter(data.values()))
-                # Если в извлеченном объекте есть _id, используем его
-                if "_id" in data:
-                    # Проверяем формат _id
-                    if not data["_id"].startswith(f"startup-{niche_name}-"):
-                        print(f"\nИсправляем формат _id с '{data['_id']}' на 'startup-{niche_name}-<number>'")
-                        # Извлекаем номер из старого _id если он есть
-                        old_number = data["_id"].split("-")[-1] if "-" in data["_id"] else str(random.randint(1, 100))
-                        data["_id"] = f"startup-{niche_name}-{old_number}"
-                else:
-                    # Генерируем _id если его нет
-                    startup_number = random.randint(1, 100)
-                    data["_id"] = f"startup-{niche_name}-{startup_number}"
             
             # Проверяем наличие всех обязательных полей
             required_fields = [
-                "_id", "name", "description", "price", "uniqueProductOffer",
+                "name", "description", "price", "uniqueProductOffer",
                 "lastMonthRevenue", "expenses", "team", "budget", "product",
                 "reputation", "level", "stage", "niche"
             ]
@@ -180,18 +168,6 @@ def test_generation(prompt: str, max_attempts: int = 3) -> tuple[bool, dict | No
             if not niche_name:
                 print("Не удалось определить нишу из prompt")
                 continue
-                
-            # Проверяем формат _id
-            if "_id" in data:
-                if not data["_id"].startswith(f"startup-{niche_name}-"):
-                    print(f"\nИсправляем формат _id с '{data['_id']}' на 'startup-{niche_name}-<number>'")
-                    # Извлекаем номер из старого _id если он есть
-                    old_number = data["_id"].split("-")[-1] if "-" in data["_id"] else str(random.randint(1, 100))
-                    data["_id"] = f"startup-{niche_name}-{old_number}"
-            else:
-                # Генерируем _id если его нет
-                startup_number = random.randint(1, 100)
-                data["_id"] = f"startup-{niche_name}-{startup_number}"
                 
             # Проверяем значение stage и преобразуем в верхний регистр
             valid_stages = [stage.value for stage in Stage]
@@ -259,6 +235,8 @@ def test_generation(prompt: str, max_attempts: int = 3) -> tuple[bool, dict | No
             # Если все проверки пройдены успешно, выводим результат и завершаем функцию
             print("\nРаспарсенный JSON:")
             sorted_data = _sort_json_keys(data)
+            # Добавляем пустой _id
+            sorted_data["_id"] = ""
             print(json.dumps(sorted_data, indent=2, ensure_ascii=False))
             
             # Добавляем результат в список
