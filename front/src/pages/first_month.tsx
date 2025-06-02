@@ -482,51 +482,45 @@ const FirstMonthPage: React.FC = () => {
     try {
       const response = await crisisAPI.submitSolution(solutionId);
       if (response.success) {
-        // Обновляем статистику на основе эффектов выбранного решения
-        const selectedSolution = currentCrisis?.possibleSolutions.find((s: CrisisSolution) => s.id === solutionId);
-        if (selectedSolution) {
-          const { effect } = selectedSolution;
-          
-          // Обновляем текущие значения
-          setUserStats((prev: UserStats) => ({
-            ...prev,
-            money: {
-              ...prev.money,
-              cash: Math.max(0, prev.money.cash + effect.priceDelta),
-              total: Math.max(0, prev.money.total + effect.priceDelta)
-            },
-            reputation: Math.max(0, prev.reputation + effect.reputationDelta)
-          }));
+        // После успешного решения кризиса получаем актуальные данные пользователя
+        const [moneyData, reputationData, expertiseData] = await Promise.all([
+          userAPI.getMoney(),
+          userAPI.getReputation(),
+          userAPI.getExpertise()
+        ]);
 
-          // Синхронизируем previousStatsData со statsData после решения кризиса
-          window.dispatchEvent(new CustomEvent('syncPreviousStats'));
+        // Обновляем userStats реальными значениями
+        setUserStats((prev: UserStats) => ({
+          ...prev,
+          money: moneyData || { cash: 0, investment: 0, total: 0 },
+          reputation: reputationData.reputation,
+          expertise: expertiseData.map || {}
+        }));
 
-          // Обновляем очки действий из ответа API
-          setStepCount(response.steps);
-          
-          // Отправляем события для обновления хедера
-          window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
-            detail: { stepsLeft: response.steps } 
-          }));
-          
-          // Обновляем репутацию в хедере
-          window.dispatchEvent(new CustomEvent('statsUpdate', { 
-            detail: { 
-              reputation: Math.max(0, userStats.reputation + effect.reputationDelta),
-              expertise: {},
-              stepsLeft: response.steps
-            } 
-          }));
-          
-          // Обновляем деньги в хедере
-          window.dispatchEvent(new CustomEvent('balanceUpdate', { 
-            detail: { 
-              cash: Math.max(0, userStats.money.cash + effect.priceDelta),
-              investment: userStats.money.investment,
-              total: Math.max(0, userStats.money.total + effect.priceDelta)
-            } 
-          }));
-        }
+        // Синхронизируем previousStatsData со statsData после решения кризиса
+        window.dispatchEvent(new CustomEvent('syncPreviousStats'));
+
+        // Обновляем очки действий из ответа API
+        setStepCount(response.steps);
+        window.dispatchEvent(new CustomEvent('stepCountUpdate', { 
+          detail: { stepsLeft: response.steps } 
+        }));
+
+        // Отправляем события для обновления хедера с реальными значениями
+        window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+          detail: { 
+            cash: moneyData.cash,
+            investment: moneyData.investment,
+            total: moneyData.total
+          }
+        }));
+        window.dispatchEvent(new CustomEvent('statsUpdate', { 
+          detail: { 
+            reputation: reputationData.reputation,
+            expertise: expertiseData.map || {},
+            stepsLeft: response.steps
+          }
+        }));
       }
     } catch (error: unknown) {
       console.error('Ошибка при отправке решения:', error);
