@@ -3,6 +3,8 @@ ai:
     url: ${AI_URL:http://localhost:8000}
 
 spring:
+  main:
+    web-application-type: servlet
   datasource:
     username: ${DB_USERNAME}
     url: ${DB_URL}
