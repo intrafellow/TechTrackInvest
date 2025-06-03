@@ -228,8 +228,15 @@ const FirstMonthPage: React.FC = () => {
         const stepsData = await monthAPI.getStepCount();
         setStepCount(stepsData.stepCount);
 
-        await startupsAPI.generate();
-        await conferenceAPI.generate();
+        // Генерируем новые стартапы и конференции в начале хода
+        try {
+          console.log('Вызов startupsAPI.generate()');
+          await startupsAPI.generate();
+          console.log('Вызов conferenceAPI.generate()');
+          await conferenceAPI.generate();
+        } catch (error) {
+          console.error('Ошибка при генерации стартапов или конференций:', error);
+        }
       } catch (error) {
         console.error('Ошибка при загрузке месяца или stepCount:', error);
       }
