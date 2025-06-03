@@ -231,9 +231,12 @@ const FirstMonthPage: React.FC = () => {
         // Генерируем новые стартапы и конференции в начале хода
         try {
           console.log('Вызов startupsAPI.generate()');
-          await startupsAPI.generate();
+          const startupsResponse = await startupsAPI.generate();
+          console.log('Ответ от startupsAPI.generate:', startupsResponse);
+
           console.log('Вызов conferenceAPI.generate()');
-          await conferenceAPI.generate();
+          const conferencesResponse = await conferenceAPI.generate();
+          console.log('Ответ от conferenceAPI.generate:', conferencesResponse);
         } catch (error) {
           console.error('Ошибка при генерации стартапов или конференций:', error);
         }
