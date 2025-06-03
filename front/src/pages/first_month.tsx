@@ -227,19 +227,6 @@ const FirstMonthPage: React.FC = () => {
         setCurrentMonth(monthData.monthCount);
         const stepsData = await monthAPI.getStepCount();
         setStepCount(stepsData.stepCount);
-
-        // Генерируем новые стартапы и конференции в начале хода
-        try {
-          console.log('Вызов startupsAPI.generate()');
-          const startupsResponse = await startupsAPI.generate();
-          console.log('Ответ от startupsAPI.generate:', startupsResponse.data, 'Статус:', startupsResponse.status);
-
-          console.log('Вызов conferenceAPI.generate()');
-          const conferencesResponse = await conferenceAPI.generate();
-          console.log('Ответ от conferenceAPI.generate:', conferencesResponse.data, 'Статус:', conferencesResponse.status);
-        } catch (error) {
-          console.error('Ошибка при генерации стартапов или конференций:', error);
-        }
       } catch (error) {
         console.error('Ошибка при загрузке месяца или stepCount:', error);
       }

@@ -12,6 +12,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { monthAPI } from '../api/apiClient';
 import WinDialog from './WinDialog';
 import LoseDialog from './LoseDialog';
+import { startupsAPI } from '../api/apiClient';
+import { conferenceAPI } from '../api/apiClient';
 
 interface EndTurnDialogProps {
   open: boolean;
@@ -71,6 +73,15 @@ const EndTurnDialog: React.FC<EndTurnDialogProps> = ({
 
   const handleEndTurn = async () => {
     try {
+      // Генерируем новые стартапы и конференции перед переходом к следующему месяцу
+      console.log('Вызов startupsAPI.generate()');
+      const startupsResponse = await startupsAPI.generate();
+      console.log('Ответ от startupsAPI.generate:', startupsResponse.data, 'Статус:', startupsResponse.status);
+
+      console.log('Вызов conferenceAPI.generate()');
+      const conferencesResponse = await conferenceAPI.generate();
+      console.log('Ответ от conferenceAPI.generate:', conferencesResponse.data, 'Статус:', conferencesResponse.status);
+
       // Вызов API для перехода к следующему месяцу и сброса очков действий
       const response = await monthAPI.endMonth();
 
