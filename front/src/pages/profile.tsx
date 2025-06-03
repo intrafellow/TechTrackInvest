@@ -300,7 +300,7 @@ const ProfilePage: React.FC = () => {
               textTransform: 'none',
             }}
           >
-            Начать без сохранения
+            Новая игра
           </Button>
           <Button
             onClick={handleContinueGame}
