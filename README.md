@@ -9,12 +9,11 @@
 # Описание проекта  
 Данный проект направлен на разработку веб-приложения игры по теме:
 Инвестиции в различные стартапы.  
-Здесь будет возможность:  
-* Пройти тестирование для определения уровня знаний  
+Здесь будет возможность:    
 * Заключать сделки со стартапами с учётом множества влияющих факторов
 * Посещать различные мероприятия для увеличения внутриигровых характеристик
 * Решать разнообразные кризисные ситуации
-* Заполнить и отправить форму на почту технической поддержки компании   
+* Наблюдать за развитием стартапов   
 
 # Ссылка на игру
 * [TechTrackInvest](https://techtrackinvest.ru)
@@ -27,11 +26,11 @@
 * [Видео](https://drive.google.com/file/d/1j18EQnYdJQl70bYAm3WuAyqAfRiZdmFc/view?usp=sharing)
 
 # Документация ко второй аттестации
-* [Swagger](https://app.swaggerhub.com/apis/LeonidChelyapin/tech-track-invest_game/0.0.1#/)
 * [Отчёт о тестировании](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Отчёт%20о%20тестировании.pdf)
 * [Отчет ПМ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/PM%20%D0%BE%D1%82%D1%87%D0%B5%D1%82.pdf)
 
-# Сопутствующая проекту документация:  
+# Сопутствующая проекту документация:
+* [Swagger](https://techtrackinvest.ru/swagger-ui/)  
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
 * [Miro](https://miro.com/app/board/uXjVIaJdqw0=/?share_link_id=799797734687)  
 * [Figma](https://www.figma.com/design/dCoOCP2Jjx9wVpFINwosEq/Untitled?node-id=0-1&t=uR2EyEcojD5NBRnk-1)
