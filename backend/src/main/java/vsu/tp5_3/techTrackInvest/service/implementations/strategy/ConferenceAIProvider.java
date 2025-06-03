@@ -1,6 +1,8 @@
 package vsu.tp5_3.techTrackInvest.service.implementations.strategy;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,17 +21,19 @@ import java.util.List;
 public class ConferenceAIProvider {
     private final AIService aiService;
     private final ConferenceMongoRepository conferenceMongoRepository;
-
+    private static final Logger logger = LoggerFactory.getLogger(ConferenceAIProvider.class);
 
     public List<ConferenceMongo> getRandomConferences(List<String> nicheIds, int countPerNiche) {
+        logger.info("Генерируем конференции для ниши {} в количестве {}", nicheIds, countPerNiche);
         return Flux.fromIterable(nicheIds)
                 .flatMap(nicheId -> aiService.requestConferences(nicheId, countPerNiche))
                 .flatMap(Flux::fromIterable)
                 .flatMap(mongoConference -> Mono.fromCallable(() -> {
                                     mongoConference.setId(null);
+                                    logger.info("Сохраняем конференцию с именем {}", mongoConference.getName());
                                     return conferenceMongoRepository.save(mongoConference);
                                 })
-                                .subscribeOn(Schedulers.boundedElastic()) // <--- важно!
+                                .subscribeOn(Schedulers.boundedElastic())
                 )
                 .collectList()
                 .block();

@@ -16,6 +16,7 @@ import vsu.tp5_3.techTrackInvest.service.implementations.strategy.StartupAIProvi
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Tag(name = "Генерация данных", description = "API для запуска генерации стартапов и конференций")
@@ -38,8 +39,9 @@ public class DataGeneratorController {
         CompletableFuture.runAsync(() -> {
             try {
                 List<String> nicheIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
-                log.info("Начало генерации стартапов для всех ниш");
-                startupAIProvider.getRandomStartups(nicheIds, 4);
+                List<String> niche = List.of(nicheIds.get(ThreadLocalRandom.current().nextInt(nicheIds.size())));
+                log.info("Начало генерации стартапов для {} ниш", niche);
+                startupAIProvider.getRandomStartups(niche, 1);
                 
                 log.info("Стартапы успешно сгенерированы");
             } catch (Exception e) {
@@ -59,10 +61,11 @@ public class DataGeneratorController {
     public ResponseEntity<String> generateConferences() {
         CompletableFuture.runAsync(() -> {
             try {
+
                 List<String> nicheIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
-                log.info("Начало генерации конференций для ниш: {}", nicheIds);
-                
-                conferenceAIProvider.getRandomConferences(nicheIds, 4);
+                List<String> niche = List.of(nicheIds.get(ThreadLocalRandom.current().nextInt(nicheIds.size())));
+                log.info("Начало генерации конференций для ниш: {}", niche);
+                conferenceAIProvider.getRandomConferences(niche, 1);
                 
                 log.info("Конференции успешно сгенерированы");
             } catch (Exception e) {

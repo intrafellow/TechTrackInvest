@@ -67,6 +67,7 @@ public class AIConnector implements AIService {
 
     @Override
     public Mono<List<ConferenceMongo>> requestConferences(String nicheId, int quantity) {
+        logger.info("Запрашиваем конференции у ИИ {}, {}", nicheId, quantity);
         return webClient.post()
                 .uri("/game/generate_conferences")
                 .bodyValue(Map.of(
