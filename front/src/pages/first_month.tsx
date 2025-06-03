@@ -232,11 +232,11 @@ const FirstMonthPage: React.FC = () => {
         try {
           console.log('Вызов startupsAPI.generate()');
           const startupsResponse = await startupsAPI.generate();
-          console.log('Ответ от startupsAPI.generate:', startupsResponse);
+          console.log('Ответ от startupsAPI.generate:', startupsResponse.data, 'Статус:', startupsResponse.status);
 
           console.log('Вызов conferenceAPI.generate()');
           const conferencesResponse = await conferenceAPI.generate();
-          console.log('Ответ от conferenceAPI.generate:', conferencesResponse);
+          console.log('Ответ от conferenceAPI.generate:', conferencesResponse.data, 'Статус:', conferencesResponse.status);
         } catch (error) {
           console.error('Ошибка при генерации стартапов или конференций:', error);
         }

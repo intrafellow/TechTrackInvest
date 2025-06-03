@@ -181,7 +181,7 @@ export const startupsAPI = {
 
   generate: async () => {
     const response = await apiClient.post('/api/v1/generator/startups');
-    return response.data;
+    return response;
   }
 };
 
@@ -218,7 +218,7 @@ export const conferenceAPI = {
 
   generate: async () => {
     const response = await apiClient.post('/api/v1/generator/conferences');
-    return response.data;
+    return response;
   }
 };
 
