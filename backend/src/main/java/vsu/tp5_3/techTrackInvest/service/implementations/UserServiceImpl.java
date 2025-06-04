@@ -1,6 +1,8 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,7 @@ import vsu.tp5_3.techTrackInvest.annotation.Tested;
 import vsu.tp5_3.techTrackInvest.dto.*;
 import vsu.tp5_3.techTrackInvest.entities.mongo.NicheMongo;
 import vsu.tp5_3.techTrackInvest.entities.postgre.*;
+import vsu.tp5_3.techTrackInvest.exceptions.SessionNotFoundException;
 import vsu.tp5_3.techTrackInvest.exceptions.UserNotFoundException;
 import vsu.tp5_3.techTrackInvest.mapper.UserCreateEditMapper;
 import vsu.tp5_3.techTrackInvest.mapper.UserProfileMapper;
@@ -22,6 +25,7 @@ import vsu.tp5_3.techTrackInvest.mapper.UserReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.UserRepository;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
+
 
 import java.util.*;
 
@@ -35,6 +39,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final PasswordEncoder passwordEncoder;
     private final NicheMongoRepository nicheMongoRepository;
     private final UserProfileMapper userProfileMapper;
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -137,7 +144,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public Session getUserDBSession() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new).getSessions().getLast();
+        logger.info("Получаем пользователя с почтой {}", email);
+        AppUser user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        logger.info("Получили пользователя с ником {}", user.getUsername());
+        List<Session> sessions = user.getSessions();
+        logger.info("Получили все сессии пользователя");
+        if (sessions == null || sessions.isEmpty()) {
+            logger.info("У пользователя нет активных сессий. Ник пользователя {}", user.getUsername());
+            throw new SessionNotFoundException("У пользователя %s нет активных сессий".formatted(user.getUsername()));
+        }
+        return sessions.getLast();
     }
 
     public Optional<UserProfileDto> getProfile() {

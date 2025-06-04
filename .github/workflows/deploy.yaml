@@ -79,7 +79,7 @@ jobs:
       run: |
         echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
         echo "CORS_ALLOWED_ORIGINS=https://techtrackinvest.ru" >> ./envfile
-        echo "AI_URL=${{ secrets.AI_URL }}" >> ./envfile
+        echo "AI_URL=109.106.139.133:8000" >> ./envfile
     
     - name: Check gh hash after pushing to registry
       run: |

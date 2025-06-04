@@ -1,8 +1,6 @@
 package vsu.tp5_3.techTrackInvest.service.implementations;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vsu.tp5_3.techTrackInvest.configs.GameBalanceConfig;
@@ -13,7 +11,6 @@ import vsu.tp5_3.techTrackInvest.mapper.ConferenceReadPostgresMapper;
 import vsu.tp5_3.techTrackInvest.mapper.DisplayedStartupReadMapper;
 import vsu.tp5_3.techTrackInvest.repositories.mongo.NicheMongoRepository;
 import vsu.tp5_3.techTrackInvest.repositories.postgre.*;
-import vsu.tp5_3.techTrackInvest.service.interfaces.ConferenceProvider;
 import vsu.tp5_3.techTrackInvest.service.interfaces.MonthService;
 import vsu.tp5_3.techTrackInvest.service.interfaces.UserService;
 
@@ -23,14 +20,12 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MonthServiceImpl implements MonthService {
-    private final UserRepository userRepository;
     private final StartupService startupService;
     private final SessionRepository sessionRepository;
     private final ConferenceReadPostgresMapper conferenceReadPostgresMapper;
     private final DisplayedStartupReadMapper displayedStartupReadMapper;
     private final UpdateStartupService updateStartupService;
     private final NicheMongoRepository nicheMongoRepository;
-    private final ConferenceProvider conferenceProvider;
     private final GameBalanceConfig gameBalanceConfig;
     private final ConferenceService conferenceService;
     private final StepService stepService;
@@ -157,13 +152,13 @@ public class MonthServiceImpl implements MonthService {
 
     @Override
     public StepCountDto getStepCount() {
-        return new StepCountDto(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast().getStepCount());
+        Session session = userService.getUserDBSession();
+        return new StepCountDto(session.getStepCount());
     }
 
     @Override
     public MonthCountDto getMonthCount() {
-        return new MonthCountDto(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .get().getSessions().getLast().getMonthCount());
+        Session session = userService.getUserDBSession();
+        return new MonthCountDto(session.getMonthCount());
     }
 }

@@ -75,11 +75,11 @@ public class CrisisServiceImpl implements CrisisService {
         for (Startup startup : startups) {
             for (String nId : crisisMongo.getNichesId()) {
                 if (startup.getNicheId().equals(nId)) {
-                    startup.setSalePrice(startup.getSalePrice() + effect.getPriceDelta());
-                    startup.setExpenses(startup.getExpenses() + effect.getExpensesDelta());
-                    startup.setTeam(startup.getTeam() + effect.getTeamDelta());
-                    startup.setProgress(startup.getProgress() + effect.getProgressDelta());
-                    startup.setReputation(startup.getReputation() + effect.getReputationDelta());
+                    startup.setSalePrice(Math.max(startup.getSalePrice() + effect.getPriceDelta(), 0));
+                    startup.setExpenses(Math.max(startup.getExpenses() + effect.getExpensesDelta(), 0));
+                    startup.setTeam(Math.max(startup.getTeam() + effect.getTeamDelta(), 0));
+                    startup.setProgress(Math.max(startup.getProgress() + effect.getProgressDelta(), 0));
+                    startup.setReputation(Math.max(startup.getReputation() + effect.getReputationDelta(), 0));
                 }
             }
         }
