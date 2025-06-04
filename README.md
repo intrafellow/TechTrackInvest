@@ -19,8 +19,9 @@
 * [TechTrackInvest](https://techtrackinvest.ru)
 
 # Тестовые данные для входа
-Почта - ya@ya.ru  
-Пароль - Passw123
+Почта - ch.qr@ya.ru  
+Пароль - Passw124
+
 
 # Видео презентация
 * [Видео](https://drive.google.com/file/d/1j18EQnYdJQl70bYAm3WuAyqAfRiZdmFc/view?usp=sharing)
@@ -30,6 +31,7 @@
 * [Отчет ПМ](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/PM%20%D0%BE%D1%82%D1%87%D0%B5%D1%82.pdf)
 
 # Сопутствующая проекту документация:
+* [Презентация защиты](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Presentation/Final_pres.pdf)
 * [Swagger](https://techtrackinvest.ru/swagger-ui/)  
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
 * [Miro](https://miro.com/app/board/uXjVIaJdqw0=/?share_link_id=799797734687)  
