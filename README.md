@@ -32,6 +32,7 @@
 
 # Сопутствующая проекту документация:
 * [Презентация защиты](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/Presentation/Final_pres.pdf)
+* [Курсовой проект](https://github.com/intrafellow/TechTrackInvest/blob/main/Docs/%D0%9A%D1%83%D1%80%D1%81%D0%BE%D0%B2%D0%BE%D0%B9_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82.pdf)
 * [Swagger](https://techtrackinvest.ru/swagger-ui/)  
 * [YouGile](https://ru.yougile.com/board/u9j4x6r62hc8)  
 * [Miro](https://miro.com/app/board/uXjVIaJdqw0=/?share_link_id=799797734687)  
