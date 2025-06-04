@@ -65,8 +65,7 @@ public class DataGeneratorController {
                 List<String> nicheIds = nicheMongoRepository.findAll().stream().map(NicheMongo::getName).toList();
                 List<String> niche = List.of(nicheIds.get(ThreadLocalRandom.current().nextInt(nicheIds.size())));
                 log.info("Начало генерации конференций для ниш: {}", niche);
-                conferenceAIProvider.getRandomConferences(niche, 1);
-                
+
                 log.info("Конференции успешно сгенерированы");
             } catch (Exception e) {
                 log.error("Ошибка при генерации конференций: {}", e.getMessage(), e);

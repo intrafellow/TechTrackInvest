@@ -144,11 +144,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public Session getUserDBSession() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        logger.info("Получаем пользователя с почтой {}", email);
         AppUser user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-        logger.info("Получили пользователя с ником {}", user.getUsername());
         List<Session> sessions = user.getSessions();
-        logger.info("Получили все сессии пользователя");
         if (sessions == null || sessions.isEmpty()) {
             logger.info("У пользователя нет активных сессий. Ник пользователя {}", user.getUsername());
             throw new SessionNotFoundException("У пользователя %s нет активных сессий".formatted(user.getUsername()));

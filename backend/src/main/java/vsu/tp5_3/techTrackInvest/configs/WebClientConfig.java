@@ -24,7 +24,7 @@ public class WebClientConfig {
                 .defaultHeader("Content-Type", "application/json")
                 .clientConnector(new ReactorClientHttpConnector(
                         HttpClient.create()
-                                .responseTimeout(Duration.ofMinutes(10))
+                                .responseTimeout(Duration.ofMinutes(15))
                 ))
                 .build();
     }
