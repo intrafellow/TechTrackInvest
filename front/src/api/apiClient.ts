@@ -103,6 +103,20 @@ export const userAPI = {
   }
 };
 
+interface StepActionDto<T> {
+  success: boolean;
+  content: T;
+  errorMessage: string;
+  stepsLeft: number;
+}
+
+interface StartupReadDto {
+  resourceId: string;
+  categoryName: string;
+  name: string;
+  description: string;
+}
+
 export const startupsAPI = {
   getAll: async () => {
     const response = await apiClient.get('/api/v1/startups');
@@ -124,7 +138,7 @@ export const startupsAPI = {
     return response.data;
   },
 
-  buy: async (resourceId: string, finalPrice: number, teamEffect: number, reputationEffect: number) => {
+  buy: async (resourceId: string, finalPrice: number, teamEffect: number, reputationEffect: number): Promise<StepActionDto<StartupReadDto>> => {
     const requestData = {
       resourceId: resourceId,
       finalPrice: finalPrice,
@@ -135,7 +149,7 @@ export const startupsAPI = {
     console.log('Sending buy request with data:', JSON.stringify(requestData, null, 2));
     
     try {
-      const response = await apiClient.post('/api/v1/startups/buy', requestData, {
+      const response = await apiClient.post<StepActionDto<StartupReadDto>>('/api/v1/startups/buy', requestData, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

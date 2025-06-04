@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,7 +6,8 @@ import {
   Typography,
   Divider,
   Button,
-  Box
+  Box,
+  Alert
 } from '@mui/material';
 
 interface DealDialogProps {
@@ -15,6 +16,7 @@ interface DealDialogProps {
   onAccept: () => void;
   startupName: string;
   investmentAmount: number;
+  error?: string;
 }
 
 const DealDialog: React.FC<DealDialogProps> = ({
@@ -22,7 +24,8 @@ const DealDialog: React.FC<DealDialogProps> = ({
   onClose,
   onAccept,
   startupName,
-  investmentAmount
+  investmentAmount,
+  error
 }) => {
   return (
     <Dialog
@@ -52,6 +55,20 @@ const DealDialog: React.FC<DealDialogProps> = ({
         <Divider sx={{ marginTop: '16px', backgroundColor: '#CAC4D0' }} />
       </DialogTitle>
       <DialogContent>
+        {error && (
+          <Alert 
+            severity="error" 
+            sx={{ 
+              marginBottom: '24px',
+              fontFamily: 'Raleway, sans-serif',
+              '& .MuiAlert-message': {
+                fontFamily: 'Raleway, sans-serif'
+              }
+            }}
+          >
+            {error}
+          </Alert>
+        )}
         <Typography
           sx={{
             fontFamily: 'Raleway, sans-serif',

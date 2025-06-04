@@ -38,6 +38,7 @@ const DealPage: React.FC = () => {
     const saved = localStorage.getItem('currentMonth');
     return saved ? JSON.parse(saved) : 0;
   });
+  const [dialogError, setDialogError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchContractData = async () => {
@@ -189,6 +190,7 @@ const DealPage: React.FC = () => {
     if (!finalCondition || !contractData) return;
     try {
       setLoading(true);
+      setDialogError(undefined);
       const buyData = {
         resourceId: contractData.startupId,
         finalPrice: finalCondition.finalPrice,
@@ -204,12 +206,19 @@ const DealPage: React.FC = () => {
         throw new Error('Некорректные числовые значения в данных покупки');
       }
       
-      await startupsAPI.buy(
+      const response = await startupsAPI.buy(
         buyData.resourceId,
         buyData.finalPrice,
         buyData.teamEffect,
         buyData.reputationEffect
       );
+
+      // Проверяем успешность операции
+      if (!response.success) {
+        setDialogError(response.errorMessage || 'Не удалось совершить покупку');
+        return;
+      }
+
       // Обновляем очки действий в хедере
       try {
         const stepCountData = await monthAPI.getStepCount();
@@ -222,29 +231,30 @@ const DealPage: React.FC = () => {
         response: err.response?.data,
         status: err.response?.status
       });
-      // fallback: демо-режим
-      // Обновляем баланс в демо-режиме
-      const currentBalance = JSON.parse(localStorage.getItem('balance') || '{"cash": 100000, "total": 150000, "investment": 50000}');
-      const newBalance = {
-        cash: currentBalance.cash - finalCondition.finalPrice, // Уменьшаем наличные на сумму покупки
-        investment: currentBalance.investment + finalCondition.finalPrice, // Увеличиваем инвестиции на сумму покупки
-        total: currentBalance.cash - finalCondition.finalPrice + (currentBalance.investment + finalCondition.finalPrice) // Общий капитал = новые наличные + новые инвестиции
-      };
-      localStorage.setItem('balance', JSON.stringify(newBalance));
       
-      // Сохраняем информацию о начальной цене инвестиции
-      const investments = JSON.parse(localStorage.getItem('investments') || '{}');
-      investments[contractData.startupId] = finalCondition.finalPrice;
-      localStorage.setItem('investments', JSON.stringify(investments));
-      console.log('Сохранена сумма инвестиций:', {
-        startupId: contractData.startupId,
-        amount: finalCondition.finalPrice,
-        allInvestments: investments
-      });
-      
-      // Отправляем событие об обновлении баланса
-      window.dispatchEvent(new CustomEvent('balanceUpdate', { detail: newBalance }));
-      navigate('/game_field', { state: { justBought: contractData } });
+      // Проверяем, является ли ошибка связанной с недостаточностью денег
+      if (err.response?.data?.errorMessage?.includes('недостаточно денег')) {
+        setDialogError('У вас недостаточно денег для совершения сделки');
+      } else {
+        // fallback: демо-режим
+        // Обновляем баланс в демо-режиме
+        const currentBalance = JSON.parse(localStorage.getItem('balance') || '{"cash": 100000, "total": 150000, "investment": 50000}');
+        const newBalance = {
+          cash: currentBalance.cash - finalCondition.finalPrice,
+          investment: currentBalance.investment + finalCondition.finalPrice,
+          total: currentBalance.cash - finalCondition.finalPrice + (currentBalance.investment + finalCondition.finalPrice)
+        };
+        localStorage.setItem('balance', JSON.stringify(newBalance));
+        
+        // Сохраняем информацию о начальной цене инвестиции
+        const investments = JSON.parse(localStorage.getItem('investments') || '{}');
+        investments[contractData.startupId] = finalCondition.finalPrice;
+        localStorage.setItem('investments', JSON.stringify(investments));
+        
+        // Отправляем событие об обновлении баланса
+        window.dispatchEvent(new CustomEvent('balanceUpdate', { detail: newBalance }));
+        navigate('/game_field', { state: { justBought: contractData } });
+      }
     } finally {
       setLoading(false);
     }
@@ -386,6 +396,7 @@ const DealPage: React.FC = () => {
             onAccept={handleDialogAccept}
             startupName={contractData?.startupName || ''}
             investmentAmount={finalCondition?.finalPrice || 0}
+            error={dialogError}
           />
         </Box>
       </Box>

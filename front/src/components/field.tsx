@@ -15,11 +15,11 @@ import EventsList from './event';
 import { startupsAPI, conferenceAPI } from '../api/apiClient';
 
 interface Startup {
-  id: string;
+  resourceId: string;
   name: string;
   description: string;
   price: number;
-  nicheId: string;
+  categoryName: string;
 }
 
 interface Event {
@@ -60,12 +60,12 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
       const data = await startupsAPI.getAll();
       let filteredStartups = data.availableStartups;
       if (selected) {
-        filteredStartups = filteredStartups.filter((startup: Startup) => startup.nicheId === selected);
+        filteredStartups = filteredStartups.filter((startup: Startup) => startup.categoryName === selected);
       } else {
         // Группируем по категориям и берём по одному на каждую
         const byCategory: { [key: string]: Startup } = {};
         for (const s of filteredStartups) {
-          if (!byCategory[s.nicheId]) byCategory[s.nicheId] = s;
+          if (!byCategory[s.categoryName]) byCategory[s.categoryName] = s;
         }
         filteredStartups = Object.values(byCategory);
       }
@@ -172,10 +172,10 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
               >
                 {boughtStartups.map((startup) => (
                   <BoughtCard
-                    key={startup.id}
+                    key={startup.resourceId}
                     title={startup.name}
-                    subtitle={startup.nicheId}
-                    resourceId={startup.id}
+                    subtitle={startup.categoryName}
+                    resourceId={startup.resourceId}
                   />
                 ))}
               </Box>
@@ -202,12 +202,12 @@ const Field: React.FC<FieldProps> = ({ type, showDividers = true }) => {
           >
             {startups.map((startup) => (
               <VerticalCard
-                key={startup.id}
+                key={startup.resourceId}
                 title={startup.name}
-                subtitle={startup.nicheId}
+                subtitle={startup.categoryName}
                 description={startup.description}
-                resourceId={startup.id}
-                startupId={startup.id}
+                resourceId={startup.resourceId}
+                startupId={startup.resourceId}
                 price={startup.price}
                 onDealStart={() => {}}
                 onDealEnd={() => {}}
