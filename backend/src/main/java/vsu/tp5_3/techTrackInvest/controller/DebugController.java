@@ -14,25 +14,11 @@ import vsu.tp5_3.techTrackInvest.service.implementations.StartupService;
 
 import java.util.List;
 
-@Tag(name = "Отладка", description = "Никак не задействуется в приложении напрямую")
+@Tag(name = "Отладка", description = "Эндпоин для проверки работоспособности api")
 @RestController
 @RequestMapping("/api/v1/debug")
 @RequiredArgsConstructor
 public class DebugController {
-    private final ConferenceMongoRepository conferenceMongoRepository;
-    private final StartupMongoRepository startupMongoRepository;
-    private final StartupService startupService;
-
-    @GetMapping("/conferences")
-    public ResponseEntity<List<ConferenceMongo>> getAllConferences() {
-        return ResponseEntity.ok(conferenceMongoRepository.findAll());
-    }
-
-    @GetMapping("/startups")
-    public ResponseEntity<List<StartupMongo>> getAllStartups() {
-        return ResponseEntity.ok(startupMongoRepository.findAll());
-    }
-
     @GetMapping("/healthAPI")
     public ResponseEntity<String> getStatus() {
         return ResponseEntity.ok("it is working");
